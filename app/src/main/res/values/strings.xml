@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LivetexSdkTestApp</string>
+    <string name="init">инициалиация</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="privetstvie">Мы рады приветствовать вас на нашем сайте! У нас все хорошо.</string>
+    <string name="your_name">Ваше имя</string>
+    <string name="your_age">Укажите возраст</string>
+    <string name="your_msg">Напишите сообщение</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_init">InitActivity</string>
+    <string name="title_activity_claim">ClaimActivity</string>
+    <string name="input_msg">Введите сообщение</string>
+    <string name="claim">Жалоба</string>
+    <string name="alena_ivanova">Алена Иванова</string>
+    <string name="vote">ОЦЕНИТЕ КОНСУЛЬТАЦИЮ</string>
+    <string name="enter_the_code">Введите код</string>
+    <string name="next">Далее</string>
+    <string name="enter_msg">Введите сообщение</string>
+
+</resources>

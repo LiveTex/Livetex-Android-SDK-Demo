@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="nit.livetex.livetexsdktestapp.ChatActivity">
+    <item
+        android:id="@+id/action_claim"
+        android:orderInCategory="100"
+        android:title="@string/claim"
+        android:icon="@drawable/ic_report_white_36dp"
+        app:showAsAction="always" />
+</menu>
