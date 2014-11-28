@@ -22,7 +22,6 @@ import java.util.List;
 import livetex.sdk.models.Department;
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.Employee;
-import livetex.sdk.models.TextMessage;
 
 public class WelcomeActivity extends BaseActivity implements View.OnClickListener {
 
@@ -43,7 +42,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.privetstvie);
+        setContentView(R.layout.activity_welcome);
         initViews();
         initViewProperties();
     }
@@ -101,7 +100,8 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_btn:
-                setName();
+//                setName();
+                requestDialog();
                 break;
         }
     }
@@ -123,6 +123,11 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
 
     private void sendMsg(final String txt) {
         MainApplication.sendMsg(txt);
+        try {
+            unregisterReceiver(mReciever);
+        } catch (IllegalArgumentException ignored){
+        }
+        ChatActivity.show(WelcomeActivity.this);
     }
 
     @Override
@@ -152,13 +157,12 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
             showProgressDialog("Отправка сообщения");
             sendMsg(mMsgEt.getText().toString());
         } else {
+            try {
+                unregisterReceiver(mReciever);
+            } catch (IllegalArgumentException ignored){
+            }
             ChatActivity.show(WelcomeActivity.this);
         }
-    }
-
-    @Override
-    protected void onMsgSended(TextMessage msg) {
-        ChatActivity.show(WelcomeActivity.this);
     }
 
     private static class  HintAdapter <T extends Object> extends ArrayAdapter<T> {

@@ -2,6 +2,8 @@ package nit.livetex.livetexsdktestapp.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +58,7 @@ public class ChatAdapter extends BaseAdapter{
     }
 
     public void addAllMsgs(List<TextMessage> msgs){
+        if (msgs == null) return;
         messages.addAll(msgs);
         notifyDataSetChanged();
     }
@@ -71,7 +74,8 @@ public class ChatAdapter extends BaseAdapter{
         TextMessage msg = (TextMessage) getItem(position);
         final TextView msgText = (TextView) view.findViewById(R.id.message_text);
         msgText.setText(msg.getText());
-        bindTime(view, (long) (Double.parseDouble(msg.getTimestamp()) * 1000), position);
+        if (!TextUtils.isEmpty(msg.getTimestamp()))
+            bindTime(view, (long) (Double.parseDouble(msg.getTimestamp()) * 1000), position);
         alignMsg(view, msg.getSender() == null);
         return view;
     }
@@ -83,13 +87,14 @@ public class ChatAdapter extends BaseAdapter{
         final String curHeader = sdf_date.format(date);
         header.setText(curHeader);
         header.setVisibility(View.VISIBLE);
-
         if (pos > 0) {
             TextMessage oldMsg = messages.get(pos-1);
             Date prevDate = new Date((long) (Double.parseDouble(oldMsg.getTimestamp()) * 1000));
             String prevHeader = sdf_date.format(prevDate);
-            if (curHeader.equals(prevHeader)) {
+            if (curHeader.equals(prevHeader) || TextUtils.isEmpty(curHeader.trim())) {
                 header.setVisibility(View.GONE);
+            } else {
+                header.setVisibility(View.VISIBLE);
             }
         }
     }

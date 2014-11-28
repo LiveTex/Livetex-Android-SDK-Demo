@@ -35,6 +35,7 @@ public class ChatActivity extends BaseActivity {
 
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, ChatActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         activity.startActivity(intent);
     }
 
@@ -65,7 +66,7 @@ public class ChatActivity extends BaseActivity {
         setContentView(R.layout.activity_chat);
         initActionBar();
         initViews();
-        getMsgHistory();
+        getDialogState();
     }
 
     private void initActionBar() {
@@ -139,8 +140,13 @@ public class ChatActivity extends BaseActivity {
 
     }
 
+    private void getDialogState(){
+//        showProgressDialog("Получение состояния диалога");
+        MainApplication.getDialogState();
+    }
+
     private void getMsgHistory() {
-        showProgressDialog("Получение истории сообщений");
+//        showProgressDialog("Получение истории сообщений");
         MainApplication.getMsgHistory(20, 0);
     }
 
@@ -166,6 +172,12 @@ public class ChatActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDialogStateGetted(DialogState state) {
+        onUpdateDialogState(state);
+        getMsgHistory();
+    }
+
+    @Override
     protected void onMsgHistoryGetted(List<TextMessage> msg) {
         mAdapter.addAllMsgs(msg);
     }
@@ -181,6 +193,7 @@ public class ChatActivity extends BaseActivity {
 
     @Override
     protected void onMsgRecieved(TextMessage msg) {
+        MainApplication.confirmMsg(msg.id);
         if (mAdapter != null) {
             mAdapter.addMsg(msg);
             mListView.setSelection(mAdapter.getCount() - 1);

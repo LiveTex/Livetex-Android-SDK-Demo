@@ -16,6 +16,7 @@
         android:layout_marginTop="10dp"
         android:clickable="false"
         android:gravity="center"
+        android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#929eac" />
 

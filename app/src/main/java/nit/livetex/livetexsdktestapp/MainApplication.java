@@ -50,6 +50,8 @@ public class MainApplication extends Application {
     public static final String REQUEST_UPDATE_STATE = "req_update_dialog_state";
     public static final String REQUEST_TYPING = "req_typing";
     public static final String REQUEST_SET_NAME = "req_set_name";
+    public static final String REQUEST_GET_STATE = "req_get_state";
+    public static final String REQUEST_CONFIRM_MSG = "req_confirm_msg";
 
     public static final int VALUE_RESULT_ERR = -1;
     public static final int VALUE_RESULT_OK = 0;
@@ -70,7 +72,7 @@ public class MainApplication extends Application {
 
     public static void initLivetex(String id) {
         sLiveTex = new Livetex.Builder(getInstance(), API_KEY, id)
-                .addAuthUrl("192.168.78.14:10010")
+                .addAuthUrl("http://192.168.78.14:10010/")
                 .setLogEnabled(true).build();
         sLiveTex.init(new IInitHandler() {
             @Override
@@ -82,7 +84,8 @@ public class MainApplication extends Application {
             public void onError(String s) {
                 sendReciver(VALUE_RESULT_ERR, REQUEST_INIT, s);
             }
-        }, new INotificationDialogHandler() {
+        });
+        sLiveTex.setNotificationDialogHandler(new INotificationDialogHandler() {
 
             @Override
             public void ban(String s) throws TException {
@@ -124,6 +127,22 @@ public class MainApplication extends Application {
 
             }
         });
+    }
+
+    public static void getDialogState(){
+        if (sLiveTex != null)
+            sLiveTex.getState(new AHandler<DialogState>() {
+
+                @Override
+                public void onError(String s) {
+                    sendReciver(VALUE_RESULT_ERR, REQUEST_GET_STATE, s);
+                }
+
+                @Override
+                public void onResultRecieved(DialogState state) {
+                    sendReciver(VALUE_RESULT_OK, REQUEST_GET_STATE, state);
+                }
+            });
     }
 
     public static void getDepartments() {
@@ -250,6 +269,22 @@ public class MainApplication extends Application {
                 @Override
                 public void onResultRecieved(Object o) {
                     sendReciver(VALUE_RESULT_OK, REQUEST_VOTE, null);
+                }
+            });
+        }
+    }
+
+    public static void confirmMsg(String msg){
+        if (sLiveTex != null) {
+            sLiveTex.confirmTextMessage(msg, new AHandler() {
+                @Override
+                public void onError(String s) {
+                    sendReciver(VALUE_RESULT_ERR, REQUEST_CONFIRM_MSG, s);
+                }
+
+                @Override
+                public void onResultRecieved(Object o) {
+                    sendReciver(VALUE_RESULT_OK, REQUEST_CONFIRM_MSG, null);
                 }
             });
         }

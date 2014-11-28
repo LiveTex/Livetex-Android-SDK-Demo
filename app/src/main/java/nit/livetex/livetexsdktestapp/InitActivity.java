@@ -2,10 +2,11 @@ package nit.livetex.livetexsdktestapp;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import livetex.sdk.models.DialogState;
 
 
 public class InitActivity extends BaseActivity {
@@ -14,6 +15,7 @@ public class InitActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
+        ((EditText) findViewById(R.id.input_id)).setText("10006460");
         findViewById(R.id.btn)
                 .setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -37,6 +39,25 @@ public class InitActivity extends BaseActivity {
 
     @Override
     protected void initComplete() {
-        WelcomeActivity.show(InitActivity.this);
+        getDialogState();
+        showProgressDialog("инициализация");
+    }
+
+    private void getDialogState() {
+        MainApplication.getDialogState();
+    }
+
+    @Override
+    protected void onDialogStateGetted(DialogState state) {
+        if (state == null) return;
+        try {
+            unregisterReceiver(mReciever);
+        } catch (IllegalArgumentException ignored) {
+        }
+        if (state.conversation != null) {
+            ChatActivity.show(InitActivity.this);
+        } else {
+            WelcomeActivity.show(InitActivity.this);
+        }
     }
 }

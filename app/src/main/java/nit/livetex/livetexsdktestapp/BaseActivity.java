@@ -23,11 +23,10 @@ import livetex.sdk.models.TypingMessage;
 
 /**
  * Created by sergey.so on 14.11.2014.
- *
  */
 public class BaseActivity extends ActionBarActivity {
 
-    private Reciever mReciever;
+    protected Reciever mReciever;
     private ProgressDialog mProgressDialog;
     private static HashMap<String, String> errors;
 
@@ -50,67 +49,83 @@ public class BaseActivity extends ActionBarActivity {
         initProgressDialog();
     }
 
+    private void registerNewReciever(){
+        if (mReciever == null) mReciever = new Reciever();
+        registerReceiver(mReciever, new IntentFilter(MainApplication.ACTION_RECIEVER));
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(mReciever);
+        try {
+            unregisterReceiver(mReciever);
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 
-    private void initProgressDialog(){
+    private void initProgressDialog() {
         mProgressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
         mProgressDialog.setIndeterminate(true);
     }
 
-    protected final void showProgressDialog(String msg){
+    protected final void showProgressDialog(String msg) {
         mProgressDialog.setMessage(msg);
         mProgressDialog.show();
     }
 
-    protected void showToast(String txt){
+    protected void showToast(String txt) {
         Toast.makeText(MainApplication.getInstance(), txt, Toast.LENGTH_LONG).show();
     }
 
-    protected void initComplete(){
+    protected void initComplete() {
 
     }
 
-    protected void departmentsRecieved(List<Department> result){
+    protected void departmentsRecieved(List<Department> result) {
 
     }
 
-    protected void employeesRecieved(List<Employee> result){
+    protected void employeesRecieved(List<Employee> result) {
 
     }
 
-    protected void dialogRecieved(DialogState state){
+    protected void dialogRecieved(DialogState state) {
 
     }
 
-    protected void onUpdateDialogState(DialogState state){
+    protected void onUpdateDialogState(DialogState state) {
 
     }
 
-    protected void onMsgSended(TextMessage msg){
+    protected void onMsgSended(TextMessage msg) {
 
     }
 
-    protected void onMsgHistoryGetted(List<TextMessage> msg){
+    protected void onMsgHistoryGetted(List<TextMessage> msg) {
 
     }
 
-    protected void onMsgRecieved(TextMessage msg){
+    protected void onMsgRecieved(TextMessage msg) {
 
     }
 
-    protected void onVoted(){
+    protected void onVoted() {
 
     }
 
-    protected void onTyping(TypingMessage typingMessage){
+    protected void onTyping(TypingMessage typingMessage) {
 
     }
 
-    protected void onNameSetted(){
+    protected void onNameSetted() {
+
+    }
+
+    protected void onDialogStateGetted(DialogState state) {
+
+    }
+
+    protected void onMsgConfirmed() {
 
     }
 
@@ -124,7 +139,7 @@ public class BaseActivity extends ActionBarActivity {
                 return;
             }
             Serializable result = intent.getSerializableExtra(MainApplication.KEY_RESULT_OBJECT);
-            switch (intent.getStringExtra(MainApplication.KEY_REQUEST_NAME)){
+            switch (intent.getStringExtra(MainApplication.KEY_REQUEST_NAME)) {
                 case MainApplication.REQUEST_INIT:
                     initComplete();
                     break;
@@ -158,8 +173,13 @@ public class BaseActivity extends ActionBarActivity {
                 case MainApplication.REQUEST_SET_NAME:
                     onNameSetted();
                     break;
+                case MainApplication.REQUEST_GET_STATE:
+                    onDialogStateGetted((DialogState) result);
+                    break;
+                case MainApplication.REQUEST_CONFIRM_MSG:
+                    onMsgConfirmed();
+                    break;
             }
         }
     }
-
 }
