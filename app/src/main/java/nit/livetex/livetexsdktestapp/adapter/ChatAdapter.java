@@ -63,6 +63,11 @@ public class ChatAdapter extends BaseAdapter{
         notifyDataSetChanged();
     }
 
+    public void removeAll(){
+        messages.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public long getItemId(int position) {
         return 0;

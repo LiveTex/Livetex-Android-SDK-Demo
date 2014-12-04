@@ -31,11 +31,10 @@ import livetex.sdk.models.TypingMessage;
 import nit.livetex.livetexsdktestapp.adapter.ChatAdapter;
 
 
-public class ChatActivity extends BaseActivity {
+public class ChatActivity extends ReinitActivity {
 
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, ChatActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         activity.startActivity(intent);
     }
 
@@ -46,6 +45,7 @@ public class ChatActivity extends BaseActivity {
     private String mOperatorName;
     private int mOperatorAvaVisibility = View.INVISIBLE;
     private boolean isTyping = false;
+    private boolean isDialogClose = true;
     private Handler mHandler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -140,17 +140,6 @@ public class ChatActivity extends BaseActivity {
 
     }
 
-    private void getDialogState(){
-//        showProgressDialog("Получение состояния диалога");
-        MainApplication.getDialogState();
-    }
-
-    private void getMsgHistory() {
-//        showProgressDialog("Получение истории сообщений");
-        MainApplication.getMsgHistory(20, 0);
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -160,25 +149,45 @@ public class ChatActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_claim) {
-            ClaimActivity.show(this);
-            return true;
+        switch (item.getItemId()){
+            case R.id.action_claim:
+                if (isDialogClose)
+                    return true;
+                lockStop();
+                ClaimActivity.show(this);
+                return true;
+            case R.id.action_close:
+                if (isDialogClose){
+                    showWelcomeActivity();
+                } else {
+                    MainApplication.closeDialog();
+                }
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
+    protected void onDialogClose(DialogState state) {
+        super.onDialogClose(state);
+        showWelcomeActivity();
+    }
+
+    @Override
     protected void onDialogStateGetted(DialogState state) {
+        super.onDialogStateGetted(state);
         onUpdateDialogState(state);
         getMsgHistory();
     }
 
+    private void getMsgHistory() {
+//        showProgressDialog("Получение истории сообщений");
+        MainApplication.getMsgHistory(20, 0);
+    }
+
     @Override
     protected void onMsgHistoryGetted(List<TextMessage> msg) {
+        mAdapter.removeAll();
         mAdapter.addAllMsgs(msg);
     }
 
@@ -220,12 +229,17 @@ public class ChatActivity extends BaseActivity {
         if (state.conversation != null && state.employee != null) {
             operatorName = state.employee.firstname + " " + state.employee.lastname;
             avaVisibility = View.VISIBLE;
+            findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
+            isDialogClose = false;
         } else if (state.conversation != null) {
-            operatorName = "Ожидайте ответа оператора";
+            isDialogClose = false;
             avaVisibility = View.GONE;
+            findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
         } else if (state.employee == null) {
             operatorName = "Диалог закрыт";
+            isDialogClose = true;
             avaVisibility = View.GONE;
+            findViewById(R.id.msg_ll).setVisibility(View.GONE);
         }
         mOperatorName = operatorName;
         if (mOperatorNameTV != null) {

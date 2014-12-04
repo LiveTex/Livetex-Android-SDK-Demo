@@ -129,6 +129,14 @@ public class BaseActivity extends ActionBarActivity {
 
     }
 
+    protected void onError(String request){
+
+    }
+
+    protected void onDialogClose(DialogState state){
+
+    }
+
     private class Reciever extends BroadcastReceiver {
 
         @Override
@@ -136,6 +144,7 @@ public class BaseActivity extends ActionBarActivity {
             mProgressDialog.dismiss();
             if (intent.getIntExtra(MainApplication.KEY_RESULT_CODE, 0) == -1) {
                 showToast(errors.get(intent.getStringExtra(MainApplication.KEY_REQUEST_NAME)));
+                onError(intent.getStringExtra(MainApplication.KEY_REQUEST_NAME));
                 return;
             }
             Serializable result = intent.getSerializableExtra(MainApplication.KEY_RESULT_OBJECT);
@@ -178,6 +187,9 @@ public class BaseActivity extends ActionBarActivity {
                     break;
                 case MainApplication.REQUEST_CONFIRM_MSG:
                     onMsgConfirmed();
+                    break;
+                case MainApplication.REQUEST_CLOSE_CHAT:
+                    onDialogClose((DialogState) result);
                     break;
             }
         }

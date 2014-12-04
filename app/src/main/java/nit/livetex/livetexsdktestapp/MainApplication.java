@@ -52,6 +52,7 @@ public class MainApplication extends Application {
     public static final String REQUEST_SET_NAME = "req_set_name";
     public static final String REQUEST_GET_STATE = "req_get_state";
     public static final String REQUEST_CONFIRM_MSG = "req_confirm_msg";
+    public static final String REQUEST_CLOSE_CHAT = "req_close_chat";
 
     public static final int VALUE_RESULT_ERR = -1;
     public static final int VALUE_RESULT_OK = 0;
@@ -59,6 +60,8 @@ public class MainApplication extends Application {
 
     private static Livetex sLiveTex;
     private static MainApplication instance;
+
+    public static String sApplicationId = null;
 
     public static MainApplication getInstance() {
         return instance;
@@ -129,7 +132,12 @@ public class MainApplication extends Application {
         });
     }
 
-    public static void getDialogState(){
+    public static void stopLivetex() {
+        if (sLiveTex != null)
+            sLiveTex.destroy();
+    }
+
+    public static void getDialogState() {
         if (sLiveTex != null)
             sLiveTex.getState(new AHandler<DialogState>() {
 
@@ -226,8 +234,8 @@ public class MainApplication extends Application {
             });
     }
 
-    public static void setName(String name){
-        if (sLiveTex != null){
+    public static void setName(String name) {
+        if (sLiveTex != null) {
             sLiveTex.setName(name, new AHandler() {
                 @Override
                 public void onError(String s) {
@@ -274,7 +282,7 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void confirmMsg(String msg){
+    public static void confirmMsg(String msg) {
         if (sLiveTex != null) {
             sLiveTex.confirmTextMessage(msg, new AHandler() {
                 @Override
@@ -285,6 +293,22 @@ public class MainApplication extends Application {
                 @Override
                 public void onResultRecieved(Object o) {
                     sendReciver(VALUE_RESULT_OK, REQUEST_CONFIRM_MSG, null);
+                }
+            });
+        }
+    }
+
+    public static void closeDialog(){
+        if (sLiveTex != null) {
+            sLiveTex.close(new AHandler<DialogState>() {
+                @Override
+                public void onError(String s) {
+                    sendReciver(VALUE_RESULT_ERR, REQUEST_CLOSE_CHAT, s);
+                }
+
+                @Override
+                public void onResultRecieved(DialogState state) {
+                    sendReciver(VALUE_RESULT_OK, REQUEST_CLOSE_CHAT, state);
                 }
             });
         }

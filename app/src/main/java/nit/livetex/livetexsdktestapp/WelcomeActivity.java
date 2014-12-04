@@ -23,7 +23,7 @@ import livetex.sdk.models.Department;
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.Employee;
 
-public class WelcomeActivity extends BaseActivity implements View.OnClickListener {
+public class WelcomeActivity extends ReinitActivity implements View.OnClickListener {
 
     private EditText mMsgEt, mNameEt;
     private Spinner mSpinner;
@@ -127,6 +127,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
             unregisterReceiver(mReciever);
         } catch (IllegalArgumentException ignored){
         }
+        lockStop();
         ChatActivity.show(WelcomeActivity.this);
     }
 
@@ -161,6 +162,7 @@ public class WelcomeActivity extends BaseActivity implements View.OnClickListene
                 unregisterReceiver(mReciever);
             } catch (IllegalArgumentException ignored){
             }
+            lockStop();
             ChatActivity.show(WelcomeActivity.this);
         }
     }
