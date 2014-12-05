@@ -47,12 +47,14 @@ public class MainApplication extends Application {
     public static final String REQUEST_MSG_HISTORY = "request_msg_history";
     public static final String REQUEST_VOTE = "request_vote";
     public static final String REQUEST_RECIEVE_MSG = "req_recieve_msg";
+    public static final String REQUEST_RECIEVE_FILE = "req_recieve_file";
     public static final String REQUEST_UPDATE_STATE = "req_update_dialog_state";
-    public static final String REQUEST_TYPING = "req_typing";
+    public static final String REQUEST_OPERATOR_TYPING = "req_operator_typing";
     public static final String REQUEST_SET_NAME = "req_set_name";
     public static final String REQUEST_GET_STATE = "req_get_state";
     public static final String REQUEST_CONFIRM_MSG = "req_confirm_msg";
     public static final String REQUEST_CLOSE_CHAT = "req_close_chat";
+    public static final String REQUEST_CLIENT_TYPING = "req_client_typing";
 
     public static final int VALUE_RESULT_ERR = -1;
     public static final int VALUE_RESULT_OK = 0;
@@ -60,8 +62,6 @@ public class MainApplication extends Application {
 
     private static Livetex sLiveTex;
     private static MainApplication instance;
-
-    public static String sApplicationId = null;
 
     public static MainApplication getInstance() {
         return instance;
@@ -102,7 +102,7 @@ public class MainApplication extends Application {
 
             @Override
             public void receiveFileMessage(FileMessage fileMessage) throws TException {
-
+                sendReciver(VALUE_RESULT_OK, REQUEST_RECIEVE_FILE, fileMessage);
             }
 
             @Override
@@ -122,7 +122,7 @@ public class MainApplication extends Application {
 
             @Override
             public void receiveTypingMessage(TypingMessage typingMessage) throws TException {
-                sendReciver(VALUE_RESULT_OK, REQUEST_TYPING, typingMessage);
+                sendReciver(VALUE_RESULT_OK, REQUEST_OPERATOR_TYPING, typingMessage);
             }
 
             @Override
@@ -309,6 +309,24 @@ public class MainApplication extends Application {
                 @Override
                 public void onResultRecieved(DialogState state) {
                     sendReciver(VALUE_RESULT_OK, REQUEST_CLOSE_CHAT, state);
+                }
+            });
+        }
+    }
+
+    public static void typing(String text){
+        if (sLiveTex != null) {
+            TypingMessage msg = new TypingMessage();
+            msg.setText(text);
+            sLiveTex.typing(msg, new AHandler() {
+                @Override
+                public void onError(String s) {
+                    sendReciver(VALUE_RESULT_ERR, REQUEST_CLIENT_TYPING, s);
+                }
+
+                @Override
+                public void onResultRecieved(Object o) {
+                    sendReciver(VALUE_RESULT_OK, REQUEST_CLIENT_TYPING, null);
                 }
             });
         }

@@ -121,16 +121,6 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
                 null : (Department) mSpinner.getSelectedItem());
     }
 
-    private void sendMsg(final String txt) {
-        MainApplication.sendMsg(txt);
-        try {
-            unregisterReceiver(mReciever);
-        } catch (IllegalArgumentException ignored){
-        }
-        lockStop();
-        ChatActivity.show(WelcomeActivity.this);
-    }
-
     @Override
     protected void onNameSetted() {
         requestDialog();
@@ -165,6 +155,16 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
             lockStop();
             ChatActivity.show(WelcomeActivity.this);
         }
+    }
+
+    private void sendMsg(final String txt) {
+        MainApplication.sendMsg(txt);
+        try {
+            unregisterReceiver(mReciever);
+        } catch (IllegalArgumentException ignored){
+        }
+        lockStop();
+        ChatActivity.show(WelcomeActivity.this);
     }
 
     private static class  HintAdapter <T extends Object> extends ArrayAdapter<T> {

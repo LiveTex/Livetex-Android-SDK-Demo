@@ -22,6 +22,7 @@ public class InitActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
+//        ((EditText) findViewById(R.id.input_id)).setText("10008248");
         ((EditText) findViewById(R.id.input_id)).setText("10008248");
         findViewById(R.id.btn)
                 .setOnClickListener(new View.OnClickListener() {

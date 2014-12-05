@@ -62,7 +62,7 @@ public class ReinitActivity extends BaseActivity {
         }
     }
 
-    private void showInitActivity(){
+    protected void showInitActivity(){
         unregister();
         InitActivity.show(this);
         finish();
@@ -105,7 +105,7 @@ public class ReinitActivity extends BaseActivity {
     protected void showWelcomeActivity(){
         unregister();
         lockStop();
-        WelcomeActivity.show(this);
+        InitActivity.show(this);
         finish();
     }
 

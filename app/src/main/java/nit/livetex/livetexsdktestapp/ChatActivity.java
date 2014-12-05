@@ -10,9 +10,11 @@ import android.os.Handler;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.ActionBar;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import livetex.sdk.models.DialogState;
+import livetex.sdk.models.FileMessage;
 import livetex.sdk.models.TextMessage;
 import livetex.sdk.models.TypingMessage;
 import nit.livetex.livetexsdktestapp.adapter.ChatAdapter;
@@ -126,6 +129,23 @@ public class ChatActivity extends ReinitActivity {
                 vote(true);
             }
         });
+        ((EditText) findViewById(R.id.input_msg)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0){
+                    MainApplication.typing(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private void vote(boolean isLike) {
@@ -158,7 +178,7 @@ public class ChatActivity extends ReinitActivity {
                 return true;
             case R.id.action_close:
                 if (isDialogClose){
-                    showWelcomeActivity();
+                    showInitActivity();
                 } else {
                     MainApplication.closeDialog();
                 }
@@ -170,7 +190,7 @@ public class ChatActivity extends ReinitActivity {
     @Override
     protected void onDialogClose(DialogState state) {
         super.onDialogClose(state);
-        showWelcomeActivity();
+        showInitActivity();
     }
 
     @Override
@@ -223,7 +243,14 @@ public class ChatActivity extends ReinitActivity {
     }
 
     @Override
+    protected void onFileRecieved(FileMessage fileMessage) {
+        super.onFileRecieved(fileMessage);
+        showToast("FileRecieved " + fileMessage);
+    }
+
+    @Override
     protected void onUpdateDialogState(DialogState state) {
+        if (state == null) return;
         String operatorName = "";
         int avaVisibility = View.VISIBLE;
         if (state.conversation != null && state.employee != null) {

@@ -77,6 +77,7 @@ public class ChatAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewGroup view = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.item_msgs, parent, false);
         TextMessage msg = (TextMessage) getItem(position);
+        if (msg == null) return view;
         final TextView msgText = (TextView) view.findViewById(R.id.message_text);
         msgText.setText(msg.getText());
         if (!TextUtils.isEmpty(msg.getTimestamp()))

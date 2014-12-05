@@ -18,11 +18,13 @@ import java.util.List;
 import livetex.sdk.models.Department;
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.Employee;
+import livetex.sdk.models.FileMessage;
 import livetex.sdk.models.TextMessage;
 import livetex.sdk.models.TypingMessage;
 
 /**
  * Created by sergey.so on 14.11.2014.
+ *
  */
 public class BaseActivity extends ActionBarActivity {
 
@@ -137,6 +139,9 @@ public class BaseActivity extends ActionBarActivity {
 
     }
 
+    protected void onFileRecieved(FileMessage fileMessage){
+    }
+
     private class Reciever extends BroadcastReceiver {
 
         @Override
@@ -170,13 +175,16 @@ public class BaseActivity extends ActionBarActivity {
                 case MainApplication.REQUEST_RECIEVE_MSG:
                     onMsgRecieved((TextMessage) result);
                     break;
+                case MainApplication.REQUEST_RECIEVE_FILE:
+                    onFileRecieved((FileMessage) result);
+                    break;
                 case MainApplication.REQUEST_VOTE:
                     onVoted();
                     break;
                 case MainApplication.REQUEST_UPDATE_STATE:
                     onUpdateDialogState((DialogState) result);
                     break;
-                case MainApplication.REQUEST_TYPING:
+                case MainApplication.REQUEST_OPERATOR_TYPING:
                     onTyping((TypingMessage) result);
                     break;
                 case MainApplication.REQUEST_SET_NAME:
