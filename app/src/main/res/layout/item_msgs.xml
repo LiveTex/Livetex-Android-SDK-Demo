@@ -14,6 +14,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:clickable="false"
         android:gravity="center"
         android:visibility="gone"
@@ -21,6 +23,7 @@
         android:textColor="#929eac" />
 
     <RelativeLayout
+        android:id="@+id/main_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/message_date"

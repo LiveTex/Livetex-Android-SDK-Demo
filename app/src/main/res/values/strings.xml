@@ -18,6 +18,7 @@
     <string name="vote">ОЦЕНИТЕ КОНСУЛЬТАЦИЮ</string>
     <string name="enter_the_code">Введите код</string>
     <string name="next">Далее</string>
+    <string name="clear">Очистить кэш</string>
     <string name="enter_msg">Введите сообщение</string>
 
 </resources>

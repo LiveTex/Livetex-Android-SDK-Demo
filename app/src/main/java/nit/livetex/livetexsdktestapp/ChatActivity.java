@@ -25,13 +25,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.FileMessage;
+import livetex.sdk.models.HoldMessage;
 import livetex.sdk.models.TextMessage;
 import livetex.sdk.models.TypingMessage;
 import nit.livetex.livetexsdktestapp.adapter.ChatAdapter;
+import nit.livetex.livetexsdktestapp.adapter.MessageModel;
 
 
 public class ChatActivity extends ReinitActivity {
@@ -208,14 +211,18 @@ public class ChatActivity extends ReinitActivity {
     @Override
     protected void onMsgHistoryGetted(List<TextMessage> msg) {
         mAdapter.removeAll();
-        mAdapter.addAllMsgs(msg);
+        List<MessageModel> models = new ArrayList<>();
+        for (TextMessage textMessage: msg){
+            models.add(new MessageModel(textMessage));
+        }
+        mAdapter.addAllMsgs(models);
     }
 
     @Override
     protected void onMsgSended(TextMessage msg) {
         if (mAdapter != null) {
             ((EditText) findViewById(R.id.input_msg)).setText("");
-            mAdapter.addMsg(msg);
+            mAdapter.addMsg(new MessageModel(msg));
             mListView.setSelection(mAdapter.getCount() - 1);
         }
     }
@@ -224,7 +231,15 @@ public class ChatActivity extends ReinitActivity {
     protected void onMsgRecieved(TextMessage msg) {
         MainApplication.confirmMsg(msg.id);
         if (mAdapter != null) {
-            mAdapter.addMsg(msg);
+            mAdapter.addMsg(new MessageModel(msg));
+            mListView.setSelection(mAdapter.getCount() - 1);
+        }
+    }
+
+    @Override
+    protected void onHoldMsgRecieved(HoldMessage holdMessage) {
+        if (mAdapter != null) {
+            mAdapter.addMsg(new MessageModel(holdMessage));
             mListView.setSelection(mAdapter.getCount() - 1);
         }
     }
@@ -244,8 +259,10 @@ public class ChatActivity extends ReinitActivity {
 
     @Override
     protected void onFileRecieved(FileMessage fileMessage) {
-        super.onFileRecieved(fileMessage);
-        showToast("FileRecieved " + fileMessage);
+        if (mAdapter != null) {
+            mAdapter.addMsg(new MessageModel(fileMessage));
+            mListView.setSelection(mAdapter.getCount() - 1);
+        }
     }
 
     @Override

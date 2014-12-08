@@ -118,7 +118,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
     private void requestDialog() {
         showProgressDialog("Получение диалога");
         MainApplication.requestDialog(mSpinner.getSelectedItemPosition() == 0 ?
-                null : (Department) mSpinner.getSelectedItem());
+                null : mSpinner.getSelectedItem());
     }
 
     @Override
@@ -128,6 +128,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     @Override
     protected void departmentsRecieved(List<Department> departments) {
+        if (departments == null) return;
         departmentList = departments;
         if (mRadioGroup.getCheckedRadioButtonId() == R.id.radio_dep) {
             mAdapter.setModels(departmentList);
@@ -136,6 +137,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     @Override
     protected void employeesRecieved(List<Employee> result) {
+        if (result == null) return;
         employeeList = result;
         if (mRadioGroup.getCheckedRadioButtonId() == R.id.radio_op) {
             mAdapter.setModels(employeeList);

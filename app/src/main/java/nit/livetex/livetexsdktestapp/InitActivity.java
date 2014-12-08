@@ -1,6 +1,7 @@
 package nit.livetex.livetexsdktestapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,8 +23,8 @@ public class InitActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
-//        ((EditText) findViewById(R.id.input_id)).setText("10008248");
         ((EditText) findViewById(R.id.input_id)).setText("10008248");
+//        ((EditText) findViewById(R.id.input_id)).setText("10006460");
         findViewById(R.id.btn)
                 .setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -38,6 +39,20 @@ public class InitActivity extends BaseActivity {
                                         }
                                     }
                 );
+        findViewById(R.id.btn_clear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dropData(v.getContext());
+            }
+        });
+    }
+
+    private void dropData(Context context) {
+        context.getSharedPreferences("com.livetex.sdk.thrift.PREFS", Context.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .commit();
+        showToast("Кэш очищен");
     }
 
     private void init() {

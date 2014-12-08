@@ -62,6 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/divider"
         android:layout_below="@+id/divider_top"
+        android:background="@color/material_blue_grey_100"
         android:divider="@null" />
 
     <View

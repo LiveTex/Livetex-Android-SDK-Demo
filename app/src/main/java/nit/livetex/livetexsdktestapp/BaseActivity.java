@@ -19,6 +19,7 @@ import livetex.sdk.models.Department;
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.Employee;
 import livetex.sdk.models.FileMessage;
+import livetex.sdk.models.HoldMessage;
 import livetex.sdk.models.TextMessage;
 import livetex.sdk.models.TypingMessage;
 
@@ -142,6 +143,9 @@ public class BaseActivity extends ActionBarActivity {
     protected void onFileRecieved(FileMessage fileMessage){
     }
 
+    protected void onHoldMsgRecieved(HoldMessage holdMessage){
+    }
+
     private class Reciever extends BroadcastReceiver {
 
         @Override
@@ -174,6 +178,9 @@ public class BaseActivity extends ActionBarActivity {
                     break;
                 case MainApplication.REQUEST_RECIEVE_MSG:
                     onMsgRecieved((TextMessage) result);
+                    break;
+                case MainApplication.REQUEST_HOLD_MSG:
+                    onHoldMsgRecieved((HoldMessage) result);
                     break;
                 case MainApplication.REQUEST_RECIEVE_FILE:
                     onFileRecieved((FileMessage) result);

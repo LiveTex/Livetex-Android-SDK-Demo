@@ -2,6 +2,7 @@ package nit.livetex.livetexsdktestapp;
 
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 import org.apache.thrift.TException;
 
@@ -25,7 +26,6 @@ import livetex.sdk.models.VoteType;
 
 /**
  * Created by sergey.so on 05.11.2014.
- *
  */
 public class MainApplication extends Application {
 
@@ -47,6 +47,7 @@ public class MainApplication extends Application {
     public static final String REQUEST_MSG_HISTORY = "request_msg_history";
     public static final String REQUEST_VOTE = "request_vote";
     public static final String REQUEST_RECIEVE_MSG = "req_recieve_msg";
+    public static final String REQUEST_HOLD_MSG = "req_hold_msg";
     public static final String REQUEST_RECIEVE_FILE = "req_recieve_file";
     public static final String REQUEST_UPDATE_STATE = "req_update_dialog_state";
     public static final String REQUEST_OPERATOR_TYPING = "req_operator_typing";
@@ -117,7 +118,8 @@ public class MainApplication extends Application {
 
             @Override
             public void receiveHoldMessage(HoldMessage holdMessage) throws TException {
-
+                sendReciver(VALUE_RESULT_OK, REQUEST_HOLD_MSG, holdMessage);
+                Log.d("livetex_sdl", "HOLD_MSG!!!");
             }
 
             @Override
@@ -183,7 +185,7 @@ public class MainApplication extends Application {
             });
     }
 
-    public static void requestDialog(Department department) {
+    public static void requestDialog(Object param) {
         if (sLiveTex != null) {
             AHandler<DialogState> handler = new AHandler<DialogState>() {
                 @Override
@@ -196,10 +198,12 @@ public class MainApplication extends Application {
                     sendReciver(VALUE_RESULT_OK, REQUEST_DIALOG, state);
                 }
             };
-            if (department != null) {
-                sLiveTex.request(department, handler);
-            } else {
+            if (param == null) {
                 sLiveTex.request(handler);
+            } else if (param instanceof Department) {
+                sLiveTex.request((Department) param, handler);
+            } else if (param instanceof Employee) {
+                sLiveTex.request((Employee) param, handler);
             }
         }
     }
@@ -298,7 +302,7 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void closeDialog(){
+    public static void closeDialog() {
         if (sLiveTex != null) {
             sLiveTex.close(new AHandler<DialogState>() {
                 @Override
@@ -314,7 +318,7 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void typing(String text){
+    public static void typing(String text) {
         if (sLiveTex != null) {
             TypingMessage msg = new TypingMessage();
             msg.setText(text);
