@@ -10,7 +10,7 @@ import livetex.sdk.models.TextMessage;
 public class MessageModel {
 
     String text;
-    String timestamp;
+    public String timestamp;
     boolean isOutgoing;
     String holdMessage;
 

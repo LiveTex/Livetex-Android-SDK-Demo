@@ -26,6 +26,7 @@ import livetex.sdk.models.VoteType;
 
 /**
  * Created by sergey.so on 05.11.2014.
+ *
  */
 public class MainApplication extends Application {
 

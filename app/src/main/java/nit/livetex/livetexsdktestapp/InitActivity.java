@@ -3,8 +3,10 @@ package nit.livetex.livetexsdktestapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -48,10 +50,13 @@ public class InitActivity extends BaseActivity {
     }
 
     private void dropData(Context context) {
+        SharedPreferences pref = context.getSharedPreferences("com.livetex.sdk.thrift.PREFS", Context.MODE_PRIVATE);
+        Log.d("mytag", "TOKEN BEFORE: " + pref.getString("com.livetex.sdk.thrift.token", ""));
         context.getSharedPreferences("com.livetex.sdk.thrift.PREFS", Context.MODE_PRIVATE)
                 .edit()
                 .clear()
                 .commit();
+        Log.d("mytag", "TOKEN AFTER: " + pref.getString("com.livetex.sdk.thrift.token", ""));
         showToast("Кэш очищен");
     }
 

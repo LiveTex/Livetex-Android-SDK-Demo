@@ -154,7 +154,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
                 unregisterReceiver(mReciever);
             } catch (IllegalArgumentException ignored){
             }
-            lockStop();
+            livetexLockStop();
             ChatActivity.show(WelcomeActivity.this);
         }
     }
@@ -165,7 +165,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
             unregisterReceiver(mReciever);
         } catch (IllegalArgumentException ignored){
         }
-        lockStop();
+        livetexLockStop();
         ChatActivity.show(WelcomeActivity.this);
     }
 
@@ -190,7 +190,6 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
             View v = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
             ((TextView) v.findViewById(android.R.id.text1)).setText(getText(position));
-
             return v;
         }
 

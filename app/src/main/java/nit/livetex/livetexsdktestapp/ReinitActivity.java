@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -20,8 +19,9 @@ public class ReinitActivity extends BaseActivity {
 
     private boolean isFirstRun = false;
     private boolean isReInit = false;
-    private boolean isStopLock = false;
+    private boolean isLivetexStopLocked = false;
     private BroadcastReceiver mInternetStateReciever;
+    private boolean isInetWasActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,22 +33,40 @@ public class ReinitActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        boolean isInetActive = isInetActive();
+        isInetWasActive = isInetActive;
         registerReceiver(mInternetStateReciever, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        if (!isFirstRun)
-            checkState();
-        isFirstRun = false;
+        if (isInetActive)
+            init();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         unregisterReceiver(mInternetStateReciever);
-        if (!isStopLock)
+        deinit();
+    }
+
+    private boolean isInetActive(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void init(){
+        if (!isFirstRun)
+            checkState();
+        isFirstRun = false;
+    }
+
+    private void deinit(){
+        if (!isLivetexStopLocked)
             MainApplication.stopLivetex();
     }
 
-    protected void lockStop(){
-        isStopLock = true;
+    protected void livetexLockStop() {
+        isLivetexStopLocked = true;
     }
 
     private void checkState() {
@@ -62,7 +80,7 @@ public class ReinitActivity extends BaseActivity {
         }
     }
 
-    protected void showInitActivity(){
+    protected void showInitActivity() {
         unregister();
         InitActivity.show(this);
         finish();
@@ -95,16 +113,20 @@ public class ReinitActivity extends BaseActivity {
         if (state.conversation == null && (this instanceof ChatActivity)) {
             showWelcomeActivity();
         } else if (state.conversation != null && (this instanceof WelcomeActivity)) {
-            unregister();
-            lockStop();
-            ChatActivity.show(this);
-            finish();
+            showChatActivity();
         }
     }
 
-    protected void showWelcomeActivity(){
+    protected void showChatActivity(){
         unregister();
-        lockStop();
+        livetexLockStop();
+        ChatActivity.show(this);
+        finish();
+    }
+
+    protected void showWelcomeActivity() {
+        unregister();
+        livetexLockStop();
         InitActivity.show(this);
         finish();
     }
@@ -115,25 +137,28 @@ public class ReinitActivity extends BaseActivity {
         showInitActivity();
     }
 
-    private class InternetStateReciever extends BroadcastReceiver{
+    private static boolean firstConnect = true;
 
+    private class InternetStateReciever extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
-                NetworkInfo networkInfo =
-                        intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                if(networkInfo.isConnected()) {
-                    // Wifi is connected
-                    Log.d("Inetify", "Wifi is connected: " + String.valueOf(networkInfo));
+            final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            final NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+            Log.d("Livetex_sdk", "InternetStateRecieve. " + activeNetInfo + " " + firstConnect);
+            if (activeNetInfo != null) {
+                if (firstConnect && !isInetWasActive) {
+                    Log.d("Livetex_sdk", "INET ACTIVE. START INIT");
+                    firstConnect = false;
+                    init();
                 }
-            } else if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                NetworkInfo networkInfo =
-                        intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-                if(networkInfo.getType() == ConnectivityManager.TYPE_WIFI &&
-                        ! networkInfo.isConnected()) {
-                    // Wifi is disconnected
-                    Log.d("Inetify", "Wifi is disconnected: " + String.valueOf(networkInfo));
+                isInetWasActive = true;
+            } else {
+                if (firstConnect){
+                    Log.d("Livetex_sdk", "INET INACTIVE. START DEINIT");
+                    deinit();
                 }
+                firstConnect = true;
+                isInetWasActive = false;
             }
         }
     }
