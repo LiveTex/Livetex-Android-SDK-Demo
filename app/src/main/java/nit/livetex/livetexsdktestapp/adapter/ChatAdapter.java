@@ -21,16 +21,15 @@ import nit.livetex.livetexsdktestapp.R;
 
 /**
  * Created by sergey.so on 12.11.2014.
- *
  */
-public class ChatAdapter extends BaseAdapter{
+public class ChatAdapter extends BaseAdapter {
 
     private final Context mContext;
     private final ArrayList<MessageModel> messages;
     private final SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private final SimpleDateFormat sdf_date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
-    public ChatAdapter(Context context){
+    public ChatAdapter(Context context) {
         mContext = context;
         messages = new ArrayList<>();
     }
@@ -50,18 +49,24 @@ public class ChatAdapter extends BaseAdapter{
         return messages.get(position);
     }
 
-    public void addMsg(MessageModel msg){
+    public void addMsg(MessageModel msg) {
+        if (msg == null) return;
+        for (MessageModel model: messages){
+            if (model.id != null && msg.id != null && model.id.equals(msg.id)){
+                return;
+            }
+        }
         messages.add(msg);
         notifyDataSetChanged();
     }
 
-    public void addAllMsgs(List<MessageModel> msgs){
+    public void addAllMsgs(List<MessageModel> msgs) {
         if (msgs == null) return;
         messages.addAll(msgs);
         notifyDataSetChanged();
     }
 
-    public void removeAll(){
+    public void removeAll() {
         messages.clear();
         notifyDataSetChanged();
     }
@@ -89,14 +94,14 @@ public class ChatAdapter extends BaseAdapter{
         return view;
     }
 
-    private void bindTime(View view, MessageModel model, int pos){
+    private void bindTime(View view, MessageModel model, int pos) {
         Date date = new Date((long) (Double.parseDouble(model.timestamp) * 1000));
         final String curHeaderDate = sdf_date.format(date);
         ((TextView) view.findViewById(R.id.message_time)).setText(sdf_time.format(date));
         TextView header = (TextView) view.findViewById(R.id.message_date);
         boolean dateVisibility;
         if (pos > 0) {
-            MessageModel oldMsg = messages.get(pos-1);
+            MessageModel oldMsg = messages.get(pos - 1);
             dateVisibility = !TextUtils.isEmpty(oldMsg.timestamp)
                     && !(curHeaderDate.equals(formatTimestamp(oldMsg.timestamp))
                     || TextUtils.isEmpty(curHeaderDate.trim()));
@@ -104,13 +109,13 @@ public class ChatAdapter extends BaseAdapter{
             dateVisibility = true;
         }
         StringBuilder headerText = new StringBuilder();
-        if (dateVisibility){
+        if (dateVisibility) {
             headerText.append(curHeaderDate);
         }
-        if (!TextUtils.isEmpty(model.holdMessage)){
+        if (!TextUtils.isEmpty(model.holdMessage)) {
             headerText.append("\n").append(model.holdMessage);
         }
-        if (headerText.length() > 0){
+        if (headerText.length() > 0) {
             header.setVisibility(View.VISIBLE);
             header.setText(headerText);
         } else {
@@ -118,7 +123,7 @@ public class ChatAdapter extends BaseAdapter{
         }
     }
 
-    private String formatTimestamp(String timestamp){
+    private String formatTimestamp(String timestamp) {
         Date date = new Date((long) (Double.parseDouble(timestamp) * 1000));
         return sdf_date.format(date);
     }

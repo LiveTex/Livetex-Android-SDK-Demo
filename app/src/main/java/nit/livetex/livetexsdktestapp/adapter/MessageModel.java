@@ -9,6 +9,7 @@ import livetex.sdk.models.TextMessage;
  */
 public class MessageModel {
 
+    String id;
     String text;
     public String timestamp;
     boolean isOutgoing;
@@ -20,16 +21,19 @@ public class MessageModel {
         text = textMessage.text;
         timestamp = textMessage.timestamp;
         isOutgoing = textMessage.getSender() == null;
+        id = textMessage.id;
     }
 
     public MessageModel(HoldMessage holdMessage){
         this.holdMessage = holdMessage.text;
         this.timestamp = holdMessage.timestamp;
+        id = null;
     }
 
     public MessageModel(FileMessage fileMessage){
         this.text = "http:" + fileMessage.url;
         this.timestamp = fileMessage.timestamp;
+        this.id = fileMessage.id;
     }
 
 

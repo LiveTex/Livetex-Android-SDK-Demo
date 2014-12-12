@@ -16,6 +16,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,9 +56,11 @@ public class ChatActivity extends ReinitActivity {
     private TextView mOperatorNameTV;
     private ImageView mOperatorAvaIV;
     private String mOperatorName;
+    private String mOperatorAva;
     private int mOperatorAvaVisibility = View.INVISIBLE;
     private boolean isTyping = false;
     private boolean isDialogClose = true;
+    private String employeeId = null;
     private Handler mHandler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -78,6 +84,12 @@ public class ChatActivity extends ReinitActivity {
         getDialogState();
     }
 
+    @Override
+    protected void onStop() {
+        MainApplication.setLastEmployee(employeeId);
+        super.onStop();
+    }
+
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
@@ -92,7 +104,13 @@ public class ChatActivity extends ReinitActivity {
         dr.setCornerRadius(bmpSize / 2.0f);
         mOperatorNameTV = (TextView) v.findViewById(R.id.operator_name);
         mOperatorAvaIV = (ImageView) v.findViewById(R.id.ava);
-        mOperatorAvaIV.setImageDrawable(dr);
+
+        if (!TextUtils.isEmpty(mOperatorAva)) {
+            AQuery aQuery = new AQuery(this);
+            aQuery.id(mOperatorAvaIV).image(mOperatorAva);
+        }
+
+//        mOperatorAvaIV.setImageDrawable(dr);
         if (mOperatorName != null) {
             mOperatorNameTV.setText(mOperatorName);
         }
@@ -196,6 +214,7 @@ public class ChatActivity extends ReinitActivity {
     @Override
     protected void onDialogClose(DialogState state) {
         super.onDialogClose(state);
+        employeeId = null;
         showInitActivity();
     }
 
@@ -243,7 +262,7 @@ public class ChatActivity extends ReinitActivity {
 
     @Override
     protected void onMsgSended(TextMessage msg) {
-        if (mAdapter != null) {
+        if (mAdapter != null && msg != null) {
             ((EditText) findViewById(R.id.input_msg)).setText("");
             mAdapter.addMsg(new MessageModel(msg));
             mListView.setSelection(mAdapter.getCount() - 1);
@@ -299,22 +318,27 @@ public class ChatActivity extends ReinitActivity {
         int avaVisibility = View.VISIBLE;
         String msg = "";
         if (state.conversation != null && state.employee != null) {  //Conversation
+            Log.d("livetex_sdk", "AVATAR - " + state.employee.avatar);
             operatorName = state.employee.firstname + " " + state.employee.lastname;
+            mOperatorAva = state.employee.avatar;
             avaVisibility = View.VISIBLE;
             findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
             isDialogClose = false;
             msg = "Оператор онлайн";
+            employeeId = state.employee.employeeId;
         } else if (state.conversation != null) {            //Queued
             isDialogClose = false;
             avaVisibility = View.GONE;
-            findViewById(R.id.msg_ll).setVisibility(View.GONE);
+            findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
             msg = "Оператор оффлайн, диалог в очереди";
+            employeeId = null;
         } else if (state.employee == null) {     //No conversation
             operatorName = "Диалог закрыт";
             isDialogClose = true;
             avaVisibility = View.GONE;
             findViewById(R.id.msg_ll).setVisibility(View.GONE);
             msg = "Диалог закрыт";
+            employeeId = null;
         }
         if (withMsg) {
             HoldMessage holdMessage = new HoldMessage();
@@ -329,7 +353,13 @@ public class ChatActivity extends ReinitActivity {
             else
                 mOperatorNameTV.setText(operatorName);
         }
+
+
         if (mOperatorAvaIV != null) {
+            if (!TextUtils.isEmpty(mOperatorAva)) {
+                AQuery aQuery = new AQuery(this);
+                aQuery.id(mOperatorAvaIV).image(mOperatorAva);
+            }
             mOperatorAvaIV.setVisibility(avaVisibility);
         }
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(android.R.id.list).getLayoutParams();

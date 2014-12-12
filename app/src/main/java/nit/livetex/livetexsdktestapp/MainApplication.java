@@ -27,6 +27,7 @@ import livetex.sdk.models.VoteType;
 /**
  * Created by sergey.so on 05.11.2014.
  *
+ *
  */
 public class MainApplication extends Application {
 
@@ -64,6 +65,7 @@ public class MainApplication extends Application {
 
     private static Livetex sLiveTex;
     private static MainApplication instance;
+    private static String sLastEmployee = null;
 
     public static MainApplication getInstance() {
         return instance;
@@ -140,20 +142,17 @@ public class MainApplication extends Application {
             sLiveTex.destroy();
     }
 
+    public static void setLastEmployee(String employeeId) {
+        sLastEmployee = employeeId;
+    }
+
+    public static String getLastEmployee() {
+        return sLastEmployee;
+    }
+
     public static void getDialogState() {
         if (sLiveTex != null)
-            sLiveTex.getState(new AHandler<DialogState>() {
-
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_GET_STATE, s);
-                }
-
-                @Override
-                public void onResultRecieved(DialogState state) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_GET_STATE, state);
-                }
-            });
+            sLiveTex.getState(buildHandler(REQUEST_GET_STATE, DialogState.class));
     }
 
     public static void getDepartments() {
@@ -186,42 +185,27 @@ public class MainApplication extends Application {
             });
     }
 
-    public static void requestDialog(Object param) {
+    public static void requestDialog() {
         if (sLiveTex != null) {
-            AHandler<DialogState> handler = new AHandler<DialogState>() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_DIALOG, s);
-                }
+            sLiveTex.requestDialog(buildHandler(REQUEST_DIALOG, DialogState.class));
+        }
+    }
 
-                @Override
-                public void onResultRecieved(DialogState state) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_DIALOG, state);
-                }
-            };
-            if (param == null) {
-                sLiveTex.request(handler);
-            } else if (param instanceof Department) {
-                sLiveTex.request((Department) param, handler);
-            } else if (param instanceof Employee) {
-                sLiveTex.request((Employee) param, handler);
-            }
+    public static void requestDialogByEmployee(String id){
+        if (sLiveTex != null) {
+            sLiveTex.requestDialogByOperator(id, buildHandler(REQUEST_DIALOG, DialogState.class));
+        }
+    }
+
+    public static void requestDialogByDepartment(String id){
+        if (sLiveTex != null) {
+            sLiveTex.requestDialogByDepartment(id, buildHandler(REQUEST_DIALOG, DialogState.class));
         }
     }
 
     public static void sendMsg(String msg) {
         if (sLiveTex != null)
-            sLiveTex.sendTextMessage(msg, new AHandler<TextMessage>() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_SEND_MSG, s);
-                }
-
-                @Override
-                public void onResultRecieved(TextMessage message) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_SEND_MSG, message);
-                }
-            });
+            sLiveTex.sendTextMessage(msg,buildHandler(REQUEST_SEND_MSG, TextMessage.class));
     }
 
     public static void getMsgHistory(int limit, int offset) {
@@ -241,81 +225,31 @@ public class MainApplication extends Application {
 
     public static void setName(String name) {
         if (sLiveTex != null) {
-            sLiveTex.setName(name, new AHandler() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_SET_NAME, s);
-                }
-
-                @Override
-                public void onResultRecieved(Object o) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_SET_NAME, null);
-                }
-            });
+            sLiveTex.setName(name, buildHandler(REQUEST_SET_NAME));
         }
     }
 
     public static void abuse(String name, String msg) {
         if (sLiveTex != null)
-            sLiveTex.abuse(new Abuse(name, msg), new AHandler() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_VOTE, s);
-                }
-
-                @Override
-                public void onResultRecieved(Object o) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_VOTE, null);
-                }
-            });
+            sLiveTex.abuse(new Abuse(name, msg), buildHandler(REQUEST_VOTE));
     }
 
     public static void vote(boolean isLike) {
         if (sLiveTex != null) {
             VoteType vote = isLike ? VoteType.GOOD : VoteType.BAD;
-            sLiveTex.vote(vote, new AHandler() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_VOTE, s);
-                }
-
-                @Override
-                public void onResultRecieved(Object o) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_VOTE, null);
-                }
-            });
+            sLiveTex.vote(vote, buildHandler(REQUEST_VOTE));
         }
     }
 
     public static void confirmMsg(String msg) {
         if (sLiveTex != null) {
-            sLiveTex.confirmTextMessage(msg, new AHandler() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_CONFIRM_MSG, s);
-                }
-
-                @Override
-                public void onResultRecieved(Object o) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_CONFIRM_MSG, null);
-                }
-            });
+            sLiveTex.confirmTextMessage(msg, buildHandler(REQUEST_CONFIRM_MSG));
         }
     }
 
     public static void closeDialog() {
         if (sLiveTex != null) {
-            sLiveTex.close(new AHandler<DialogState>() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_CLOSE_CHAT, s);
-                }
-
-                @Override
-                public void onResultRecieved(DialogState state) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_CLOSE_CHAT, state);
-                }
-            });
+            sLiveTex.close(buildHandler(REQUEST_CLOSE_CHAT, DialogState.class));
         }
     }
 
@@ -323,18 +257,38 @@ public class MainApplication extends Application {
         if (sLiveTex != null) {
             TypingMessage msg = new TypingMessage();
             msg.setText(text);
-            sLiveTex.typing(msg, new AHandler() {
-                @Override
-                public void onError(String s) {
-                    sendReciver(VALUE_RESULT_ERR, REQUEST_CLIENT_TYPING, s);
-                }
-
-                @Override
-                public void onResultRecieved(Object o) {
-                    sendReciver(VALUE_RESULT_OK, REQUEST_CLIENT_TYPING, null);
-                }
-            });
+            sLiveTex.typing(msg, buildHandler(REQUEST_CLIENT_TYPING));
         }
+    }
+
+    private static AHandler buildHandler(final String request) {
+        return new AHandler() {
+
+            @Override
+            public void onError(String s) {
+                sendReciver(VALUE_RESULT_ERR, request, s);
+            }
+
+            @Override
+            public void onResultRecieved(Object o) {
+                sendReciver(VALUE_RESULT_OK, request, null);
+            }
+        };
+    }
+
+    private static <T> AHandler<T> buildHandler(final String request, final Class<T> classOfT) {
+        return new AHandler<T>() {
+
+            @Override
+            public void onError(String s) {
+                sendReciver(VALUE_RESULT_ERR, request, s);
+            }
+
+            @Override
+            public void onResultRecieved(T t) {
+                sendReciver(VALUE_RESULT_OK, request, (Serializable) t);
+            }
+        };
     }
 
     private static void sendReciver(int code, String request, Serializable o) {

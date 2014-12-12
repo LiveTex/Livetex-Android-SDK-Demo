@@ -24,5 +24,6 @@ android {
 
 dependencies {
     compile files("libs/sdk.jar")
-    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile files("libs/android-query-full.0.26.7.jar")
+    compile 'com.android.support:appcompat-v7:21.0.2'
 }

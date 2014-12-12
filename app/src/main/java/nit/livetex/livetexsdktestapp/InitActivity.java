@@ -25,7 +25,7 @@ public class InitActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
-        ((EditText) findViewById(R.id.input_id)).setText("10008248");
+//        ((EditText) findViewById(R.id.input_id)).setText("10008248");
 //        ((EditText) findViewById(R.id.input_id)).setText("10006460");
         findViewById(R.id.btn)
                 .setOnClickListener(new View.OnClickListener() {
@@ -50,13 +50,10 @@ public class InitActivity extends BaseActivity {
     }
 
     private void dropData(Context context) {
-        SharedPreferences pref = context.getSharedPreferences("com.livetex.sdk.thrift.PREFS", Context.MODE_PRIVATE);
-        Log.d("mytag", "TOKEN BEFORE: " + pref.getString("com.livetex.sdk.thrift.token", ""));
         context.getSharedPreferences("com.livetex.sdk.thrift.PREFS", Context.MODE_PRIVATE)
                 .edit()
                 .clear()
                 .commit();
-        Log.d("mytag", "TOKEN AFTER: " + pref.getString("com.livetex.sdk.thrift.token", ""));
         showToast("Кэш очищен");
     }
 

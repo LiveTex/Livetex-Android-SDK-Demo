@@ -81,11 +81,13 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
     }
 
     private void loadDepartments() {
+        if (!isInetActive()) return;
         showProgressDialog("Получение списка отделов");
         MainApplication.getDepartments();
     }
 
     private void loadEmployees() {
+        if (!isInetActive()) return;
         showProgressDialog("Получение списка операторов");
         MainApplication.getOperators();
     }
@@ -100,25 +102,34 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_btn:
-//                setName();
-                requestDialog();
+                if (!isInetActive()) {
+                    showToast("Отсутствует подключение к сети");
+                    return;
+                }
+                setName();
+//                requestDialog();
                 break;
         }
     }
 
     private void setName(){
         if (mNameEt.getText() == null || TextUtils.isEmpty(mNameEt.getText().toString())) {
-            showToast("Введите имя");
+            requestDialog();
             return;
         }
-        showProgressDialog("Устанавливается имя");
+//        showProgressDialog("Устанавливается имя");
         MainApplication.setName(mNameEt.getText().toString());
     }
 
     private void requestDialog() {
         showProgressDialog("Получение диалога");
-        MainApplication.requestDialog(mSpinner.getSelectedItemPosition() == 0 ?
-                null : mSpinner.getSelectedItem());
+        if (mSpinner.getSelectedItemPosition() <= 0){
+            MainApplication.requestDialog();
+        } else if (mSpinner.getSelectedItem() instanceof Employee){
+            MainApplication.requestDialogByEmployee(((Employee)mSpinner.getSelectedItem()).employeeId);
+        } else if (mSpinner.getSelectedItem() instanceof Department){
+            MainApplication.requestDialogByDepartment(((Department) mSpinner.getSelectedItem()).departmentId);
+        }
     }
 
     @Override

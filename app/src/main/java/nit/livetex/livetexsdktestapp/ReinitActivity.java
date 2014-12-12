@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import livetex.sdk.models.DialogState;
+import livetex.sdk.models.Employee;
 
 /**
  * Created by sergey.so on 02.12.2014.
@@ -47,7 +48,7 @@ public class ReinitActivity extends BaseActivity {
         deinit();
     }
 
-    private boolean isInetActive(){
+    protected boolean isInetActive(){
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -55,9 +56,10 @@ public class ReinitActivity extends BaseActivity {
     }
 
     private void init(){
-        if (!isFirstRun)
+        if (!isFirstRun && !isLivetexStopLocked)
             checkState();
         isFirstRun = false;
+        isLivetexStopLocked=false;
     }
 
     private void deinit(){
@@ -111,11 +113,19 @@ public class ReinitActivity extends BaseActivity {
 
         isReInit = false;
         if (state.conversation == null && (this instanceof ChatActivity)) {
-            showWelcomeActivity();
+            if (MainApplication.getLastEmployee() == null){
+                showWelcomeActivity();
+            } else {
+                MainApplication.requestDialogByEmployee(MainApplication.getLastEmployee());
+            }
         } else if (state.conversation != null && (this instanceof WelcomeActivity)) {
             showChatActivity();
         }
     }
+
+//    protected void requestDialog(){
+////        MainApplication.requestDialog();
+//    }
 
     protected void showChatActivity(){
         unregister();
@@ -134,6 +144,10 @@ public class ReinitActivity extends BaseActivity {
     @Override
     protected void onError(String request) {
         if (!request.equals(MainApplication.REQUEST_INIT)) return;
+        if (request.equals(MainApplication.REQUEST_DIALOG) && this instanceof ChatActivity){
+            showWelcomeActivity();
+            return;
+        }
         showInitActivity();
     }
 
