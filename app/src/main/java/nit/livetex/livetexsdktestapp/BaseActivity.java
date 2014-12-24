@@ -1,11 +1,14 @@
 package nit.livetex.livetexsdktestapp;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 
 import android.widget.Toast;
@@ -32,6 +35,7 @@ public class BaseActivity extends ActionBarActivity {
     protected Reciever mReciever;
     private ProgressDialog mProgressDialog;
     private static HashMap<String, String> errors;
+    private Handler mHandler;
 
     static {
         errors = new HashMap<>();
@@ -47,9 +51,16 @@ public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (mHandler == null) mHandler = new Handler();
         if (mReciever == null) mReciever = new Reciever();
         registerReceiver(mReciever, new IntentFilter(MainApplication.ACTION_RECIEVER));
         initProgressDialog();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mProgressDialog.dismiss();
     }
 
     private void registerNewReciever(){
@@ -77,7 +88,18 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     protected void showToast(String txt) {
-        Toast.makeText(MainApplication.getInstance(), txt, Toast.LENGTH_LONG).show();
+        Toast.makeText(MainApplication.getInstance(), txt, Toast.LENGTH_SHORT).show();
+    }
+
+    protected void showAlert(String msg){
+        new AlertDialog.Builder(this)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     protected void initComplete() {
@@ -128,11 +150,14 @@ public class BaseActivity extends ActionBarActivity {
 
     }
 
-    protected void onMsgConfirmed() {
+    protected void onOperatorMsgConfirmed() {
 
     }
 
-    protected void onError(String request){
+    protected void onSendMsgConfirmed(String msgId) {
+    }
+
+    protected void onError(String request, String msg){
 
     }
 
@@ -150,10 +175,16 @@ public class BaseActivity extends ActionBarActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            mProgressDialog.dismiss();
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressDialog.dismiss();
+                }
+            }, 500);
             if (intent.getIntExtra(MainApplication.KEY_RESULT_CODE, 0) == -1) {
                 showToast(errors.get(intent.getStringExtra(MainApplication.KEY_REQUEST_NAME)));
-                onError(intent.getStringExtra(MainApplication.KEY_REQUEST_NAME));
+                onError(intent.getStringExtra(MainApplication.KEY_REQUEST_NAME),
+                        intent.getStringExtra(MainApplication.KEY_RESULT_OBJECT));
                 return;
             }
             Serializable result = intent.getSerializableExtra(MainApplication.KEY_RESULT_OBJECT);
@@ -200,8 +231,11 @@ public class BaseActivity extends ActionBarActivity {
                 case MainApplication.REQUEST_GET_STATE:
                     onDialogStateGetted((DialogState) result);
                     break;
-                case MainApplication.REQUEST_CONFIRM_MSG:
-                    onMsgConfirmed();
+                case MainApplication.REQUEST_CONFIRM_OPERATOR_MSG:
+                    onOperatorMsgConfirmed();
+                    break;
+                case MainApplication.REQUEST_CONFIRM_SEND_MSG:
+                    onSendMsgConfirmed((String) result);
                     break;
                 case MainApplication.REQUEST_CLOSE_CHAT:
                     onDialogClose((DialogState) result);

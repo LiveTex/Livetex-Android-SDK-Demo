@@ -2,12 +2,14 @@ package nit.livetex.livetexsdktestapp;
 
 import android.app.Application;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.apache.thrift.TException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import livetex.sdk.Livetex;
@@ -16,6 +18,7 @@ import livetex.sdk.handler.IInitHandler;
 import livetex.sdk.handler.INotificationDialogHandler;
 import livetex.sdk.models.Abuse;
 import livetex.sdk.models.Department;
+import livetex.sdk.models.DialogAttributes;
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.Employee;
 import livetex.sdk.models.FileMessage;
@@ -55,7 +58,8 @@ public class MainApplication extends Application {
     public static final String REQUEST_OPERATOR_TYPING = "req_operator_typing";
     public static final String REQUEST_SET_NAME = "req_set_name";
     public static final String REQUEST_GET_STATE = "req_get_state";
-    public static final String REQUEST_CONFIRM_MSG = "req_confirm_msg";
+    public static final String REQUEST_CONFIRM_OPERATOR_MSG = "req_confirm_msg";
+    public static final String REQUEST_CONFIRM_SEND_MSG = "req_confirm_send_msg";
     public static final String REQUEST_CLOSE_CHAT = "req_close_chat";
     public static final String REQUEST_CLIENT_TYPING = "req_client_typing";
 
@@ -66,6 +70,7 @@ public class MainApplication extends Application {
     private static Livetex sLiveTex;
     private static MainApplication instance;
     private static String sLastEmployee = null;
+    public static boolean isAppActive = false;
 
     public static MainApplication getInstance() {
         return instance;
@@ -77,9 +82,15 @@ public class MainApplication extends Application {
         instance = this;
     }
 
-    public static void initLivetex(String id) {
+    public static boolean isPushActive(){
+        Log.e("mytag", "isAppActive:"+isAppActive + " slivetex:"+sLiveTex);
+        return  (!isAppActive && sLiveTex != null);
+    }
+
+    public static void initLivetex(String id, String deviceId) {
         sLiveTex = new Livetex.Builder(getInstance(), API_KEY, id)
                 .addAuthUrl("http://192.168.78.14:10010/")
+                .addDeviceId(deviceId)
                 .setLogEnabled(true).build();
         sLiveTex.init(new IInitHandler() {
             @Override
@@ -96,7 +107,6 @@ public class MainApplication extends Application {
 
             @Override
             public void ban(String s) throws TException {
-
             }
 
             @Override
@@ -116,7 +126,7 @@ public class MainApplication extends Application {
 
             @Override
             public void confirmTextMessage(String textMessage) throws TException {
-
+                sendReciver(VALUE_RESULT_OK, REQUEST_CONFIRM_SEND_MSG, textMessage);
             }
 
             @Override
@@ -132,7 +142,6 @@ public class MainApplication extends Application {
 
             @Override
             public void onError(String s) {
-
             }
         });
     }
@@ -185,22 +194,35 @@ public class MainApplication extends Application {
             });
     }
 
-    public static void requestDialog() {
+    public static void requestDialog(String age) {
         if (sLiveTex != null) {
-            sLiveTex.requestDialog(buildHandler(REQUEST_DIALOG, DialogState.class));
+            sLiveTex.requestDialog(buildAttrs(age), buildHandler(REQUEST_DIALOG, DialogState.class));
         }
     }
 
-    public static void requestDialogByEmployee(String id){
+    public static void requestDialogByEmployee(String id, String age){
         if (sLiveTex != null) {
-            sLiveTex.requestDialogByOperator(id, buildHandler(REQUEST_DIALOG, DialogState.class));
+            sLiveTex.requestDialogByOperator(id, buildAttrs(age), buildHandler(REQUEST_DIALOG, DialogState.class));
         }
     }
 
-    public static void requestDialogByDepartment(String id){
+    public static void requestDialogByDepartment(String id, String age){
         if (sLiveTex != null) {
-            sLiveTex.requestDialogByDepartment(id, buildHandler(REQUEST_DIALOG, DialogState.class));
+            sLiveTex.requestDialogByDepartment(id, buildAttrs(age), buildHandler(REQUEST_DIALOG, DialogState.class));
         }
+    }
+
+    private static DialogAttributes buildAttrs(String age){
+        DialogAttributes attrs = new DialogAttributes();
+        HashMap<String, String> hidden = new HashMap<>();
+        hidden.put("platform","Android");
+        attrs.hidden = hidden;
+        if (!TextUtils.isEmpty(age)){
+            HashMap<String, String> visible = new HashMap<>();
+            visible.put("age",age);
+            attrs.visible = visible;
+        }
+        return attrs;
     }
 
     public static void sendMsg(String msg) {
@@ -243,7 +265,7 @@ public class MainApplication extends Application {
 
     public static void confirmMsg(String msg) {
         if (sLiveTex != null) {
-            sLiveTex.confirmTextMessage(msg, buildHandler(REQUEST_CONFIRM_MSG));
+            sLiveTex.confirmTextMessage(msg, buildHandler(REQUEST_CONFIRM_OPERATOR_MSG));
         }
     }
 

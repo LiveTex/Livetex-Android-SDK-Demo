@@ -12,6 +12,7 @@
     <string name="title_activity_init">InitActivity</string>
     <string name="title_activity_claim">ClaimActivity</string>
     <string name="input_msg">Введите сообщение</string>
+    <string name="input_name">Введите имя</string>
     <string name="claim">Жалоба</string>
     <string name="close">Закрыть</string>
     <string name="alena_ivanova">Алена Иванова</string>

@@ -8,6 +8,14 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <EditText
+        android:id="@+id/input_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="@string/input_name"/>
+
+    <EditText
         android:id="@+id/input_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

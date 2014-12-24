@@ -25,13 +25,18 @@ public class ClaimActivity extends BaseActivity {
         findViewById(R.id.send_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                String name = ((EditText) findViewById(R.id.input_name)).getText().toString();
+                if (TextUtils.isEmpty(name)) {
+                    showToast("Введите имя");
+                    return;
+                }
                 String msg = ((EditText) findViewById(R.id.input_msg)).getText().toString();
                 if (TextUtils.isEmpty(msg)) {
                     showToast("Введите сообщение");
                     return;
                 }
                 showProgressDialog("Отправляется жалоба");
-                MainApplication.abuse("", msg);
+                MainApplication.abuse(name, msg);
             }
         });
     }

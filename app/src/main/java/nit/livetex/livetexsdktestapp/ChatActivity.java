@@ -46,6 +46,7 @@ import nit.livetex.livetexsdktestapp.adapter.MessageModel;
 
 public class ChatActivity extends ReinitActivity {
 
+
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, ChatActivity.class);
         activity.startActivity(intent);
@@ -212,6 +213,12 @@ public class ChatActivity extends ReinitActivity {
     }
 
     @Override
+    protected void onSendMsgConfirmed(String msgId) {
+        if (mAdapter != null)
+            mAdapter.setMsgChecked(msgId);
+    }
+
+    @Override
     protected void onDialogClose(DialogState state) {
         super.onDialogClose(state);
         employeeId = null;
@@ -235,7 +242,7 @@ public class ChatActivity extends ReinitActivity {
         mAdapter.removeAll();
         List<MessageModel> models = new ArrayList<>();
         for (TextMessage textMessage : msg) {
-            models.add(new MessageModel(textMessage));
+            models.add(new MessageModel(textMessage, true));
         }
         sortMsgList(models);
         mAdapter.addAllMsgs(models);
@@ -264,7 +271,8 @@ public class ChatActivity extends ReinitActivity {
     protected void onMsgSended(TextMessage msg) {
         if (mAdapter != null && msg != null) {
             ((EditText) findViewById(R.id.input_msg)).setText("");
-            mAdapter.addMsg(new MessageModel(msg));
+            MessageModel model = new MessageModel(msg);
+            mAdapter.addMsg(model);
             mListView.setSelection(mAdapter.getCount() - 1);
         }
     }
@@ -272,6 +280,8 @@ public class ChatActivity extends ReinitActivity {
     @Override
     protected void onMsgRecieved(TextMessage msg) {
         MainApplication.confirmMsg(msg.id);
+        mHandler.removeCallbacks(runnable);
+        mHandler.post(runnable);
         if (mAdapter != null) {
             mAdapter.addMsg(new MessageModel(msg));
             mListView.setSelection(mAdapter.getCount() - 1);
@@ -301,6 +311,8 @@ public class ChatActivity extends ReinitActivity {
 
     @Override
     protected void onFileRecieved(FileMessage fileMessage) {
+        mHandler.removeCallbacks(runnable);
+        mHandler.post(runnable);
         if (mAdapter != null) {
             mAdapter.addMsg(new MessageModel(fileMessage));
             mListView.setSelection(mAdapter.getCount() - 1);

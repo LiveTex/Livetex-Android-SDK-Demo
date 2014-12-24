@@ -22,16 +22,18 @@ import java.util.List;
 import livetex.sdk.models.Department;
 import livetex.sdk.models.DialogState;
 import livetex.sdk.models.Employee;
+import livetex.sdk.models.TextMessage;
 
 public class WelcomeActivity extends ReinitActivity implements View.OnClickListener {
 
-    private EditText mMsgEt, mNameEt;
+    private EditText mMsgEt, mNameEt, mAgeEt;
     private Spinner mSpinner;
     private Button mSendBtn;
     private RadioGroup mRadioGroup;
     private HintAdapter mAdapter;
     private List<Department> departmentList = new ArrayList<>();
     private List<Employee> employeeList = new ArrayList<>();
+    private boolean radioIsLock = false;
 
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, WelcomeActivity.class);
@@ -50,6 +52,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
     private void initViews() {
         mMsgEt = (EditText) findViewById(R.id.msg);
         mNameEt = (EditText) findViewById(R.id.name);
+        mAgeEt = (EditText) findViewById(R.id.age);
         mSpinner = (Spinner) findViewById(R.id.main_spinner);
         mSpinner.setAdapter(buildAdapter(new ArrayList<>()));
         mSendBtn = (Button) findViewById(R.id.send_btn);
@@ -57,19 +60,19 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (radioIsLock){
+                    radioIsLock = false;
+                    return;
+                }
                 switch (checkedId) {
                     case R.id.radio_site:
                         mSpinner.setVisibility(View.GONE);
                         break;
                     case R.id.radio_dep:
                         loadDepartments();
-                        mSpinner.setVisibility(View.VISIBLE);
-                        mAdapter.setModels(departmentList);
                         break;
                     case R.id.radio_op:
                         loadEmployees();
-                        mSpinner.setVisibility(View.VISIBLE);
-                        mAdapter.setModels(employeeList);
                         break;
                 }
             }
@@ -106,13 +109,17 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
                     showToast("Отсутствует подключение к сети");
                     return;
                 }
+                if (mMsgEt == null || TextUtils.isEmpty(mMsgEt.getText().toString())) {
+                    showToast("Введите сообщение");
+                    return;
+                }
                 setName();
 //                requestDialog();
                 break;
         }
     }
 
-    private void setName(){
+    private void setName() {
         if (mNameEt.getText() == null || TextUtils.isEmpty(mNameEt.getText().toString())) {
             requestDialog();
             return;
@@ -123,12 +130,12 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     private void requestDialog() {
         showProgressDialog("Получение диалога");
-        if (mSpinner.getSelectedItemPosition() <= 0){
-            MainApplication.requestDialog();
-        } else if (mSpinner.getSelectedItem() instanceof Employee){
-            MainApplication.requestDialogByEmployee(((Employee)mSpinner.getSelectedItem()).employeeId);
-        } else if (mSpinner.getSelectedItem() instanceof Department){
-            MainApplication.requestDialogByDepartment(((Department) mSpinner.getSelectedItem()).departmentId);
+        if (mSpinner.getSelectedItemPosition() <= 0) {
+            MainApplication.requestDialog(mAgeEt.getText().toString());
+        } else if (mSpinner.getSelectedItem() instanceof Employee) {
+            MainApplication.requestDialogByEmployee(((Employee) mSpinner.getSelectedItem()).employeeId, mAgeEt.getText().toString());
+        } else if (mSpinner.getSelectedItem() instanceof Department) {
+            MainApplication.requestDialogByDepartment(((Department) mSpinner.getSelectedItem()).departmentId, mAgeEt.getText().toString());
         }
     }
 
@@ -139,7 +146,13 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     @Override
     protected void departmentsRecieved(List<Department> departments) {
-        if (departments == null) return;
+        if (departments == null || departments.size() == 0){
+            showAlert("В данный момент нет доступных отделов");
+            radioIsLock = true;
+            mRadioGroup.check(R.id.radio_site);
+            return;
+        }
+        mSpinner.setVisibility(View.VISIBLE);
         departmentList = departments;
         if (mRadioGroup.getCheckedRadioButtonId() == R.id.radio_dep) {
             mAdapter.setModels(departmentList);
@@ -148,7 +161,13 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     @Override
     protected void employeesRecieved(List<Employee> result) {
-        if (result == null) return;
+        if (result == null || result.size() == 0){
+            showAlert("В данный момент нет доступных операторов");
+            radioIsLock = true;
+            mRadioGroup.check(R.id.radio_site);
+            return;
+        }
+        mSpinner.setVisibility(View.VISIBLE);
         employeeList = result;
         if (mRadioGroup.getCheckedRadioButtonId() == R.id.radio_op) {
             mAdapter.setModels(employeeList);
@@ -157,30 +176,28 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     @Override
     protected void dialogRecieved(DialogState state) {
+        if (state == null) return;
         if (mMsgEt != null && !TextUtils.isEmpty(mMsgEt.getText().toString())) {
             showProgressDialog("Отправка сообщения");
-            sendMsg(mMsgEt.getText().toString());
+            MainApplication.sendMsg(mMsgEt.getText().toString());
         } else {
-            try {
-                unregisterReceiver(mReciever);
-            } catch (IllegalArgumentException ignored){
-            }
-            livetexLockStop();
-            ChatActivity.show(WelcomeActivity.this);
+            showToast("Введите сообщение");
         }
     }
 
-    private void sendMsg(final String txt) {
-        MainApplication.sendMsg(txt);
-        try {
-            unregisterReceiver(mReciever);
-        } catch (IllegalArgumentException ignored){
-        }
-        livetexLockStop();
-        ChatActivity.show(WelcomeActivity.this);
+    @Override
+    protected void onMsgSended(TextMessage msg) {
+        showChatActivity();
     }
 
-    private static class  HintAdapter <T extends Object> extends ArrayAdapter<T> {
+    @Override
+    protected void onError(String request, String msg) {
+        if (msg.contains("Unable to select chat member")) {
+            showAlert("В данный момент нет доступных операторов");
+        }
+    }
+
+    private static class HintAdapter<T extends Object> extends ArrayAdapter<T> {
 
         private List<T> models = new ArrayList<>();
 

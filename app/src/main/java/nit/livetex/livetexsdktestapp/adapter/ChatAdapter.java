@@ -51,8 +51,8 @@ public class ChatAdapter extends BaseAdapter {
 
     public void addMsg(MessageModel msg) {
         if (msg == null) return;
-        for (MessageModel model: messages){
-            if (model.id != null && msg.id != null && model.id.equals(msg.id)){
+        for (MessageModel model : messages) {
+            if (model.id != null && msg.id != null && model.id.equals(msg.id)) {
                 return;
             }
         }
@@ -76,6 +76,16 @@ public class ChatAdapter extends BaseAdapter {
         return 0;
     }
 
+    public void setMsgChecked(String id) {
+        if (id == null) return;
+        for (MessageModel model : messages) {
+            if (id.equals(model.id)){
+                model.isChecked = true;
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewGroup view = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.item_msgs, parent, false);
@@ -84,7 +94,7 @@ public class ChatAdapter extends BaseAdapter {
         final TextView msgText = (TextView) view.findViewById(R.id.message_text);
         if (msg.holdMessage == null) {
             msgText.setText(msg.text);
-            alignMsg(view, msg.isOutgoing);
+            alignMsg(view, msg.isOutgoing, msg.isChecked);
             view.findViewById(R.id.main_msg).setVisibility(View.VISIBLE);
         } else {
             view.findViewById(R.id.main_msg).setVisibility(View.GONE);
@@ -128,30 +138,7 @@ public class ChatAdapter extends BaseAdapter {
         return sdf_date.format(date);
     }
 
-//    private void bindTime(View view, long time, int pos) {
-//        Date date = new Date(time);
-//        ((TextView) view.findViewById(R.id.message_time)).setText(sdf_time.format(date));
-//        TextView header = (TextView) view.findViewById(R.id.message_date);
-//        final String curHeader = sdf_date.format(date);
-//        header.setText(curHeader);
-//        header.setVisibility(View.VISIBLE);
-//        if (pos > 0) {
-//            MessageModel oldMsg = messages.get(pos-1);
-//            if (oldMsg.timestamp.equals("")){
-//                header.setVisibility(View.GONE);
-//                return;
-//            }
-//            Date prevDate = new Date((long) (Double.parseDouble(oldMsg.timestamp) * 1000));
-//            String prevHeader = sdf_date.format(prevDate);
-//            if (curHeader.equals(prevHeader) || TextUtils.isEmpty(curHeader.trim())) {
-//                header.setVisibility(View.GONE);
-//            } else {
-//                header.setVisibility(View.VISIBLE);
-//            }
-//        }
-//    }
-
-    private void alignMsg(View view, boolean isOutgoing) {
+    private void alignMsg(View view, boolean isOutgoing, boolean isChecked) {
         View mainLayout = view.findViewById(R.id.message_type);
         View time = view.findViewById(R.id.message_time);
         TextView text = (TextView) view.findViewById(R.id.message_text);
@@ -174,6 +161,11 @@ public class ChatAdapter extends BaseAdapter {
             textParams.rightMargin = (int) mContext.getResources().getDimension(R.dimen.margin);
             text.setTextColor(Color.WHITE);
             text.setLinkTextColor(mContext.getResources().getColor(R.color.light_silver));
+            if (isChecked){
+                view.findViewById(R.id.message_mark).setVisibility(View.VISIBLE);
+            } else {
+                view.findViewById(R.id.message_mark).setVisibility(View.GONE);
+            }
         } else {
             mainLayout.setBackgroundResource(R.drawable.message_right);
             mainLayout.setPadding(ten, thirteen, ten, thirteen);
@@ -189,6 +181,4 @@ public class ChatAdapter extends BaseAdapter {
             text.setLinkTextColor(mContext.getResources().getColor(R.color.link_registartion));
         }
     }
-
-
 }

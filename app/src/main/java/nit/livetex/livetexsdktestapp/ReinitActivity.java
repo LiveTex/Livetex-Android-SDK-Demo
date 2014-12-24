@@ -10,13 +10,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import livetex.sdk.models.DialogState;
-import livetex.sdk.models.Employee;
 
 /**
  * Created by sergey.so on 02.12.2014.
- *
  */
 public class ReinitActivity extends BaseActivity {
+
+    public static final String IS_FROM_NOTIF = "is_from_notif";
 
     private boolean isFirstRun = false;
     private boolean isReInit = false;
@@ -29,11 +29,25 @@ public class ReinitActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         isFirstRun = true;
         mInternetStateReciever = new InternetStateReciever();
+        isFirstRun = !getIntent().getBooleanExtra(IS_FROM_NOTIF, false);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            for (String key : bundle.keySet()) {
+                Log.e("mytag", "BUNDLE key:" + key + " value:" + bundle.get(key));
+            }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        isFirstRun = false;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        MainApplication.isAppActive = true;
         boolean isInetActive = isInetActive();
         isInetWasActive = isInetActive;
         registerReceiver(mInternetStateReciever, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -44,25 +58,26 @@ public class ReinitActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        MainApplication.isAppActive = false;
         unregisterReceiver(mInternetStateReciever);
         deinit();
     }
 
-    protected boolean isInetActive(){
+    protected boolean isInetActive() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void init(){
+    private void init() {
         if (!isFirstRun && !isLivetexStopLocked)
             checkState();
         isFirstRun = false;
-        isLivetexStopLocked=false;
+        isLivetexStopLocked = false;
     }
 
-    private void deinit(){
+    private void deinit() {
         if (!isLivetexStopLocked)
             MainApplication.stopLivetex();
     }
@@ -78,7 +93,7 @@ public class ReinitActivity extends BaseActivity {
             showInitActivity();
         } else {
             isReInit = true;
-            MainApplication.initLivetex(appId);
+            MainApplication.initLivetex(appId, GcmUtils.restoreRegistrationId(this));
         }
     }
 
@@ -113,10 +128,10 @@ public class ReinitActivity extends BaseActivity {
 
         isReInit = false;
         if (state.conversation == null && (this instanceof ChatActivity)) {
-            if (MainApplication.getLastEmployee() == null){
+            if (MainApplication.getLastEmployee() == null) {
                 showWelcomeActivity();
             } else {
-                MainApplication.requestDialogByEmployee(MainApplication.getLastEmployee());
+                MainApplication.requestDialogByEmployee(null, MainApplication.getLastEmployee());
             }
         } else if (state.conversation != null && (this instanceof WelcomeActivity)) {
             showChatActivity();
@@ -127,7 +142,7 @@ public class ReinitActivity extends BaseActivity {
 ////        MainApplication.requestDialog();
 //    }
 
-    protected void showChatActivity(){
+    protected void showChatActivity() {
         unregister();
         livetexLockStop();
         ChatActivity.show(this);
@@ -142,9 +157,9 @@ public class ReinitActivity extends BaseActivity {
     }
 
     @Override
-    protected void onError(String request) {
+    protected void onError(String request, String msg) {
         if (!request.equals(MainApplication.REQUEST_INIT)) return;
-        if (request.equals(MainApplication.REQUEST_DIALOG) && this instanceof ChatActivity){
+        if (request.equals(MainApplication.REQUEST_DIALOG) && this instanceof ChatActivity) {
             showWelcomeActivity();
             return;
         }
@@ -167,7 +182,7 @@ public class ReinitActivity extends BaseActivity {
                 }
                 isInetWasActive = true;
             } else {
-                if (firstConnect){
+                if (firstConnect) {
                     Log.d("Livetex_sdk", "INET INACTIVE. START DEINIT");
                     deinit();
                 }
