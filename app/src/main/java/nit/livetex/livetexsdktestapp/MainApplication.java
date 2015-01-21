@@ -34,7 +34,9 @@ import livetex.sdk.models.VoteType;
  */
 public class MainApplication extends Application {
 
-    private static final String API_KEY = "dev_key_test";
+//    private static final String API_KEY = "dev_key_test";
+    public static final String API_KEY = "prerelease_key";
+    private static final String AUTH_URL = "http://sdk-prerelease.livetex.ru:10010/";
     private static final String DEPARTMENT_STATUS = "online";
     private static final String OPERATOR_STATUS = "online";
 
@@ -84,12 +86,15 @@ public class MainApplication extends Application {
 
     public static boolean isPushActive(){
         Log.e("mytag", "isAppActive:"+isAppActive + " slivetex:"+sLiveTex);
-        return  (!isAppActive && sLiveTex != null);
+        return  (!isAppActive);
     }
 
     public static void initLivetex(String id, String deviceId) {
-        sLiveTex = new Livetex.Builder(getInstance(), API_KEY, id)
-                .addAuthUrl("http://192.168.78.14:10010/")
+        String apiKey = TextUtils.isEmpty(InitActivity.API_KEY) ? API_KEY : InitActivity.API_KEY;
+        String authUrl = TextUtils.isEmpty(InitActivity.AUTH_URL) ? AUTH_URL : InitActivity.AUTH_URL;
+        sLiveTex = new Livetex.Builder(getInstance(), apiKey, id)
+//                .addAuthUrl("http://192.168.78.14:10010/")
+                .addAuthUrl(authUrl)
                 .addDeviceId(deviceId)
                 .setLogEnabled(true).build();
         sLiveTex.init(new IInitHandler() {
@@ -314,6 +319,9 @@ public class MainApplication extends Application {
     }
 
     private static void sendReciver(int code, String request, Serializable o) {
+        if (request.equals(REQUEST_RECIEVE_MSG)){
+            Log.e("mytag", "Request recieve msg");
+        }
         Intent intent = new Intent(ACTION_RECIEVER);
         intent.putExtra(KEY_RESULT_CODE, code);
         intent.putExtra(KEY_REQUEST_NAME, request);

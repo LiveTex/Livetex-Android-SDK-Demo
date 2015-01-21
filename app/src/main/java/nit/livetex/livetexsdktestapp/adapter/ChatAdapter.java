@@ -26,7 +26,7 @@ public class ChatAdapter extends BaseAdapter {
 
     private final Context mContext;
     private final ArrayList<MessageModel> messages;
-    private final SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
     private final SimpleDateFormat sdf_date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
     public ChatAdapter(Context context) {

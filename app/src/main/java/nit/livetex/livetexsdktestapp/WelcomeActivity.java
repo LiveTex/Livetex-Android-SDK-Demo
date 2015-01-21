@@ -37,7 +37,7 @@ public class WelcomeActivity extends ReinitActivity implements View.OnClickListe
 
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, WelcomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         activity.startActivity(intent);
     }
 

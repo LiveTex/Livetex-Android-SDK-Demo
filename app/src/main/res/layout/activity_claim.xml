@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:hint="@string/input_name"/>
+        android:inputType="numberDecimal"
+        android:hint="@string/input_phone_number"/>
 
     <EditText
         android:id="@+id/input_msg"

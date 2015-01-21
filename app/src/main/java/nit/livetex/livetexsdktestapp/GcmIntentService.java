@@ -3,24 +3,13 @@ package nit.livetex.livetexsdktestapp;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import nit.livetex.livetexsdktestapp.ChatActivity;
-import nit.livetex.livetexsdktestapp.R;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -40,6 +29,7 @@ public class GcmIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.e("mytag", "onHandleIntent push getted");
         Bundle extras = intent.getExtras();
         if (!extras.isEmpty() && MainApplication.isPushActive()) {
             Log.e("mytag", "onHandleIntent process");
@@ -47,7 +37,7 @@ public class GcmIntentService extends IntentService {
             startIntent.putExtra(ChatActivity.IS_FROM_NOTIF, true);
             startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
                     Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            sendNotification(extras.getString("title"), startIntent);
+            sendNotification(extras.getString("text"), startIntent);
         }
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }

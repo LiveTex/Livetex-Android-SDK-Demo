@@ -13,6 +13,7 @@ import livetex.sdk.models.DialogState;
 
 /**
  * Created by sergey.so on 02.12.2014.
+ *
  */
 public class ReinitActivity extends BaseActivity {
 
@@ -97,12 +98,6 @@ public class ReinitActivity extends BaseActivity {
         }
     }
 
-    protected void showInitActivity() {
-        unregister();
-        InitActivity.show(this);
-        finish();
-    }
-
     protected void unregister() {
         try {
             unregisterReceiver(mReciever);
@@ -142,6 +137,13 @@ public class ReinitActivity extends BaseActivity {
 ////        MainApplication.requestDialog();
 //    }
 
+
+    protected void showInitActivity() {
+        unregister();
+        InitActivity.show(this);
+        finish();
+    }
+
     protected void showChatActivity() {
         unregister();
         livetexLockStop();
@@ -152,14 +154,14 @@ public class ReinitActivity extends BaseActivity {
     protected void showWelcomeActivity() {
         unregister();
         livetexLockStop();
-        InitActivity.show(this);
+        WelcomeActivity.show(this);
         finish();
     }
 
     @Override
     protected void onError(String request, String msg) {
         if (!request.equals(MainApplication.REQUEST_INIT)) return;
-        if (request.equals(MainApplication.REQUEST_DIALOG) && this instanceof ChatActivity) {
+        if (request.equals(MainApplication.REQUEST_DIALOG) && (this instanceof ChatActivity || this instanceof WelcomeActivity)) {
             showWelcomeActivity();
             return;
         }
@@ -184,6 +186,7 @@ public class ReinitActivity extends BaseActivity {
             } else {
                 if (firstConnect) {
                     Log.d("Livetex_sdk", "INET INACTIVE. START DEINIT");
+                    showToast("Интернет соединение отсутсвует.");
                     deinit();
                 }
                 firstConnect = true;

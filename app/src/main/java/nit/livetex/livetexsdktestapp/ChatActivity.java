@@ -28,11 +28,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import livetex.sdk.models.DialogState;
@@ -46,22 +46,41 @@ import nit.livetex.livetexsdktestapp.adapter.MessageModel;
 
 public class ChatActivity extends ReinitActivity {
 
+    private static HashMap<CurrentDialogState, String> mStateMsgs = new HashMap<>();
+    private static HashMap<CurrentDialogState, String> mStateInfoMsgs = new HashMap<>();
+
+    static {
+        mStateMsgs.put(CurrentDialogState.ACTIVE, "Оператор онлайн");
+        mStateMsgs.put(CurrentDialogState.QUEUED, "Оператор оффлайн, диалог в очереди");
+        mStateMsgs.put(CurrentDialogState.CLOSED, "Диалог закрыт");
+        mStateInfoMsgs.put(CurrentDialogState.ACTIVE, "ОЦЕНИТЕ КОНСУЛЬТАЦИЮ");
+        mStateInfoMsgs.put(CurrentDialogState.QUEUED, "ОЖИДАЕМ ОПЕРАТОРА");
+        mStateInfoMsgs.put(CurrentDialogState.CLOSED, "ДИАЛОГ ЗАКРЫТ");
+    }
+
 
     public static void show(Activity activity) {
         Intent intent = new Intent(activity, ChatActivity.class);
         activity.startActivity(intent);
     }
 
+
+    private enum CurrentDialogState{
+        ACTIVE,
+        QUEUED,
+        CLOSED
+    }
+
     private ListView mListView;
-    private ChatAdapter mAdapter;
     private TextView mOperatorNameTV;
     private ImageView mOperatorAvaIV;
+
+    private ChatAdapter mAdapter;
     private String mOperatorName;
     private String mOperatorAva;
-    private int mOperatorAvaVisibility = View.INVISIBLE;
     private boolean isTyping = false;
-    private boolean isDialogClose = true;
     private String employeeId = null;
+    private CurrentDialogState mDialogState;
     private Handler mHandler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -91,6 +110,14 @@ public class ChatActivity extends ReinitActivity {
         super.onStop();
     }
 
+    private boolean checkRequestAvailable(){
+        if (!isInetActive()){
+            showToast("Отсутствует интернет соединение. Повторите попытку позже.");
+            return false;
+        }
+        return true;
+    }
+
     private void initActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
@@ -115,6 +142,7 @@ public class ChatActivity extends ReinitActivity {
         if (mOperatorName != null) {
             mOperatorNameTV.setText(mOperatorName);
         }
+        int mOperatorAvaVisibility = View.INVISIBLE;
         mOperatorAvaIV.setVisibility(mOperatorAvaVisibility);
         actionBar.setCustomView(v);
     }
@@ -137,6 +165,7 @@ public class ChatActivity extends ReinitActivity {
         findViewById(R.id.send_msg).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkRequestAvailable()) return;
                 sendMsg();
             }
         });
@@ -145,12 +174,14 @@ public class ChatActivity extends ReinitActivity {
         findViewById(R.id.vote_down).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkRequestAvailable()) return;
                 vote(false);
             }
         });
         findViewById(R.id.vote_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkRequestAvailable()) return;
                 vote(true);
             }
         });
@@ -196,13 +227,16 @@ public class ChatActivity extends ReinitActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_claim:
-                if (isDialogClose)
+                if (!checkRequestAvailable()) return true;
+                if (mDialogState.equals(CurrentDialogState.CLOSED) ||
+                        mDialogState.equals(CurrentDialogState.QUEUED))
                     return true;
                 livetexLockStop();
                 ClaimActivity.show(this);
                 return true;
             case R.id.action_close:
-                if (isDialogClose) {
+                if (!checkRequestAvailable()) return true;
+                if (mDialogState.equals(CurrentDialogState.CLOSED)) {
                     showInitActivity();
                 } else {
                     MainApplication.closeDialog();
@@ -246,6 +280,7 @@ public class ChatActivity extends ReinitActivity {
         }
         sortMsgList(models);
         mAdapter.addAllMsgs(models);
+        addHoldMsgByState();
     }
 
     private void sortMsgList(List<MessageModel> msg) {
@@ -265,6 +300,13 @@ public class ChatActivity extends ReinitActivity {
                 return 0;
             }
         });
+    }
+
+    private void addHoldMsgByState(){
+        HoldMessage holdMessage = new HoldMessage();
+        holdMessage.timestamp = "" + (System.currentTimeMillis() / 1000);
+        holdMessage.text = mStateMsgs.get(mDialogState);
+        onHoldMsgRecieved(holdMessage);
     }
 
     @Override
@@ -325,39 +367,37 @@ public class ChatActivity extends ReinitActivity {
     }
 
     protected void onUpdateDialogState(DialogState state, boolean withMsg) {
+        Log.d("livetex_sdk", "onUpdateDialogState - " + withMsg + " " + state);
         if (state == null) return;
         String operatorName = "";
         int avaVisibility = View.VISIBLE;
-        String msg = "";
         if (state.conversation != null && state.employee != null) {  //Conversation
-            Log.d("livetex_sdk", "AVATAR - " + state.employee.avatar);
             operatorName = state.employee.firstname + " " + state.employee.lastname;
             mOperatorAva = state.employee.avatar;
             avaVisibility = View.VISIBLE;
-            findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
-            isDialogClose = false;
-            msg = "Оператор онлайн";
+            setMsgInputVisible();
+
             employeeId = state.employee.employeeId;
+
+            mDialogState = CurrentDialogState.ACTIVE;
         } else if (state.conversation != null) {            //Queued
-            isDialogClose = false;
             avaVisibility = View.GONE;
-            findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
-            msg = "Оператор оффлайн, диалог в очереди";
+        //    setMsgInputVisible();
             employeeId = null;
+
+            mDialogState = CurrentDialogState.QUEUED;
         } else if (state.employee == null) {     //No conversation
             operatorName = "Диалог закрыт";
-            isDialogClose = true;
             avaVisibility = View.GONE;
-            findViewById(R.id.msg_ll).setVisibility(View.GONE);
-            msg = "Диалог закрыт";
+            setMsgInputHide();
             employeeId = null;
+
+            mDialogState = CurrentDialogState.CLOSED;
         }
         if (withMsg) {
-            HoldMessage holdMessage = new HoldMessage();
-            holdMessage.timestamp = "" + (System.currentTimeMillis() / 1000);
-            holdMessage.text = msg;
-            onHoldMsgRecieved(holdMessage);
+            addHoldMsgByState();
         }
+        setInfoMsg();
         mOperatorName = operatorName;
         if (mOperatorNameTV != null) {
             if (isTyping)
@@ -366,7 +406,6 @@ public class ChatActivity extends ReinitActivity {
                 mOperatorNameTV.setText(operatorName);
         }
 
-
         if (mOperatorAvaIV != null) {
             if (!TextUtils.isEmpty(mOperatorAva)) {
                 AQuery aQuery = new AQuery(this);
@@ -374,9 +413,40 @@ public class ChatActivity extends ReinitActivity {
             }
             mOperatorAvaIV.setVisibility(avaVisibility);
         }
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(android.R.id.list).getLayoutParams();
-        if (avaVisibility == View.GONE) {
-            params.addRule(RelativeLayout.ABOVE, 0);
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(android.R.id.list).getLayoutParams();
+//        if (avaVisibility == View.GONE) {
+//            params.addRule(RelativeLayout.ABOVE, 0);
+//        }
+    }
+
+    private void setMsgInputVisible(){
+        findViewById(R.id.msg_ll).setVisibility(View.VISIBLE);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(R.id.divider).getLayoutParams();
+        params.addRule(RelativeLayout.ABOVE, R.id.msg_ll);
+    }
+
+    private void setMsgInputHide(){
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(R.id.divider).getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        findViewById(R.id.msg_ll).setVisibility(View.GONE);
+    }
+
+    private void setInfoMsg(){
+        int visibility;
+        ((TextView)findViewById(R.id.status_tv)).setText(mStateInfoMsgs.get(mDialogState));
+        if (mDialogState.equals(CurrentDialogState.ACTIVE)){
+            findViewById(R.id.vote_down).setEnabled(true);
+            findViewById(R.id.vote_up).setEnabled(true);
+            visibility = View.VISIBLE;
+        } else {
+            findViewById(R.id.vote_down).setEnabled(false);
+            findViewById(R.id.vote_up).setEnabled(false);
+            if (mDialogState.equals(CurrentDialogState.QUEUED)){
+                visibility = View.VISIBLE;
+            } else {
+                visibility = View.GONE;
+            }
         }
+        findViewById(R.id.vote_ll).setVisibility(visibility);
     }
 }

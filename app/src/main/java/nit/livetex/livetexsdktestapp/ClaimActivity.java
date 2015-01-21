@@ -9,10 +9,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import java.util.regex.Pattern;
+
 
 public class ClaimActivity extends BaseActivity {
 
-    public static void show(Activity activity){
+    public static void show(Activity activity) {
         Intent intent = new Intent(activity, ClaimActivity.class);
         activity.startActivity(intent);
     }
@@ -26,8 +28,8 @@ public class ClaimActivity extends BaseActivity {
             @Override
             public void onClick(final View v) {
                 String name = ((EditText) findViewById(R.id.input_name)).getText().toString();
-                if (TextUtils.isEmpty(name)) {
-                    showToast("Введите имя");
+                if (TextUtils.isEmpty(name) || !Pattern.matches("[0-9]+", name) || name.length() < 7) {
+                    showToast("Введите номер телефона");
                     return;
                 }
                 String msg = ((EditText) findViewById(R.id.input_msg)).getText().toString();

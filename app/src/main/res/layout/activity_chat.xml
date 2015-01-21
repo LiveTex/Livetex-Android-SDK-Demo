@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@color/material_grey_50">
         <TextView
+            android:id="@+id/status_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

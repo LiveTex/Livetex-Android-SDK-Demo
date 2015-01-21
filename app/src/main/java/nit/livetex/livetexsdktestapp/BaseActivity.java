@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -88,6 +89,7 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     protected void showToast(String txt) {
+        if (TextUtils.isEmpty(txt)) return;
         Toast.makeText(MainApplication.getInstance(), txt, Toast.LENGTH_SHORT).show();
     }
 
