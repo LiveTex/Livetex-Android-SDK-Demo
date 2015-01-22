@@ -34,9 +34,11 @@ import livetex.sdk.models.VoteType;
  */
 public class MainApplication extends Application {
 
+    private static final String API_KEY = "demo";
 //    private static final String API_KEY = "dev_key_test";
-    public static final String API_KEY = "prerelease_key";
-    private static final String AUTH_URL = "http://sdk-prerelease.livetex.ru:10010/";
+//    public static final String API_KEY = "prerelease_key";
+//    private static final String AUTH_URL = "http://sdk-prerelease.livetex.ru:10010/";
+    private static final String AUTH_URL = "http://authentication-service-sdk-production-1.livetex.ru/";
     private static final String DEPARTMENT_STATUS = "online";
     private static final String OPERATOR_STATUS = "online";
 
@@ -85,16 +87,13 @@ public class MainApplication extends Application {
     }
 
     public static boolean isPushActive(){
-        Log.e("mytag", "isAppActive:"+isAppActive + " slivetex:"+sLiveTex);
         return  (!isAppActive);
     }
 
     public static void initLivetex(String id, String deviceId) {
-        String apiKey = TextUtils.isEmpty(InitActivity.API_KEY) ? API_KEY : InitActivity.API_KEY;
-        String authUrl = TextUtils.isEmpty(InitActivity.AUTH_URL) ? AUTH_URL : InitActivity.AUTH_URL;
-        sLiveTex = new Livetex.Builder(getInstance(), apiKey, id)
+        sLiveTex = new Livetex.Builder(getInstance(), API_KEY, id)
 //                .addAuthUrl("http://192.168.78.14:10010/")
-                .addAuthUrl(authUrl)
+                .addAuthUrl(AUTH_URL)
                 .addDeviceId(deviceId)
                 .setLogEnabled(true).build();
         sLiveTex.init(new IInitHandler() {
@@ -137,7 +136,6 @@ public class MainApplication extends Application {
             @Override
             public void receiveHoldMessage(HoldMessage holdMessage) throws TException {
                 sendReciver(VALUE_RESULT_OK, REQUEST_HOLD_MSG, holdMessage);
-                Log.d("livetex_sdl", "HOLD_MSG!!!");
             }
 
             @Override
@@ -320,7 +318,6 @@ public class MainApplication extends Application {
 
     private static void sendReciver(int code, String request, Serializable o) {
         if (request.equals(REQUEST_RECIEVE_MSG)){
-            Log.e("mytag", "Request recieve msg");
         }
         Intent intent = new Intent(ACTION_RECIEVER);
         intent.putExtra(KEY_RESULT_CODE, code);

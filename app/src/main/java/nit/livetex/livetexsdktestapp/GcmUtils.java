@@ -76,7 +76,6 @@ public class GcmUtils {
     private static void getGcmId(final Context context,final Callback callback) {
         String gcmKey = PreferenceManager.getDefaultSharedPreferences(context).getString(GCM, null);
         if (gcmKey == null) {
-            Log.d("livetex", "getGcmId:: start");
             new AsyncTask<String, String, String>() {
 
                 ProgressDialog progressDialog;
@@ -98,7 +97,6 @@ public class GcmUtils {
                         // upstream messages to a server that echo back the message using the
                         // 'from' address in the message.
 
-                        Log.d("livetex", "GSM regId recieved:: " + regid);
                         // Persist the regID - no need to register again.
                         storeRegistrationId(context, regid);
                         return regid;
@@ -110,7 +108,6 @@ public class GcmUtils {
                 @Override
                 protected void onPostExecute(String aVoid) {
                     super.onPostExecute(aVoid);
-                    Log.d("livetex", "getGcmId:: complete " + aVoid);
                     if (progressDialog != null) {
                         progressDialog.cancel();
                     }

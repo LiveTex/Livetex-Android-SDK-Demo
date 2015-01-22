@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 
 import livetex.sdk.models.DialogState;
 
@@ -31,12 +30,6 @@ public class ReinitActivity extends BaseActivity {
         isFirstRun = true;
         mInternetStateReciever = new InternetStateReciever();
         isFirstRun = !getIntent().getBooleanExtra(IS_FROM_NOTIF, false);
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            for (String key : bundle.keySet()) {
-                Log.e("mytag", "BUNDLE key:" + key + " value:" + bundle.get(key));
-            }
-        }
     }
 
     @Override
@@ -175,17 +168,14 @@ public class ReinitActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
             final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             final NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
-            Log.d("Livetex_sdk", "InternetStateRecieve. " + activeNetInfo + " " + firstConnect);
             if (activeNetInfo != null) {
                 if (firstConnect && !isInetWasActive) {
-                    Log.d("Livetex_sdk", "INET ACTIVE. START INIT");
                     firstConnect = false;
                     init();
                 }
                 isInetWasActive = true;
             } else {
                 if (firstConnect) {
-                    Log.d("Livetex_sdk", "INET INACTIVE. START DEINIT");
                     showToast("Интернет соединение отсутсвует.");
                     deinit();
                 }

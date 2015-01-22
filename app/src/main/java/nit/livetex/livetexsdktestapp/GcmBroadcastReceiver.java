@@ -14,7 +14,6 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("mytag", "onReceive");
         ComponentName comp = new ComponentName(context.getPackageName(),
                 GcmIntentService.class.getName());
         context.startService(intent.setComponent(comp));

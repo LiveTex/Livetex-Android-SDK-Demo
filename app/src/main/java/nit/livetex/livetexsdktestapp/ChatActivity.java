@@ -367,7 +367,6 @@ public class ChatActivity extends ReinitActivity {
     }
 
     protected void onUpdateDialogState(DialogState state, boolean withMsg) {
-        Log.d("livetex_sdk", "onUpdateDialogState - " + withMsg + " " + state);
         if (state == null) return;
         String operatorName = "";
         int avaVisibility = View.VISIBLE;

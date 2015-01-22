@@ -29,10 +29,8 @@ public class GcmIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.e("mytag", "onHandleIntent push getted");
         Bundle extras = intent.getExtras();
         if (!extras.isEmpty() && MainApplication.isPushActive()) {
-            Log.e("mytag", "onHandleIntent process");
             Intent startIntent = new Intent(getApplicationContext(), ChatActivity.class);
             startIntent.putExtra(ChatActivity.IS_FROM_NOTIF, true);
             startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
