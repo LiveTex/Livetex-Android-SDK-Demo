@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">LivetexSdkTestApp</string>
+    <string name="app_name">Livetex SDK</string>
     <string name="init">инициалиация</string>
     <string name="title_activity_chat">ChatActivity</string>
     <string name="privetstvie">Мы рады приветствовать вас на нашем сайте! У нас все хорошо.</string>
