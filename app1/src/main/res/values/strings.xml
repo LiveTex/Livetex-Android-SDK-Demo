@@ -1,0 +1,30 @@
+<resources>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="app_name">Livetex SDK</string>
+    <string name="init">инициалиация</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="privetstvie">Мы рады приветствовать вас на нашем сайте! У нас все хорошо.</string>
+    <string name="your_name">Ваше имя</string>
+    <string name="your_age">Укажите возраст</string>
+    <string name="your_msg">Напишите сообщение</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_init">InitActivity</string>
+    <string name="title_activity_claim">ClaimActivity</string>
+    <string name="input_msg">Введите сообщение</string>
+    <string name="input_phone_number">Введите номер телефона</string>
+    <string name="claim">Жалоба</string>
+    <string name="close">Закрыть</string>
+    <string name="alena_ivanova">Алена Иванова</string>
+    <string name="vote">ОЦЕНИТЕ КОНСУЛЬТАЦИЮ</string>
+    <string name="enter_the_code">Введите код</string>
+    <string name="next">Далее</string>
+    <string name="clear">Очистить кэш</string>
+    <string name="enter_msg">Сообщение</string>
+    <string name="offline_mode">Offline Mode</string>
+    <string name="send_offline_msg">Отправить</string>
+    <string name="menu_add">Add</string>
+    <string name="online_mode">Online Mode</string>
+    <string name="create_online_dialog">Создать</string>
+</resources>

@@ -1,0 +1,49 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="CustomTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/LTActionBar</item>
+        <item name="actionBarStyle">@style/LTActionBar</item>
+
+    </style>
+
+    <style name="LTActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/material_blue_800</item>
+        <item name="background">@color/material_blue_800</item>
+    </style>
+
+    <style name="TextViewActionBar" parent="android:style/Widget.TextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="EditTextBordered" parent="android:style/Widget.EditText">
+        <item name="android:background">@drawable/border</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_margin">9dp</item>
+    </style>
+
+    <style name="EditTextBorderedBig" parent="EditTextBordered">
+        <item name="android:gravity">top</item>
+        <item name="android:lines">5</item>
+    </style>
+
+    <style name="CustomSpinner" parent="@style/Base.Widget.AppCompat.Spinner.Underlined">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="btn_blue">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:background">@drawable/blue_btn</item>
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingRight">32dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:text">Отправить</item>
+    </style>
+
+</resources>

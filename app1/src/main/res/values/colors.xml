@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="light_silver">#F5F2F2</color>
+    <color name="material_blue_900">#0D47A1</color>
+    <color name="material_blue_800">#1565C0</color>
+    <color name="btn_color">#3399d9</color>
+    <color name="link_registartion">#03A3F8</color>
+    <color name="material_red_500">#F44336</color>
+    <color name="material_green_500">#4CAF50</color>
+    <color name="material_blue_50">#E3F2FD</color>
+    <color name="material_blue_500">#90CAF9</color>
+    <color name="material_grey_500">#9E9E9E</color>
+    <color name="material_grey_50">#FAFAFA</color>
+    <color name="material_blue_grey_100">#CFD8DC</color>
+    <color name="white">#ffffff</color>
+</resources>

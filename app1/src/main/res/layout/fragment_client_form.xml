@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:padding="10dp"
+    android:layout_height="match_parent">
+<!--
+
+    <TextView
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Мы рады приветствовать Вас!"
+        android:textSize="22dp"
+        android:layout_margin="9dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+-->
+
+    <nit.livetex.livetexsdktestapp.view.CustomEditText
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/etWelcomeName"
+        android:textSize="@dimen/et_text_size"
+        android:hint="Имя"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <nit.livetex.livetexsdktestapp.view.CustomSpinner
+        style="@style/CustomSpinner"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/spDepartments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <nit.livetex.livetexsdktestapp.view.CustomEditText
+        android:layout_marginBottom="16dp"
+        android:textSize="@dimen/et_text_size"
+        android:id="@+id/etLivetexId"
+        android:hint="Предчат поля"
+        android:inputType="number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <nit.livetex.livetexsdktestapp.view.CustomEditText
+        android:layout_marginBottom="32dp"
+        android:textSize="@dimen/et_text_size"
+        android:id="@+id/etMessage"
+        android:hint="Ваше сообщение"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_marginRight="4dp"
+        style="@style/btn_blue"
+        android:layout_gravity="right"
+        android:id="@+id/btnCreateOnlineDialog"
+        android:text="@string/create_online_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

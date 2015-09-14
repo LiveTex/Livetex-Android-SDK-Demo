@@ -1,0 +1,117 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nit.livetex.livetexsdktestapp.ChatActivity"
+    android:background="@color/material_blue_50">
+
+    <RelativeLayout
+        android:id="@+id/rlVote"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/material_grey_50">
+        <TextView
+            android:id="@+id/status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@+id/ivVoteDown"
+            android:layout_centerVertical="true"
+            android:paddingLeft="16dp"
+            android:textSize="16sp"
+            android:text="@string/vote"/>
+        <ImageView
+            android:id="@+id/ivVoteDown"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="center"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/vote_div"
+            android:src="@drawable/ic_thumb_down_black_24dp"
+            android:background="@drawable/default_icon"
+            android:contentDescription="@string/vote" />
+        <View
+            android:id="@+id/vote_div"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/ivVoteUp"
+            android:layout_alignTop="@+id/ivVoteDown"
+            android:layout_alignBottom="@+id/ivVoteDown"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/material_grey_500"/>
+        <ImageView
+            android:id="@+id/ivVoteUp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:scaleType="center"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/vote"
+            android:background="@drawable/default_icon"
+            android:src="@drawable/ic_thumb_up_black_24dp" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/divider_top"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/rlVote"
+        android:background="@color/material_grey_500" />
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/divider"
+        android:layout_below="@+id/divider_top"
+        android:divider="@null" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@+id/msg_ll"
+        android:background="@color/material_grey_500" />
+
+    <RelativeLayout
+        android:id="@+id/msg_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <!--<ImageButton
+            android:id="@+id/ivAddFile"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:scaleType="center"
+            android:background="@drawable/default_icon"
+            android:src="@drawable/add_file" />-->
+
+        <EditText
+            android:id="@+id/etInputMsg"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/ivSendMsg"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/enter_msg"/>
+
+        <ImageView
+            android:id="@+id/ivSendMsg"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:scaleType="center"
+            android:src="@drawable/send_msg1"
+            android:background="@drawable/default_icon"  />
+    </RelativeLayout>
+
+</RelativeLayout>

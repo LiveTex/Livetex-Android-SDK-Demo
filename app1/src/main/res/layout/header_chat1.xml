@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <nit.livetex.livetexsdktestapp.view.RoundedImageView
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_centerVertical="true"
+        android:id="@+id/ivAvatarHeader"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/ic_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_toRightOf="@+id/ivAvatarHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_marginLeft="4dp"
+            android:textSize="18sp"
+            android:id="@+id/tvHeaderTitle"
+            android:text="Misha Mavashi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_marginLeft="4dp"
+            android:textSize="14sp"
+            android:visibility="gone"
+            android:id="@+id/tvHeaderTyping"
+            android:text="Печатает..."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:visibility="invisible"
+        android:layout_marginRight="12dp"
+        android:id="@+id/ivAbuseSend"
+        android:clickable="true"
+        android:layout_toLeftOf="@+id/ivSendFile"
+        android:src="@drawable/smile1"
+        android:layout_centerVertical="true"
+        android:layout_width="26dp"
+        android:layout_height="26dp" />
+
+    <ImageView
+        android:id="@+id/ivSendFile"
+        android:clickable="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/add_file1"
+        android:layout_centerVertical="true"
+        android:layout_width="26dp"
+        android:layout_height="26dp" />
+
+</RelativeLayout>
