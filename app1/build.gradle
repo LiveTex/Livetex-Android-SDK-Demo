@@ -41,5 +41,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.8.0'
     compile 'com.squareup.picasso:picasso:2.5.0'
-    compile (name:'app_sdk2-debug', ext:'aar')
+    compile (name:'app_sdk2', ext:'aar')
 }
