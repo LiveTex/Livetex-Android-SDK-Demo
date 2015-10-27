@@ -38,8 +38,6 @@ public abstract class BaseFragment extends Fragment {
             onExtrasParsed(getArguments());
         }
 
-
-
     }
 
     protected void setSoftInputMode() {

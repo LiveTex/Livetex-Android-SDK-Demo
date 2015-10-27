@@ -8,4 +8,8 @@
     <dimen name="ava_size">48dp</dimen>
     <dimen name="et_text_size">18sp</dimen>
 
+    <dimen name="tv_title_size_medium">16sp</dimen>
+    <dimen name="tv_title_size_small">13sp</dimen>
+    <dimen name="btn_text_size">14sp</dimen>
+    <dimen name="header_title">20sp</dimen>
 </resources>

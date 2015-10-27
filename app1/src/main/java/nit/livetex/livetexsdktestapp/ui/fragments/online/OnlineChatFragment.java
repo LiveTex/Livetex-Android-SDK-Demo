@@ -1,12 +1,19 @@
 package nit.livetex.livetexsdktestapp.ui.fragments.online;
 
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import livetex.message.TextMessage;
 import nit.livetex.livetexsdktestapp.Const;
 import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.R;
@@ -21,6 +29,8 @@ import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.models.OnlineOperator;
 import nit.livetex.livetexsdktestapp.providers.Dao;
 import nit.livetex.livetexsdktestapp.services.DownloadService;
+import nit.livetex.livetexsdktestapp.ui.dialogs.AttachChooseDialog;
+import nit.livetex.livetexsdktestapp.ui.dialogs.FileManagerDialog;
 import nit.livetex.livetexsdktestapp.ui.fragments.AbuseFragment;
 import nit.livetex.livetexsdktestapp.ui.fragments.ChooseModeFragment;
 import nit.livetex.livetexsdktestapp.ui.fragments.offline.BaseChatFragment;
@@ -28,6 +38,9 @@ import nit.livetex.livetexsdktestapp.utils.CommonUtils;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import sdk.handler.AHandler;
@@ -47,6 +60,8 @@ public class OnlineChatFragment extends BaseChatFragment {
     public final static String AVATAR = "avatar";
     public final static String FIRST_NAME = "first_name";
 
+
+
     private String avatar;
     private String firstName;
 
@@ -59,7 +74,6 @@ public class OnlineChatFragment extends BaseChatFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getLoaderManager().initLoader(1, null, this);
         handler = new Handler();
         typingTask = new TypingTask();
 
@@ -69,17 +83,20 @@ public class OnlineChatFragment extends BaseChatFragment {
 
         @Override
         public void run() {
-            tvHeaderTyping.setVisibility(View.GONE);
+           // tvHeaderTyping.setVisibility(View.GONE);
+            tvHeaderTyping.setText("оператор онлайн");
         }
     }
-
-    // when operator passes dialog to another his id changes, but in db messages of our conversation are saved by id of the first operator
-    private static int firstOperatorId = -1;
 
     private void sendingMessagesEnabled(boolean enabled) {
         etInputMsg.setEnabled(enabled);
         ivSendMsg.setEnabled(enabled);
-        ivAddFile.setEnabled(enabled);
+    }
+
+    @Override
+    protected View onCreateView(View v) {
+        tvHeaderTyping.setText("оператор онлайн");
+        return super.onCreateView(v);
     }
 
     @Subscribe
@@ -90,19 +107,22 @@ public class OnlineChatFragment extends BaseChatFragment {
                 setHeaderData(employee.getAvatar(), employee.getFirstname());
                 setConversationId(employee.getEmployeeId());
                 sendingMessagesEnabled(true);
+                tvHeaderTyping.setText("оператор онлайн");
                 Dao.getInstance(getContext()).saveMessage("OPEN_DIALOG",
                         String.valueOf(System.currentTimeMillis()), Integer.parseInt(getConversationId()), false);
                 getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
                 break;
             case CLOSE:
                 Log.d("close", "onMessageReceive");
-                sendingMessagesEnabled(false);
+                //sendingMessagesEnabled(false);
+                tvHeaderTyping.setText("оператор оффлайн");
                 Dao.getInstance(getContext()).saveMessage("CLOSE_DIALOG",
                         String.valueOf(System.currentTimeMillis()), Integer.parseInt(getConversationId()), false);
                 getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
                 break;
             case TYPING_MESSAGE:
                 tvHeaderTyping.setVisibility(View.VISIBLE);
+                tvHeaderTyping.setText("печатает...");
                 handler.postDelayed(typingTask, 1500);
                 break;
             case RECEIVE_MSG:
@@ -122,16 +142,24 @@ public class OnlineChatFragment extends BaseChatFragment {
                 }
                 Log.d("downloadzz", path.getAbsolutePath());
                 String[] parts = fileMessage.getText().split("/");
-                File outFile = new File(path, parts[parts.length-1]);
+                String fileName = null;
+                try {
+                    fileName = URLDecoder.decode(parts[parts.length - 1], "UTF-8");
+                    File outFile = new File(path, fileName);
 
-                Dao.getInstance(getContext()).saveMessage(outFile.getAbsolutePath(), String.valueOf(System.currentTimeMillis()),
-                        Integer.parseInt(new OnlineOperator(getContext()).getId()), false);
-                Intent intent = new Intent(getContext(), DownloadService.class);
-                intent.putExtra("url", fileMessage.getText());
-                intent.putExtra("receiver", new DownloadReceiver(new Handler()));
-                intent.putExtra("outFile", outFile);
-                getContext().startService(intent);
-                getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
+                    Dao.getInstance(getContext()).saveMessage(outFile.getAbsolutePath(), String.valueOf(System.currentTimeMillis()),
+                            Integer.parseInt(new OnlineOperator(getContext()).getId()), false);
+
+                    Intent intent = new Intent(getContext(), DownloadService.class);
+                    intent.putExtra("url", fileMessage.getText());
+                    intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+                    intent.putExtra("outFile", outFile);
+                    getContext().startService(intent);
+                    getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
                 break;
         }
     }
@@ -158,30 +186,8 @@ public class OnlineChatFragment extends BaseChatFragment {
         View header = inflater.inflate(R.layout.header_chat1, null);
         ivAvatarHeader = (ImageView) header.findViewById(R.id.ivAvatarHeader);
         ImageView ivAbuseSend = (ImageView) header.findViewById(R.id.ivAbuseSend);
-       // ImageView ivScreenshot = (ImageView) header.findViewById(R.id.ivScreenshot);
-       // ivScreenshot.setColorFilter(getResources().getColor(android.R.color.darker_gray));
-       // ivAbuseSend.setColorFilter(getResources().getColor(android.R.color.darker_gray));
         ivAbuseSend.setVisibility(View.VISIBLE);
-      //  ivScreenshot.setVisibility(View.VISIBLE);
-//        ivScreenshot.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showProgress();
-//                MainApplication.sendScreenshotOnline(getActivity(), getConversationId(), new AHandler<Boolean>() {
-//                    @Override
-//                    public void onError(String errMsg) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onResultRecieved(Boolean result) {
-//                        dismissProgress();
-//                        Dao.getInstance(getContext()).saveMessage("Скриншот отправлен", String.valueOf(System.currentTimeMillis()), Integer.parseInt(new OnlineOperator(getContext()).getId()), true);
-//                        getLoaderManager().getLoader(1).forceLoad();
-//                    }
-//                });
-//            }
-//        });
+
         ivAbuseSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -202,29 +208,13 @@ public class OnlineChatFragment extends BaseChatFragment {
         ivSendFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendFile();
+
+                AttachChooseDialog dialog = new AttachChooseDialog();
+                dialog.setTargetFragment(OnlineChatFragment.this, CHOOSER_DIALOG_REQUEST);
+                dialog.show(getFragmentEnvironment().getSupportFragmentManager(), "AttachChooseDialog");
             }
         });
 
-//        ImageView ivConversationClose = (ImageView) header.findViewById(R.id.ivConversationClose);
-//        ivConversationClose.setVisibility(View.VISIBLE);
-//        ivConversationClose.setColorFilter(getResources().getColor(android.R.color.darker_gray));
-//        ivConversationClose.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                MainApplication.closeDialog(new AHandler<LTDialogState>() {
-//                    @Override
-//                    public void onError(String errMsg) {
-//                        CommonUtils.showToast(getContext(), errMsg);
-//                    }
-//
-//                    @Override
-//                    public void onResultRecieved(LTDialogState result) {
-//                        showFragment(new ChooseModeFragment());
-//                    }
-//                });
-//            }
-//        });
 
         return header;
     }
@@ -234,15 +224,15 @@ public class OnlineChatFragment extends BaseChatFragment {
     public void onResume() {
         super.onResume();
 
-        MainApplication.getMsgHistory(10, 0, new AHandler<List<LTTextMessage>>() {
+        MainApplication.getMsgHistory(10, 0, new AHandler<List<TextMessage>>() {
             @Override
             public void onError(String errMsg) {
 
             }
 
             @Override
-            public void onResultRecieved(List<LTTextMessage> result) {
-                for (LTTextMessage message : result) {
+            public void onResultRecieved(List<TextMessage> result) {
+                for (TextMessage message : result) {
                     MainApplication.confirmTxtMsg(message.getId());
                 }
 
@@ -258,33 +248,31 @@ public class OnlineChatFragment extends BaseChatFragment {
     @Override
     public void onClick(View view) {
         super.onClick(view);
-        switch (view.getId()) {
-            case R.id.ivVoteUp:
-                MainApplication.vote(true, new AHandler() {
-                    @Override
-                    public void onError(String errMsg) {
 
-                    }
+        if(view.getId() == R.id.ivVoteUp) {
+            MainApplication.vote(true, new AHandler() {
+                @Override
+                public void onError(String errMsg) {
 
-                    @Override
-                    public void onResultRecieved(Object result) {
-                        CommonUtils.showToast(getContext(), "Спасибо за оценку");
-                    }
-                });
-                break;
-            case R.id.ivVoteDown:
-                MainApplication.vote(false, new AHandler() {
-                    @Override
-                    public void onError(String errMsg) {
+                }
 
-                    }
+                @Override
+                public void onResultRecieved(Object result) {
+                    CommonUtils.showToast(getContext(), "Спасибо за оценку");
+                }
+            });
+        } else if(view.getId() == R.id.ivVoteDown) {
+            MainApplication.vote(false, new AHandler() {
+                @Override
+                public void onError(String errMsg) {
 
-                    @Override
-                    public void onResultRecieved(Object result) {
-                        CommonUtils.showToast(getContext(), "Спасибо за оценку");
-                    }
-                });
-                break;
+                }
+
+                @Override
+                public void onResultRecieved(Object result) {
+                    CommonUtils.showToast(getContext(), "Спасибо за оценку");
+                }
+            });
         }
     }
 
@@ -313,49 +301,44 @@ public class OnlineChatFragment extends BaseChatFragment {
         });
     }
 
-    @Override
+    /*@Override
     public void sendFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("file/*");
+        intent.setType("file*//*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(Intent.createChooser(intent, "Выберите файл для загрузки"), Const.CODE.FILE_SELECT);
         } catch(ActivityNotFoundException ex) {
             CommonUtils.showToast(getContext(), "Пожалуйста, установите файловый менеджер");
         }
-    }
+    }*/
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case Const.CODE.FILE_SELECT:
-                if(data != null) {
-                    Uri uri = data.getData();
-                    final String path = CommonUtils.getPath(getContext(), uri);
-                    if(path == null) {
-                        CommonUtils.showToast(getContext(), "Файл не доступен для загрузки");
-                    }
-                    final File file = new File(path);
-                    showProgress();
-                    MainApplication.sendFile(file, conversationId, new AHandler<Boolean>() {
-                        @Override
-                        public void onError(String errMsg) {
+    public void sendFileFromUri(final String path) {
+       // final Uri uriPath = CommonUtils.getRealPathFromURI(getContext(), uri);
+       // final String path = uri.toString();
 
-                        }
-
-                        @Override
-                        public void onResultRecieved(Boolean result) {
-                            dismissProgress();
-                            String name = path.substring(path.lastIndexOf("/") + 1);
-                            Dao.getInstance(getContext()).saveMessage(name, String.valueOf(System.currentTimeMillis()), Integer.parseInt(new OnlineOperator(getContext()).getId()), true);
-                            getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
-                        }
-                    });
-                }
-                break;
+        if(path == null) {
+            CommonUtils.showToast(getContext(), "Файл не доступен для загрузки");
+            return;
         }
+       // String decodedPath = URLDecoder.decode(path, "UTF-8");
+        final File file = new File(path);
+        showProgress();
+        MainApplication.sendFile(file, conversationId, new AHandler<Boolean>() {
+            @Override
+            public void onError(String errMsg) {
+                Log.d("tag", errMsg);
+            }
 
-        super.onActivityResult(requestCode, resultCode, data);
+            @Override
+            public void onResultRecieved(Boolean result) {
+                dismissProgress();
+                String name = path.substring(path.lastIndexOf("/") + 1);
+                Dao.getInstance(getContext()).saveMessage(name, String.valueOf(System.currentTimeMillis()), Integer.parseInt(new OnlineOperator(getContext()).getId()), true);
+                getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
+            }
+        });
+
     }
 
     private class DownloadReceiver extends ResultReceiver {

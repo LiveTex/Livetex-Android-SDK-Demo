@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 
+import livetex.message.TextMessage;
 import nit.livetex.livetexsdktestapp.models.OnlineOperator;
 import nit.livetex.livetexsdktestapp.ui.fragments.ChooseModeFragment;
 import nit.livetex.livetexsdktestapp.ui.fragments.InitFragment;
@@ -72,15 +73,15 @@ public class FragmentEnvironment extends ActionBarActivity {
 
                         @Override
                         public void onResultRecieved(LTDialogState result) {
-                            MainApplication.getMsgHistory(10, 0, new AHandler<List<LTTextMessage>>() {
+                            MainApplication.getMsgHistory(10, 0, new AHandler<List<TextMessage>>() {
                                 @Override
                                 public void onError(String errMsg) {
 
                                 }
 
                                 @Override
-                                public void onResultRecieved(List<LTTextMessage> result) {
-                                    for(LTTextMessage message : result) {
+                                public void onResultRecieved(List<TextMessage> result) {
+                                    for(TextMessage message : result) {
                                         MainApplication.confirmTxtMsg(message.getId());
                                     }
                                     Bundle bundle = new Bundle();
@@ -102,11 +103,9 @@ public class FragmentEnvironment extends ActionBarActivity {
 
             String appID = DataKeeper.restoreAppId(this);
             String regID = DataKeeper.restoreRegId(this);
-
             MainApplication.initLivetex(appID, regID, new AHandler<Boolean>() {
                 @Override
                 public void onError(String errMsg) {
-
                 }
 
                 @Override
@@ -149,7 +148,6 @@ public class FragmentEnvironment extends ActionBarActivity {
                     tapToGetOut++;
                 } else {
                     tapToGetOut = 0;
-
                     finish();
                 }
                 return;
@@ -157,7 +155,6 @@ public class FragmentEnvironment extends ActionBarActivity {
                 MainApplication.closeDialog(new AHandler<LTDialogState>() {
                     @Override
                     public void onError(String errMsg) {
-
                     }
 
                     @Override
@@ -168,7 +165,6 @@ public class FragmentEnvironment extends ActionBarActivity {
             }
         }
         super.onBackPressed();
-
     }
 
     @Override

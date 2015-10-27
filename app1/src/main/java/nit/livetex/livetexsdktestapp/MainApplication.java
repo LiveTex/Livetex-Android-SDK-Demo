@@ -1,3 +1,4 @@
+
 package nit.livetex.livetexsdktestapp;
 
 import android.app.Activity;
@@ -8,6 +9,8 @@ import android.os.HandlerThread;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
+import livetex.abuse.Abuse;
+import livetex.message.TextMessage;
 import nit.livetex.livetexsdktestapp.models.BaseMessage;
 import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
@@ -18,6 +21,7 @@ import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 import org.apache.thrift.TException;
 
 import java.io.File;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,39 +52,15 @@ public class MainApplication extends Application {
 
     public static boolean IS_ACTIVE = false;
 
-    public static final String SITE_ID_TEST = "10009747";
-    public static final String SITE_ID_PRE = "92941";
-    public static final String SITE_ID_REAL = "106217";
-// "account:19804:site:10019719:group:15935"
-    public static final String OFFLINE_DEPARTMENT_ID_PRE_RELEASE = "117168"/*"118224"*/;
-    public static final String OFFLINE_DEPARTMENT_ID_TEST = "10246";
-    public static final String OFFLINE_DEPARTMENT_ID_REAL = /*"118564"*//*"118224"*/"42"/*"42"*//*"72879"*/;
-
-
-    private static final String AUTH_URL_TEST = "http://authentication-service.livetex.omnitest:80/";
-    private static final String AUTH_URL_PRE_REAL = "http://notification-service-0-sdk-prerelease.livetex.ru:80/";
+    public static final String OFFLINE_DEPARTMENT_ID_REAL = "42";
 
     private static final String AUTH_URL_REAL = "http://authentication-service-sdk-production-1.livetex.ru";
 
-    private static final String API_KEY_TEST =  "dev_key_test";
     private static final String API_KEY_PRE_REAL =  "demo";
 
-    private static  String API_KEY = API_KEY_TEST;
-    public static String OFFLINE_DEPARTMENT_ID = OFFLINE_DEPARTMENT_ID_TEST;
-    private static String AUTH_URL =AUTH_URL_TEST;
-
-
-    public static void setTestScope() {
-        API_KEY = API_KEY_TEST;
-        OFFLINE_DEPARTMENT_ID = OFFLINE_DEPARTMENT_ID_TEST;
-        AUTH_URL = AUTH_URL_TEST;
-    }
-
-    public static void setPreReleaseScope() {
-        API_KEY = API_KEY_PRE_REAL;
-        OFFLINE_DEPARTMENT_ID = OFFLINE_DEPARTMENT_ID_PRE_RELEASE;
-        AUTH_URL = AUTH_URL_REAL;
-    }
+    private static  String API_KEY = "";
+    public static String OFFLINE_DEPARTMENT_ID = "";
+    private static String AUTH_URL = "";
 
     public static void setProductionScope() {
         API_KEY = API_KEY_PRE_REAL;
@@ -90,12 +70,6 @@ public class MainApplication extends Application {
 
     private static Livetex sLiveTex;
     private static MainApplication instance;
-    private static String sLastEmployee = null;
-    public static boolean isAppActive = false;
-
-    private static Handler mainThreadHandler = new Handler();
-    private static Handler workerThreadHandler;
-
     public static MainApplication getInstance() {
         return instance;
     }
@@ -109,10 +83,7 @@ public class MainApplication extends Application {
         instance = this;
         MainApplication.setProductionScope();
         HandlerThread handlerThread = new HandlerThread("");
-
         handlerThread.start();
-        workerThreadHandler = new Handler(handlerThread.getLooper());
-
         BusProvider.register(this);
     }
 
@@ -234,14 +205,14 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void getMsgHistory(int limit, int offset, AHandler<List<LTTextMessage>> handler) {
+    public static void getMsgHistory(int limit, int offset, AHandler<List<TextMessage>> handler) {
         if (sLiveTex != null)
             sLiveTex.messageHistory((short) limit, (short) offset, handler);
     }
 
     public static void abuse(String name, String msg) {
         if (sLiveTex != null)
-            sLiveTex.abuse(new LTAbuse(name, msg));
+            sLiveTex.abuse(new Abuse(name, msg));
     }
 
     public static void postMessage(BaseMessage message) {
@@ -256,19 +227,6 @@ public class MainApplication extends Application {
 
     public static void confirmTxtMsg(String msgId) {
         if(sLiveTex != null) {
-
-            /*sLiveTex.close(new AHandler<LTDialogState>() {
-                @Override
-                public void onError(String errMsg) {
-
-                }
-
-                @Override
-                public void onResultRecieved(LTDialogState result) {
-
-                }
-            }); */
-
             sLiveTex.confirmTextMessage(msgId, null);
         }
     }

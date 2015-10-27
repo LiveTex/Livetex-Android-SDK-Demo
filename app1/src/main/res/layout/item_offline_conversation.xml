@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
             android:id="@+id/tvOperatorName"
             android:textSize="18dp"
             android:textStyle="bold"
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
             android:id="@+id/tvMessage"
             android:textSize="14dp"
             android:layout_marginTop="2dp"
@@ -46,7 +46,7 @@
 
     </LinearLayout>
 
-    <TextView
+    <nit.livetex.livetexsdktestapp.view.TextViewRoboto
         android:layout_gravity="top"
         android:layout_marginRight="4dp"
         android:id="@+id/tvTime"

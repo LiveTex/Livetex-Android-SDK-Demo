@@ -3,7 +3,7 @@
 
     <item android:state_pressed="true" android:state_selected="false">
         <shape>
-            <gradient android:angle="270" android:endColor="@color/material_blue_800" android:startColor="@color/material_blue_800" android:type="linear" />
+            <gradient android:angle="270" android:endColor="@color/new_blue" android:startColor="@color/new_blue" android:type="linear" />
             <corners android:bottomLeftRadius="2dp"
                 android:bottomRightRadius="2dp"
                 android:topLeftRadius="2dp"
@@ -12,7 +12,7 @@
     </item>
     <item android:state_selected="true">
         <shape>
-            <gradient android:angle="270" android:endColor="@color/material_blue_800" android:startColor="@color/material_blue_800" android:type="linear" />
+            <gradient android:angle="270" android:endColor="@color/new_blue" android:startColor="@color/new_blue" android:type="linear" />
             <corners android:bottomLeftRadius="2dp"
                 android:bottomRightRadius="2dp"
                 android:topLeftRadius="2dp"
@@ -21,7 +21,7 @@
     </item>
     <item android:state_selected="false">
         <shape>
-            <gradient android:angle="270" android:endColor="@color/material_blue_800" android:startColor="@color/material_blue_800" android:type="linear" />
+            <gradient android:angle="270" android:endColor="@color/new_blue" android:startColor="@color/new_blue" android:type="linear" />
             <corners android:bottomLeftRadius="2dp"
                 android:bottomRightRadius="2dp"
                 android:topLeftRadius="2dp"

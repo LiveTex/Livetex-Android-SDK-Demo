@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:layout_width="match_parent"
@@ -8,42 +10,42 @@
 
     <LinearLayout
         android:id="@+id/llLeft"
-        android:layout_marginRight="64dp"
         android:visibility="gone"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
             android:id="@+id/tvLeft"
             android:layout_marginRight="2dp"
-            android:textStyle="bold"
             android:background="@drawable/user_baloon_active"
             android:text=""
-            android:textSize="20sp"
-            android:layout_width="200dp"
+            android:maxEms="12"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
             android:id="@+id/tvTimerLeft"
             android:text="12:10"
+            android:layout_marginLeft="4dp"
             android:layout_gravity="bottom"
-            android:padding="2dp"
-            android:layout_width="wrap_content"
+            android:padding="1dp"
+            android:layout_width="42dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/llRight"
-        android:layout_marginLeft="64dp"
         android:layout_alignParentRight="true"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
             android:layout_gravity="bottom"
             android:text="12:10"
-            android:padding="2dp"
+            android:padding="1dp"
+            android:layout_marginRight="4dp"
             android:id="@+id/tvTimerRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -58,20 +60,20 @@
                 android:src="@drawable/ic_insert_drive_file_black_24dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <TextView
+            <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
                 android:id="@+id/tvRight"
                 android:layout_marginLeft="2dp"
                 android:text=""
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:layout_width="200dp"
+                android:maxEms="12"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <TextView
+    <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
         android:id="@+id/tvDialogState"
         android:visibility="gone"
         android:gravity="center_horizontal"

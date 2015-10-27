@@ -13,4 +13,11 @@
     <color name="material_grey_50">#FAFAFA</color>
     <color name="material_blue_grey_100">#CFD8DC</color>
     <color name="white">#ffffff</color>
+
+    <color name="new_ultra_light_gray">#F4F4F4</color>
+    <color name="new_light_gray">#EFEEEE</color>
+    <color name="new_gray">#b3b3b3</color>
+    <color name="new_blue">#0277bd</color>
+    <color name="new_green">#20C88C</color>
+    <color name="new_red">#D66464</color>
 </resources>

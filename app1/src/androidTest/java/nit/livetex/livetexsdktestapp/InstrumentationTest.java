@@ -53,11 +53,11 @@ public class InstrumentationTest extends ActivityInstrumentationTestCase2<Fragme
        // solo.clickOnView(solo.getView(R.id.action_offline_msg));
         solo.clickOnView(solo.getView(R.id.ivConversationAdd));
         EditText etName = (EditText) solo.getView(R.id.etName);
-        EditText etPhone = (EditText) solo.getView(R.id.etPhone);
+       // EditText etPhone = (EditText) solo.getView(R.id.etPhone);
         EditText etEmail = (EditText) solo.getView(R.id.etEmail);
         EditText etMessage = (EditText) solo.getView(R.id.etMessage);
         solo.enterText(etName, "Алексей Алексеевич");
-        solo.enterText(etPhone, "89650089191");
+      //  solo.enterText(etPhone, "89650089191");
         solo.enterText(etEmail, "yes.android.cool@yandex.ru");
         solo.enterText(etMessage, "Дай пять");
 
