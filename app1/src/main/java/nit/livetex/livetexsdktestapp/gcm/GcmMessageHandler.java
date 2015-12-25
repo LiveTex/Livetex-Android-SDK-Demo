@@ -28,6 +28,8 @@ import nit.livetex.livetexsdktestapp.utils.BusProvider;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * Created by user on 11.08.15.
@@ -78,8 +80,6 @@ public class GcmMessageHandler extends IntentService {
                 initIntent.putExtra(ConversationsProvider.CONVERSATION_ID, cid);
                 initIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 sendNotification(mes, initIntent);
-
-
             } else {
 
                 if(mes.startsWith("http")) {
@@ -89,12 +89,18 @@ public class GcmMessageHandler extends IntentService {
                     }
                     Log.d("downloadzz", path.getAbsolutePath());
                     String[] parts = mes.split("/");
-                    File outFile = new File(path, parts[parts.length-1]);
-                    Intent i = new Intent(this, DownloadService.class);
-                    i.putExtra("url", mes);
-                    i.putExtra("outFile", outFile);
-                    startService(i);
-                    mes = outFile.getAbsolutePath();
+                    try {
+                        String fileName = URLDecoder.decode(parts[parts.length - 1], "UTF-8");
+                        File outFile = new File(path, fileName);
+                        Intent i = new Intent(this, DownloadService.class);
+                        i.putExtra("url", mes);
+                        i.putExtra("outFile", outFile);
+                        startService(i);
+                        mes = outFile.getAbsolutePath();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
                 OnlineOperator onlineOperator = new OnlineOperator(this);

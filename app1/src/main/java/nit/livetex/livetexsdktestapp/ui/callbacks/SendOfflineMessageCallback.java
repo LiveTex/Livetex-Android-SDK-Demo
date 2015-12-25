@@ -5,5 +5,5 @@ package nit.livetex.livetexsdktestapp.ui.callbacks;
  */
 public interface SendOfflineMessageCallback extends BaseCallback {
 
-    public void onMessageSended();
+    public void onMessageSended(String conversationId);
 }

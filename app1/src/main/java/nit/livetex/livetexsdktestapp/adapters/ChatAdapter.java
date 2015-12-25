@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.webkit.URLUtil;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.models.MessagePersistent;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -57,34 +60,43 @@ public class ChatAdapter extends CursorAdapter {
         }
     }
 
-    private void setBubbleState(View view,  MessagePersistent offlineMessagePersistent, BubbleState state) {
-
+    private void setBubbleState(View view,  final MessagePersistent offlineMessagePersistent, BubbleState state) {
         if("CLOSE_DIALOG".equals(offlineMessagePersistent.getText())) {
             state = BubbleState.CLOSE;
         }
-
         if("OPEN_DIALOG".equals(offlineMessagePersistent.getText())) {
             state = BubbleState.OPEN;
         }
-
         if(offlineMessagePersistent.getText() != null &&offlineMessagePersistent.getText().contains("/")) {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    String filePath = offlineMessagePersistent.getText();
+                    File file = new File(filePath);
+                    MimeTypeMap map = MimeTypeMap.getSingleton();
+                    String ext = filePath.split("\\.").length > 0 ? filePath.split("\\.")[1] : "";
+                    String type = map.getMimeTypeFromExtension(ext);
+                    if(type == null) {
+                        if(URLUtil.isValidUrl(filePath)) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(filePath));
+                            context.startActivity(browserIntent);
+                            return;
+                        } else {
+                            type = "*/*";
+                        }
+                    }
                     Log.d("tag", "click");
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()
-                            + "/Downloadzz/");
-                    intent.setDataAndType(uri, "*/*");
-                    context.startActivity(Intent.createChooser(intent, "Open folder"));
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Uri data = Uri.fromFile(file);
+                    intent.setDataAndType(data, type);
+                    context.startActivity(intent);
                 }
             });
         }
-
         LinearLayout llLeft = (LinearLayout) view.findViewById(R.id.llLeft);
         LinearLayout llRight = (LinearLayout) view.findViewById(R.id.llRight);
         LinearLayout llRightBaloon = (LinearLayout) view.findViewById(R.id.llRightBaloon);
-        llRightBaloon.getBackground().setColorFilter(context.getResources().getColor(R.color.material_blue_800), PorterDuff.Mode.SRC_ATOP);
+        llRightBaloon.getBackground().setColorFilter(context.getResources().getColor(R.color.new_blue), PorterDuff.Mode.SRC_ATOP);
         TextView tvDialogState = (TextView) view.findViewById(R.id.tvDialogState);
         TextView tvMessageLeft = (TextView) view.findViewById(R.id.tvLeft);
         tvMessageLeft.getBackground().setColorFilter(context.getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);

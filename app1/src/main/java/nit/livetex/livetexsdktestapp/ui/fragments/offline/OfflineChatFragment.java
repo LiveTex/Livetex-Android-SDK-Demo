@@ -17,6 +17,7 @@ import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.models.OfflineConversationPersistent;
 import nit.livetex.livetexsdktestapp.providers.Dao;
+import nit.livetex.livetexsdktestapp.ui.dialogs.AttachChooseDialog;
 import nit.livetex.livetexsdktestapp.utils.CommonUtils;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -58,6 +59,30 @@ public class OfflineChatFragment extends BaseChatFragment   {
     @Override
     public boolean onVoteLayoutVisible() {
         return false;
+    }
+
+    @Override
+    protected void sendFileFromUri(final String path) {
+        if (path == null) {
+            CommonUtils.showToast(getContext(), "Файл не доступен для загрузки");
+        }
+        final File file = new File(path);
+        showProgress();
+
+        MainApplication.sendOfflineFile(file, getConversationId(), new AHandler<Boolean>() {
+            @Override
+            public void onError(String errMsg) {
+
+            }
+
+            @Override
+            public void onResultRecieved(Boolean result) {
+                String name = path.substring(path.lastIndexOf("/") + 1);
+                Dao.getInstance(getContext()).saveMessage(name, String.valueOf(System.currentTimeMillis()), Integer.parseInt(getConversationId()), true);
+                getFragmentEnvironment().getSupportLoaderManager().getLoader(getLoaderId()).forceLoad();
+                dismissProgress();
+            }
+        });
     }
 
     @Override
@@ -116,29 +141,34 @@ public class OfflineChatFragment extends BaseChatFragment   {
         }
         TextView tvHeaderTitle = (TextView) header.findViewById(R.id.tvHeaderTitle);
         tvHeaderTitle.setText(offlineConversationPersistent.getFirstName());
+        TextView tvHeaderTyping = (TextView) header.findViewById(R.id.tvHeaderTyping);
+        tvHeaderTyping.setVisibility(View.GONE);
         ImageView ivSendFile = (ImageView) header.findViewById(R.id.ivSendFile);
         ivSendFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendFile();
+
+                AttachChooseDialog dialog = new AttachChooseDialog();
+                dialog.setTargetFragment(OfflineChatFragment.this, CHOOSER_DIALOG_REQUEST);
+                dialog.show(getFragmentEnvironment().getSupportFragmentManager(), "AttachChooseDialog");
             }
         });
         return header;
     }
 
-    @Override
+    /*@Override
     public void sendFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("file/*");
+        intent.setType("file*//*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
             startActivityForResult(Intent.createChooser(intent, "Выберите файл для загрузки"), Const.CODE.FILE_SELECT);
         } catch(ActivityNotFoundException ex) {
             CommonUtils.showToast(getContext(), "Пожалуйста, установите файловый менеджер");
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Const.CODE.FILE_SELECT:
@@ -170,7 +200,7 @@ public class OfflineChatFragment extends BaseChatFragment   {
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
+    }*/
 
     @Override
     public void onResume() {

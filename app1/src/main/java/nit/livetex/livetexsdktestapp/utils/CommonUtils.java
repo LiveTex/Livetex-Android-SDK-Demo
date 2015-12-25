@@ -1,12 +1,20 @@
 package nit.livetex.livetexsdktestapp.utils;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,8 +30,12 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import nit.livetex.livetexsdktestapp.MainApplication;
 
 /**
  * Created by user on 28.07.15.
@@ -65,10 +77,11 @@ public class CommonUtils {
                 cursor = context.getContentResolver().query(uri, projection, null, null, null);
                 int column_index = cursor.getColumnIndexOrThrow("_data");
                 if(cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
+                    String path = cursor.getString(column_index);
+                    return path;
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
         else if("file".equalsIgnoreCase(uri.getScheme())) {
@@ -77,12 +90,115 @@ public class CommonUtils {
         return null;
     }
 
+    public static Uri getOutputMediaFile(Context context) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        return Uri.fromFile(new File(getStorageDir(context).getPath() + File.separator +
+                "IMG_" + timeStamp + ".jpg"));
+    }
+
+    private static File getStorageDir(Context context) {
+        if (!isStorageAvailable())
+            return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File mediaStorageDir = new File(context.getExternalCacheDir(), "LiveTex");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        return mediaStorageDir;
+    }
+
+    private static boolean isStorageAvailable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
+    public static boolean isKitKat() {
+        return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+    }
+    private static Uri getMediaUri() {
+        String state = Environment.getExternalStorageState();
+        if (!state.equalsIgnoreCase(Environment.MEDIA_MOUNTED))
+            return MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+
+        return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    }
+    public static Uri getRealPathFromURI(Context context, Uri contentUri) {
+       // Context context = MainApplication.getInstance();
+        if (isKitKat()) {
+            // get the id of the image selected by the user
+            try {
+                String wholeID = DocumentsContract.getDocumentId(contentUri);
+                String id = wholeID.split(":")[1];
+
+                String[] projection = {MediaStore.Images.Media.DATA};
+                String whereClause = MediaStore.Images.Media._ID + "=?";
+                Cursor cursor = context.getContentResolver().query(getMediaUri(),
+                        projection, whereClause, new String[]{id}, null);
+                if (cursor != null) {
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    if (cursor.moveToFirst()) {
+                        Uri result = Uri.parse(cursor.getString(column_index));
+                        cursor.close();
+                        return result;
+                    }
+                    cursor.close();
+                } else {
+                    return contentUri;
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+
+            }
+
+
+        } else {
+            Uri res = null;
+            final String[] columns = {MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME};
+            Cursor cursor = context.getContentResolver()
+                    .query(contentUri, columns, null, null, null);
+            if (cursor == null || !cursor.moveToFirst()) {
+                if (cursor != null) cursor.close();
+                return null;
+            }
+            String path;
+            int columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+            if (columnIndex != -1) {
+                path = cursor.getString(columnIndex);
+                res = Uri.parse(path);
+            } else {
+                columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME);
+                if (columnIndex != -1) {
+                    res = contentUri;
+                }
+            }
+            cursor.close();
+            return res;
+        }
+        return null;
+    }
+
+    public static void galleryAddPic(Context context, Uri uri) {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, uri.getPath());
+        context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
     public static void multipart(String url, File file) throws IOException {
         MultipartUtility multipartUtility = new MultipartUtility(url, "UTF-8");
         multipartUtility.addFilePart("file", file);
         multipartUtility.finish();
+    }
 
+    public static Point getScreenSize(Activity activity) {
+        Point screeSize = new Point();
+        getDefaultDisplay(activity).getSize(screeSize);
+        return screeSize;
+    }
 
+    public static Display getDefaultDisplay(Context context) {
+        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
     }
 
     public static long getID() {

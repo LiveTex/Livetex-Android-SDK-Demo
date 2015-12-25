@@ -3,6 +3,7 @@ package nit.livetex.livetexsdktestapp.ui.fragments.offline;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -39,10 +40,11 @@ public class OfflineConversationListFragment extends BaseFragment implements Loa
         View v = inflater.inflate(R.layout.header_conversation_list, null);
         ImageView ivAddConversation = (ImageView) v.findViewById(R.id.ivConversationAdd);
         ivAddConversation.setColorFilter(Color.WHITE);
+        ivAddConversation.setVisibility(View.INVISIBLE);
         ivAddConversation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFragment(new SendOfflineMessageFragment(), true);
+              //  showFragment(new SendOfflineMessageFragment(), true);
             }
         });
         return v;
@@ -55,7 +57,13 @@ public class OfflineConversationListFragment extends BaseFragment implements Loa
         presenter.fetchConversationData();
 
         lvConversations = (ListView) v.findViewById(R.id.lvConversations);
-
+        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragment(new SendOfflineMessageFragment(), true);
+            }
+        });
         adapter = new ConversationAdapter(getContext());
         getFragmentEnvironment().getSupportLoaderManager().initLoader(0, null, this);
 

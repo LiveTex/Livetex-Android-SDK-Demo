@@ -25,7 +25,7 @@ public class InitFragment extends BaseFragment implements InitCallback {
     protected View onCreateView(View v) {
         showProgress();
         presenter = new InitPresenter(this);
-        presenter.init(/*"10009747"*//*"92941"*//*"98527"*//*"49134"*//*"10009775"*/"106217"/*"10009775"*//*"10009747"*/);
+        presenter.init("106217");
         return super.onCreateView(v);
     }
 

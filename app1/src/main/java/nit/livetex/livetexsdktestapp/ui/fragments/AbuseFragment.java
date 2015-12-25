@@ -21,6 +21,7 @@ public class AbuseFragment extends BaseFragment implements View.OnClickListener 
 
     EditText etAbusePhone;
     EditText etAbuseMessage;
+    EditText etEmail;
     Button btnSendAbuse;
 
     @Override
@@ -50,22 +51,25 @@ public class AbuseFragment extends BaseFragment implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnSendAbuse:
-                if(!CommonUtils.isEmpty(etAbuseMessage, etAbusePhone)) {
-                    MainApplication.abuse(etAbusePhone.getText().toString(), etAbuseMessage.getText().toString());
-                    CommonUtils.showToast(getContext(), "Ваша жалоба отправлена");
-                    getFragmentEnvironment().getSupportFragmentManager().popBackStack();
-                } else {
-                    CommonUtils.showToast(getContext(), "Введите, пожалуйста, сообщение и контактный номер");
+        if(view.getId() == R.id.btnSendAbuse) {
+            if(!CommonUtils.isEmpty(etAbuseMessage, etAbusePhone, etEmail)) {
+                if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
+                    CommonUtils.showToast(getContext(), "Введите, пожалуйста, корректный email");
+                    return;
                 }
-                break;
+                MainApplication.abuse(etAbusePhone.getText().toString(), etAbuseMessage.getText().toString());
+                CommonUtils.showToast(getContext(), "Ваша жалоба отправлена");
+                getFragmentEnvironment().getSupportFragmentManager().popBackStack();
+            } else {
+                CommonUtils.showToast(getContext(), "Пожалуйста, заполните все поля");
+            }
         }
     }
 
     private void init(View v) {
         etAbuseMessage = (CustomEditText) v.findViewById(R.id.etAbuseMessage);
         etAbusePhone = (CustomEditText) v.findViewById(R.id.etAbusePhone);
+        etEmail = (CustomEditText) v.findViewById(R.id.etEmail);
         btnSendAbuse = (Button) v.findViewById(R.id.btnSendAbuse);
         btnSendAbuse.setOnClickListener(this);
     }

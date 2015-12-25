@@ -14,7 +14,7 @@ public class Const {
     public static String URL = URL_TEST;
 
     public static class CODE {
-        public final static int FILE_SELECT = 1;
+        public final static int FILE_SELECT = 10;
     }
 
 }

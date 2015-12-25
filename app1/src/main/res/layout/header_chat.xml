@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
             android:layout_marginLeft="4dp"
             android:textSize="18sp"
             android:id="@+id/tvHeaderTitle"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
             android:layout_marginLeft="4dp"
             android:textSize="14sp"
             android:visibility="gone"

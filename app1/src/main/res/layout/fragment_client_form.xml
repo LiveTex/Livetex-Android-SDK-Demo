@@ -14,14 +14,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 -->
-
-    <nit.livetex.livetexsdktestapp.view.CustomEditText
+    <android.support.design.widget.TextInputLayout
         android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
-        android:id="@+id/etWelcomeName"
-        android:textSize="@dimen/et_text_size"
-        android:hint="Имя"
+        android:layout_below="@+id/ll"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <nit.livetex.livetexsdktestapp.view.CustomEditText
+            android:id="@+id/etWelcomeName"
+            android:textSize="@dimen/et_text_size"
+            android:hint="Имя"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TextInputLayout>
+
+    <nit.livetex.livetexsdktestapp.view.TextViewRoboto
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="4dp"
+        android:text="Все отделы"
+        android:textSize="14dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <nit.livetex.livetexsdktestapp.view.CustomSpinner
@@ -31,24 +44,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <nit.livetex.livetexsdktestapp.view.CustomEditText
+    <!--<nit.livetex.livetexsdktestapp.view.CustomEditText
         android:layout_marginBottom="16dp"
         android:textSize="@dimen/et_text_size"
         android:id="@+id/etLivetexId"
         android:hint="Предчат поля"
         android:inputType="number"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
 
-    <nit.livetex.livetexsdktestapp.view.CustomEditText
+    <android.support.design.widget.TextInputLayout
         android:layout_marginBottom="32dp"
-        android:textSize="@dimen/et_text_size"
-        android:id="@+id/etMessage"
-        android:hint="Ваше сообщение"
+        android:layout_below="@+id/ll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" >
 
-    <Button
+        <nit.livetex.livetexsdktestapp.view.CustomEditText
+            android:textSize="@dimen/et_text_size"
+            android:id="@+id/etMessage"
+            android:hint="Введите сообщение"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TextInputLayout>
+
+    <nit.livetex.livetexsdktestapp.view.ButtonBlue
         android:layout_marginRight="4dp"
         style="@style/btn_blue"
         android:layout_gravity="right"

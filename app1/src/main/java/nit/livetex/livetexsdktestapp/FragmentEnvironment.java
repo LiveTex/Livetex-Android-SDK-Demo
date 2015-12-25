@@ -103,11 +103,9 @@ public class FragmentEnvironment extends ActionBarActivity {
 
             String appID = DataKeeper.restoreAppId(this);
             String regID = DataKeeper.restoreRegId(this);
-
             MainApplication.initLivetex(appID, regID, new AHandler<Boolean>() {
                 @Override
                 public void onError(String errMsg) {
-
                 }
 
                 @Override
@@ -150,7 +148,6 @@ public class FragmentEnvironment extends ActionBarActivity {
                     tapToGetOut++;
                 } else {
                     tapToGetOut = 0;
-
                     finish();
                 }
                 return;
@@ -158,7 +155,6 @@ public class FragmentEnvironment extends ActionBarActivity {
                 MainApplication.closeDialog(new AHandler<LTDialogState>() {
                     @Override
                     public void onError(String errMsg) {
-
                     }
 
                     @Override
@@ -169,7 +165,6 @@ public class FragmentEnvironment extends ActionBarActivity {
             }
         }
         super.onBackPressed();
-
     }
 
     @Override

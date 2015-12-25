@@ -1,8 +1,10 @@
 package nit.livetex.livetexsdktestapp.ui.fragments.offline;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -16,10 +18,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import nit.livetex.livetexsdktestapp.Const;
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.adapters.ChatAdapter;
 import nit.livetex.livetexsdktestapp.providers.ConversationsProvider;
 import nit.livetex.livetexsdktestapp.providers.MessagesProvider;
+import nit.livetex.livetexsdktestapp.ui.dialogs.AttachChooseDialog;
+import nit.livetex.livetexsdktestapp.ui.dialogs.FileManagerDialog;
 import nit.livetex.livetexsdktestapp.ui.fragments.BaseFragment;
 import nit.livetex.livetexsdktestapp.utils.CommonUtils;
 
@@ -39,6 +44,15 @@ public abstract class BaseChatFragment extends BaseFragment implements View.OnCl
 
     protected String conversationId;
 
+    public static final int CAPTURE_IMAGE_REQUEST = 0;
+    public static final int SELECT_PICTURE_REQUEST = 1;
+
+
+    public static final int CHOOSER_DIALOG_REQUEST = 191;
+    public static final int CHOOSER_FILE_REQUEST = 192;
+
+    private Uri mTakenPhotoUri;
+
     public String getConversationId() {
         return conversationId;
     }
@@ -49,28 +63,20 @@ public abstract class BaseChatFragment extends BaseFragment implements View.OnCl
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ivVoteUp:
-                break;
-            case R.id.ivVoteDown:
-                break;
-          /*  case R.id.ivAddFile:
-                sendFile();
-                break;*/
-            case R.id.ivSendMsg:
-                if(!CommonUtils.isEmpty(etInputMsg)) {
-                    sendMessage(etInputMsg.getText().toString());
-                    etInputMsg.setText("");
-                } else {
-                    CommonUtils.showToast(getContext(), "Введите сообщение");
-                }
-                break;
+        if(R.id.ivSendMsg == view.getId()) {
+            if(!CommonUtils.isEmpty(etInputMsg)) {
+                sendMessage(etInputMsg.getText().toString());
+                etInputMsg.setText("");
+            } else {
+                CommonUtils.showToast(getContext(), "Введите сообщение");
+            }
         }
     }
 
     private void init(View v) {
         lvChat = (ListView) v.findViewById(android.R.id.list);
         ivSendMsg = (ImageView) v.findViewById(R.id.ivSendMsg);
+        ivSendMsg.setColorFilter(getResources().getColor(R.color.new_blue));
         etInputMsg = (EditText) v.findViewById(R.id.etInputMsg);
         ivVoteUp = (ImageView) v.findViewById(R.id.ivVoteUp);
         ivVoteDown = (ImageView) v.findViewById(R.id.ivVoteDown);
@@ -91,11 +97,13 @@ public abstract class BaseChatFragment extends BaseFragment implements View.OnCl
     }
 
 
+
+
     @Override
     protected View onCreateView(View v) {
         init(v);
-        ivVoteDown.setColorFilter(getResources().getColor(R.color.material_red_500));
-        ivVoteUp.setColorFilter(getResources().getColor(R.color.material_green_500));
+        ivVoteDown.setColorFilter(getResources().getColor(R.color.new_red));
+        ivVoteUp.setColorFilter(getResources().getColor(R.color.new_green));
         RelativeLayout rlVote = (RelativeLayout) v.findViewById(R.id.rlVote);
 
         initTextWatcher();
@@ -104,8 +112,10 @@ public abstract class BaseChatFragment extends BaseFragment implements View.OnCl
             rlVote.setVisibility(View.VISIBLE);
         }
         adapter = new ChatAdapter(getContext());
-        getFragmentEnvironment().getSupportLoaderManager().initLoader(getLoaderId(), null, this);
+        //getFragmentEnvironment().getSupportLoaderManager().initLoader(getLoaderId(), null, this);
+        getFragmentEnvironment().getSupportLoaderManager().restartLoader(getLoaderId(), null, this);
         lvChat.setAdapter(adapter);
+
         return super.onCreateView(v);
     }
 
@@ -120,10 +130,84 @@ public abstract class BaseChatFragment extends BaseFragment implements View.OnCl
         return true;
     }
 
-
+/*
     public void sendFile() {
 
+    }*/
+
+
+
+
+    public void takePictureByCam() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        mTakenPhotoUri = CommonUtils.getOutputMediaFile(getFragmentEnvironment());
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mTakenPhotoUri);
+        startActivityForResult(intent, CAPTURE_IMAGE_REQUEST);
     }
+
+    public void takeGalleryPicture() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent,
+                "Select Picture"), SELECT_PICTURE_REQUEST);
+    }
+
+    public void takeFile() {
+        FileManagerDialog dialog = new FileManagerDialog();
+        dialog.setTargetFragment(this, CHOOSER_FILE_REQUEST);
+        dialog.show(getFragmentEnvironment().getSupportFragmentManager(), "FileManagerDialog");
+    }
+
+    protected abstract void sendFileFromUri(String path);
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Const.CODE.FILE_SELECT:
+                if(data != null) {
+                    Uri uri = data.getData();
+                    sendFileFromUri(CommonUtils.getPath(getContext(), uri));
+                }
+                break;
+            case CHOOSER_DIALOG_REQUEST:
+                if(resultCode == AttachChooseDialog.TAKE_FILE) {
+                    takeFile();
+                } else if(resultCode == AttachChooseDialog.TAKE_PICTURE_BY_CAM) {
+                    takePictureByCam();
+                } else if(resultCode == AttachChooseDialog.TAKE_GALLERY_PICTURE) {
+                    takeGalleryPicture();
+                }
+                break;
+            case SELECT_PICTURE_REQUEST:
+                if(data != null) {
+                    Uri uri = data.getData();
+                    Uri pathUri = CommonUtils.getRealPathFromURI(getContext(), uri);
+                    if(pathUri != null) {
+                        sendFileFromUri(pathUri.toString());
+                    } else {
+                        CommonUtils.showToast(getContext(), "Пожалуйста,выберите другой файл");
+                    }
+
+                }
+                break;
+            case CHOOSER_FILE_REQUEST:
+                if(resultCode == FileManagerDialog.TAKE_FILE_URI) {
+                    if(data != null) {
+                        Uri uri = data.getData();
+                        sendFileFromUri(CommonUtils.getPath(getContext(), uri));
+                    }
+                }
+                break;
+            case CAPTURE_IMAGE_REQUEST:
+         //       CommonUtils.galleryAddPic(getContext(), mTakenPhotoUri);
+                sendFileFromUri(CommonUtils.getPath(getContext(), mTakenPhotoUri));
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     @Override
     public void onDestroyView() {

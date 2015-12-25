@@ -1,5 +1,6 @@
 package nit.livetex.livetexsdktestapp.ui.fragments.offline;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.presenters.offline.SendOfflineMessagePresenter;
+import nit.livetex.livetexsdktestapp.providers.ConversationsProvider;
 import nit.livetex.livetexsdktestapp.ui.callbacks.SendOfflineMessageCallback;
 import nit.livetex.livetexsdktestapp.ui.fragments.BaseFragment;
 import nit.livetex.livetexsdktestapp.utils.CommonUtils;
@@ -23,7 +25,7 @@ public class SendOfflineMessageFragment extends BaseFragment implements SendOffl
     EditText etName;
     EditText etEmail;
     EditText etMessage;
-    EditText etPhone;
+    //EditText etPhone;
     Button btnSendOfflineMsg;
 
     private SendOfflineMessagePresenter presenter;
@@ -49,7 +51,7 @@ public class SendOfflineMessageFragment extends BaseFragment implements SendOffl
     }
 
     private void init(View v) {
-        etPhone = (CustomEditText) v.findViewById(R.id.etPhone);
+     //   etPhone = (CustomEditText) v.findViewById(R.id.etPhone);
         etName = (CustomEditText) v.findViewById(R.id.etName);
         etEmail = (CustomEditText) v.findViewById(R.id.etEmail);
         etMessage = (CustomEditText) v.findViewById(R.id.etMessage);
@@ -71,34 +73,38 @@ public class SendOfflineMessageFragment extends BaseFragment implements SendOffl
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
-            case R.id.btnSendOfflineMsg:
-                String phone = "";
-                String name = "";
-                if(!CommonUtils.isEmpty(etPhone)) {
+
+            String phone = "";
+            String name = "";
+                /*if(!CommonUtils.isEmpty(etPhone)) {
                     phone = etPhone.getText().toString();
+                }*/
+            if(!CommonUtils.isEmpty(etName)) {
+                name = etName.getText().toString();
+            }
+            if(!CommonUtils.isEmpty(etName, etEmail, etMessage)) {
+                if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
+                    CommonUtils.showToast(getContext(), "Неверно введен email");
+                    return;
                 }
-                if(!CommonUtils.isEmpty(etName)) {
-                    name = etName.getText().toString();
-                }
-                if(!CommonUtils.isEmpty(etName, etEmail, etMessage)) {
-                    if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
-                        CommonUtils.showToast(getContext(), "Неверно введен email");
-                        return;
-                    }
-                    showProgress();
-                    presenter.createConversation(name, etEmail.getText().toString(), phone, etMessage.getText().toString());
-                } else {
-                    CommonUtils.showToast(getActivity(), "Заполните необходимые поля");
-                }
-                break;
-        }
+                showProgress();
+                presenter.createConversation(name, etEmail.getText().toString(), phone, etMessage.getText().toString());
+            } else {
+                CommonUtils.showToast(getActivity(), "Заполните обязательные поля");
+            }
+
     }
 
     @Override
-    public void onMessageSended() {
+    public void onMessageSended(String conversationId) {
         dismissProgress();
         getFragmentManager().popBackStack();
+        if(conversationId != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString(ConversationsProvider.CONVERSATION_ID, conversationId);
+            showFragment(new OfflineChatFragment(), bundle, false);
+        }
+
     }
 }
 

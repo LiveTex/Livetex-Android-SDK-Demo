@@ -20,7 +20,7 @@
             android:src="@drawable/ic_app"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <TextView
+        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
             android:text="LIVETEX"
             android:textSize="24sp"
             android:layout_width="wrap_content"

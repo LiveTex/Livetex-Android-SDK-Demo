@@ -23,8 +23,15 @@
     <string name="clear">Очистить кэш</string>
     <string name="enter_msg">Сообщение</string>
     <string name="offline_mode">Offline Mode</string>
-    <string name="send_offline_msg">Отправить</string>
+    <string name="send_offline_msg">ОТПРАВИТЬ</string>
     <string name="menu_add">Add</string>
     <string name="online_mode">Online Mode</string>
-    <string name="create_online_dialog">Создать</string>
+    <string name="create_online_dialog">ОТПРАВИТЬ</string>
+
+    <string name="take_photo">Получить снимок</string>
+    <string name="choose_from_gallery">Выбрать из галереи</string>
+    <string name="send_file">Отправить файл</string>
+    <string name="loading_file">Передача файла</string>
+    <string name="choose_file">Выберите файл</string>
+
 </resources>
