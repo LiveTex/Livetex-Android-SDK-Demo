@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import livetex.message.TextMessage;
 import nit.livetex.livetexsdktestapp.Const;
 import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.R;
@@ -77,9 +78,11 @@ public class OnlineChatFragment extends BaseChatFragment {
     private static int firstOperatorId = -1;
 
     private void sendingMessagesEnabled(boolean enabled) {
-        etInputMsg.setEnabled(enabled);
-        ivSendMsg.setEnabled(enabled);
-        ivAddFile.setEnabled(enabled);
+        if(etInputMsg != null && ivSendMsg != null && ivAddFile != null) {
+            etInputMsg.setEnabled(enabled);
+            ivSendMsg.setEnabled(enabled);
+            ivAddFile.setEnabled(enabled);
+        }
     }
 
     @Subscribe
@@ -234,15 +237,15 @@ public class OnlineChatFragment extends BaseChatFragment {
     public void onResume() {
         super.onResume();
 
-        MainApplication.getMsgHistory(10, 0, new AHandler<List<LTTextMessage>>() {
+        MainApplication.getMsgHistory(10, 0, new AHandler<List<TextMessage>>() {
             @Override
             public void onError(String errMsg) {
 
             }
 
             @Override
-            public void onResultRecieved(List<LTTextMessage> result) {
-                for (LTTextMessage message : result) {
+            public void onResultRecieved(List<TextMessage> result) {
+                for (TextMessage message : result) {
                     MainApplication.confirmTxtMsg(message.getId());
                 }
 

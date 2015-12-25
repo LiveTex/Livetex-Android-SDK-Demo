@@ -8,6 +8,8 @@ import android.os.HandlerThread;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
+import livetex.abuse.Abuse;
+import livetex.message.TextMessage;
 import nit.livetex.livetexsdktestapp.models.BaseMessage;
 import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
@@ -57,10 +59,10 @@ public class MainApplication extends Application {
     public static final String OFFLINE_DEPARTMENT_ID_REAL = /*"118564"*//*"118224"*/"42"/*"42"*//*"72879"*/;
 
 
-    private static final String AUTH_URL_TEST = "http://authentication-service.livetex.omnitest:80/";
+    private static final String AUTH_URL_TEST = "https://authentication-service.livetex.omnitest:443/";
     private static final String AUTH_URL_PRE_REAL = "http://notification-service-0-sdk-prerelease.livetex.ru:80/";
 
-    private static final String AUTH_URL_REAL = "http://authentication-service-sdk-production-1.livetex.ru";
+    private static final String AUTH_URL_REAL = "https://authentication-service-sdk-production-1.livetex.ru";
 
     private static final String API_KEY_TEST =  "dev_key_test";
     private static final String API_KEY_PRE_REAL =  "demo";
@@ -234,14 +236,14 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void getMsgHistory(int limit, int offset, AHandler<List<LTTextMessage>> handler) {
+    public static void getMsgHistory(int limit, int offset, AHandler<List<TextMessage>> handler) {
         if (sLiveTex != null)
             sLiveTex.messageHistory((short) limit, (short) offset, handler);
     }
 
     public static void abuse(String name, String msg) {
         if (sLiveTex != null)
-            sLiveTex.abuse(new LTAbuse(name, msg));
+            sLiveTex.abuse(new Abuse(name, msg));
     }
 
     public static void postMessage(BaseMessage message) {
