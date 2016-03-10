@@ -47,7 +47,6 @@ public class InitFragment extends BaseFragment implements InitCallback {
         }
     }
 
-
     @Override
     public void onInitComplete(String token) {
         dismissProgress();

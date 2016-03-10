@@ -20,6 +20,7 @@ import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 import org.apache.thrift.TException;
 
 import java.io.File;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,24 +54,21 @@ public class MainApplication extends Application {
     public static final String SITE_ID_TEST = "10009747";
     public static final String SITE_ID_PRE = "92941";
     public static final String SITE_ID_REAL = "106217";
-// "account:19804:site:10019719:group:15935"
-    public static final String OFFLINE_DEPARTMENT_ID_PRE_RELEASE = "117168"/*"118224"*/;
-    public static final String OFFLINE_DEPARTMENT_ID_TEST = "10246";
-    public static final String OFFLINE_DEPARTMENT_ID_REAL = /*"118564"*//*"118224"*/"42"/*"42"*//*"72879"*/;
 
+    public static final String OFFLINE_DEPARTMENT_ID_PRE_RELEASE = "117168";
+    public static final String OFFLINE_DEPARTMENT_ID_TEST = "16501";
+    public static final String OFFLINE_DEPARTMENT_ID_REAL = "119115";
 
-    private static final String AUTH_URL_TEST = "https://authentication-service.livetex.omnitest:443/";
+    private static final String AUTH_URL_TEST ="http://authentication-service.livetex.omnitest:80";
     private static final String AUTH_URL_PRE_REAL = "http://notification-service-0-sdk-prerelease.livetex.ru:80/";
 
-    private static final String AUTH_URL_REAL = "https://authentication-service-sdk-production-1.livetex.ru";
-
-    private static final String API_KEY_TEST =  "dev_key_test";
+    private static final String AUTH_URL_REAL = "http://authentication-service-sdk-production-1.livetex.ru";
+    private static final String API_KEY_TEST =  "demo";
     private static final String API_KEY_PRE_REAL =  "demo";
 
     private static  String API_KEY = API_KEY_TEST;
     public static String OFFLINE_DEPARTMENT_ID = OFFLINE_DEPARTMENT_ID_TEST;
     private static String AUTH_URL =AUTH_URL_TEST;
-
 
     public static void setTestScope() {
         API_KEY = API_KEY_TEST;
@@ -90,13 +88,18 @@ public class MainApplication extends Application {
         AUTH_URL = AUTH_URL_REAL;
     }
 
+    public static void setSberbankScope() {
+        API_KEY = "mgvoronin.sbt@sberbank.ru";
+        OFFLINE_DEPARTMENT_ID = OFFLINE_DEPARTMENT_ID_REAL;
+        AUTH_URL = AUTH_URL_REAL;
+    }
+
     private static Livetex sLiveTex;
     private static MainApplication instance;
     private static String sLastEmployee = null;
     public static boolean isAppActive = false;
 
     private static Handler mainThreadHandler = new Handler();
-    private static Handler workerThreadHandler;
 
     public static MainApplication getInstance() {
         return instance;
@@ -111,9 +114,6 @@ public class MainApplication extends Application {
         instance = this;
         MainApplication.setProductionScope();
         HandlerThread handlerThread = new HandlerThread("");
-
-        handlerThread.start();
-        workerThreadHandler = new Handler(handlerThread.getLooper());
 
         BusProvider.register(this);
     }
@@ -140,7 +140,7 @@ public class MainApplication extends Application {
             @Override
             public void onSuccess(String token) {
                 postMessage(new EventMessage(BaseMessage.TYPE.INIT, token));
-                if(handler != null) {
+                if (handler != null) {
                     handler.onResultRecieved(true);
                 }
             }
@@ -258,19 +258,6 @@ public class MainApplication extends Application {
 
     public static void confirmTxtMsg(String msgId) {
         if(sLiveTex != null) {
-
-            /*sLiveTex.close(new AHandler<LTDialogState>() {
-                @Override
-                public void onError(String errMsg) {
-
-                }
-
-                @Override
-                public void onResultRecieved(LTDialogState result) {
-
-                }
-            }); */
-
             sLiveTex.confirmTextMessage(msgId, null);
         }
     }
@@ -381,52 +368,6 @@ public class MainApplication extends Application {
         if(sLiveTex != null) {
 
             sLiveTex.sendOnlineFile(file, conversationId, handler);
-
-            /*workerThreadHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    sLiveTex.getUploadUrl(new AHandler<String>() {
-                        @Override
-                        public void onError(final String errMsg) {
-                            mainThreadHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    handler.onError(errMsg);
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        public void onResultRecieved(final String uploadUrl) {
-
-                            String url1 = uploadUrl.replace("https", "http");
-                            try {
-                                CommonUtils.multipart(url1 + "&recipient_id=" + conversationId + "&transfer_id=" + CommonUtils.getID(), file);
-                                mainThreadHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        handler.onResultRecieved(true);
-                                    }
-                                });
-
-                            } catch (final IOException e) {
-                                e.printStackTrace();
-                                mainThreadHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        handler.onError(e.getMessage());
-                                    }
-                                });
-
-                            }
-
-                        }
-                    });
-                }
-            });*/
-
-
         }
     }
 

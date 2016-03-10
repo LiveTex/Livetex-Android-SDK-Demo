@@ -64,40 +64,4 @@
     </LinearLayout>
 
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_margin="24dp"
-        android:gravity="center_horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <nit.livetex.livetexsdktestapp.view.ButtonBlue
-            style="@style/btn_blue"
-            android:id="@+id/btnOfflineMode"
-            android:text="ОБРАЩЕНИЕ В ПОДДЕРЖКУ"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
-            style="@style/tv_title_init"
-            android:textSize="@dimen/tv_title_size_small"
-            android:layout_marginTop="6dp"
-            android:text="Для создания нескольких обращений"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
-            style="@style/tv_title_init"
-            android:text="без необходимости общения в режиме"
-            android:textSize="@dimen/tv_title_size_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <nit.livetex.livetexsdktestapp.view.TextViewRoboto
-            style="@style/tv_title_init"
-            android:textSize="@dimen/tv_title_size_small"
-            android:text="реального времени"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-
 </LinearLayout>

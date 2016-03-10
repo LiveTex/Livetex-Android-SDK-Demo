@@ -18,7 +18,6 @@ import sdk.models.LTDepartment;
  */
 public class ChooseModeFragment extends BaseFragment implements View.OnClickListener {
 
-    Button btnOfflineMode;
     Button btnOnlineMode;
 
     @Override
@@ -27,18 +26,16 @@ public class ChooseModeFragment extends BaseFragment implements View.OnClickList
     }
 
     private void init(View v) {
-        btnOfflineMode = (Button) v.findViewById(R.id.btnOfflineMode);
         btnOnlineMode = (Button) v.findViewById(R.id.btnOnlineMode);
         btnOnlineMode.setOnClickListener(this);
-        btnOfflineMode.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.btnOfflineMode) {
-            showFragment(new OfflineConversationListFragment(), true);
-        } else if(view.getId() == R.id.btnOnlineMode) {
-            showFragment(new ClientFormFragment(), true);
+        switch (view.getId()) {
+            case R.id.btnOnlineMode:
+                showFragment(new ClientFormFragment(), true);
+                break;
         }
     }
 

@@ -63,20 +63,28 @@ public abstract class BaseChatFragment extends BaseFragment implements View.OnCl
 
     @Override
     public void onClick(View view) {
-        if(R.id.ivSendMsg == view.getId()) {
-            if(!CommonUtils.isEmpty(etInputMsg)) {
-                sendMessage(etInputMsg.getText().toString());
-                etInputMsg.setText("");
-            } else {
-                CommonUtils.showToast(getContext(), "Введите сообщение");
-            }
+        switch (view.getId()) {
+            case R.id.ivVoteUp:
+                break;
+            case R.id.ivVoteDown:
+                break;
+          /*  case R.id.ivAddFile:
+                sendFile();
+                break;*/
+            case R.id.ivSendMsg:
+                if(!CommonUtils.isEmpty(etInputMsg)) {
+                    sendMessage(etInputMsg.getText().toString());
+                    etInputMsg.setText("");
+                } else {
+                    CommonUtils.showToast(getContext(), "Введите сообщение");
+                }
+                break;
         }
     }
 
     private void init(View v) {
         lvChat = (ListView) v.findViewById(android.R.id.list);
         ivSendMsg = (ImageView) v.findViewById(R.id.ivSendMsg);
-        ivSendMsg.setColorFilter(getResources().getColor(R.color.new_blue));
         etInputMsg = (EditText) v.findViewById(R.id.etInputMsg);
         ivVoteUp = (ImageView) v.findViewById(R.id.ivVoteUp);
         ivVoteDown = (ImageView) v.findViewById(R.id.ivVoteDown);

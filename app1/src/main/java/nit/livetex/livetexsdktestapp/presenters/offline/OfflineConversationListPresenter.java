@@ -49,8 +49,8 @@ public class OfflineConversationListPresenter extends BasePresenter<OfflineConve
                                 operator.setFirstname(result.getFirstname() != null ? result.getFirstname() : "Неизвестный оператор");
                                 final String conversationId = conversation.getId();
                                 Log.d("result", "conversationId " + conversation.getId());
-                                if(!Dao.getInstance(getContext()).hasConversation(conversationId)) {
-                                    Dao.getInstance(getContext()).saveConversation(conversation, operator);
+                                if(Dao.getInstance(getContext()).hasConversation(conversationId)) {
+                                    //Dao.getInstance(getContext()).saveConversation(conversation, operator);
 
                                     MainApplication.getOfflineMessagesList(Integer.parseInt(conversation.getId()), new AHandler<ArrayList<OfflineMessage>>() {
                                         @Override

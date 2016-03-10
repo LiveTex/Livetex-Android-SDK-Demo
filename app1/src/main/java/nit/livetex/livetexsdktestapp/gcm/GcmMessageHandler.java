@@ -24,17 +24,22 @@ import nit.livetex.livetexsdktestapp.models.OnlineOperator;
 import nit.livetex.livetexsdktestapp.providers.ConversationsProvider;
 import nit.livetex.livetexsdktestapp.providers.Dao;
 import nit.livetex.livetexsdktestapp.services.DownloadService;
+import nit.livetex.livetexsdktestapp.ui.fragments.online.OnlineChatFragment;
 import nit.livetex.livetexsdktestapp.utils.BusProvider;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by user on 11.08.15.
  */
 public class GcmMessageHandler extends IntentService {
+
+    public static ArrayList<String> messages = new ArrayList<>();
 
     public static final int NOTIFICATION_ID = 1;
 
@@ -65,13 +70,12 @@ public class GcmMessageHandler extends IntentService {
 
         mes = extras.getString("text");
 
-
         String cid = extras.getString("cid");
         String sender = extras.getString("sender");
-
         Log.d("double", "push mes " + mes + ", cid " + cid + ", sender " + sender);
 
         if(!MainApplication.IS_ACTIVE) {
+            messages.add(mes);
             Log.d("double", "!is_active");
             if(cid != null) {
                 Dao.getInstance(this).saveMessage(mes, String.valueOf(System.currentTimeMillis()), Integer.parseInt(cid), "0".equals(sender));
@@ -128,7 +132,6 @@ public class GcmMessageHandler extends IntentService {
 
             }
         }
-
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 

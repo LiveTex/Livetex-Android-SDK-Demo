@@ -1,5 +1,7 @@
 package nit.livetex.livetexsdktestapp.presenters.online;
 
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 import nit.livetex.livetexsdktestapp.MainApplication;
@@ -29,23 +31,39 @@ public class ClientFormPresenter extends BasePresenter<ClientFormCallback> {
     }
 
     public void process() {
-
-        MainApplication.getDepartments("online", new AHandler<ArrayList<LTDepartment>>() {
+        final Handler handler = new Handler();
+        HandlerThread thread = new HandlerThread("");
+        thread.start();
+        Handler backgroundHandler = new Handler(thread.getLooper());
+        backgroundHandler.post(new Runnable() {
             @Override
-            public void onError(String errMsg) {
+            public void run() {
+                MainApplication.getDepartments("online", new AHandler<ArrayList<LTDepartment>>() {
+                    @Override
+                    public void onError(String errMsg) {
 
-            }
+                    }
 
-            @Override
-            public void onResultRecieved(ArrayList<LTDepartment> departments) {
-                if (departments != null && !departments.isEmpty()) {
-                    getCallback().onDepartmentsReceived(departments);
+                    @Override
+                    public void onResultRecieved(final ArrayList<LTDepartment> departments) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (departments != null && !departments.isEmpty()) {
+                                    getCallback().onDepartmentsReceived(departments);
 
-                } else {
-                    getCallback().onDepartmentsEmpty();
-                }
+                                } else {
+                                    getCallback().onDepartmentsEmpty();
+                                }
+                            }
+                        });
+
+                    }
+                });
             }
         });
+
+
 
     }
 

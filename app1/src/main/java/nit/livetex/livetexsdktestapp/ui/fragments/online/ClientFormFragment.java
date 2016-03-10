@@ -70,28 +70,29 @@ public class ClientFormFragment extends BaseFragment implements ClientFormCallba
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.btnCreateOnlineDialog) {
-            String livetexId = "";
-            String welcomeName = "";
+        switch (view.getId()) {
+            case R.id.btnCreateOnlineDialog:
+                String livetexId = "";
+                String welcomeName = "";
                /* if(!CommonUtils.isEmpty(etLivetexId)) {
                     livetexId = etLivetexId.getText().toString();
                 }*/
-            if(!CommonUtils.isEmpty(etWelcomeName)) {
-                welcomeName = etWelcomeName.getText().toString();
-            }
-            if(CommonUtils.isEmpty(etMessage)) {
-                CommonUtils.showToast(getContext(), "Введите сообщение");
-                return;
-            }
-            if(spDepartments.getSelectedItem() == null) {
-                CommonUtils.showToast(getContext(), "Нет доступных операторов");
-                return;
-            }
-            showProgress();
-            LTDepartment department = (LTDepartment) spDepartments.getSelectedItem();
-            presenter.sendToDepartmentOperator(department, welcomeName, livetexId, etMessage.getText().toString());
+                if(!CommonUtils.isEmpty(etWelcomeName)) {
+                    welcomeName = etWelcomeName.getText().toString();
+                }
+                if(CommonUtils.isEmpty(etMessage)) {
+                    CommonUtils.showToast(getContext(), "Введите сообщение");
+                    return;
+                }
+                if(spDepartments.getSelectedItem() == null) {
+                    CommonUtils.showToast(getContext(), "Нет доступных операторов");
+                    return;
+                }
+                showProgress();
+                LTDepartment department = (LTDepartment) spDepartments.getSelectedItem();
+                presenter.sendToDepartmentOperator(department, welcomeName, livetexId, etMessage.getText().toString());
+                break;
         }
-
     }
 
     @Override

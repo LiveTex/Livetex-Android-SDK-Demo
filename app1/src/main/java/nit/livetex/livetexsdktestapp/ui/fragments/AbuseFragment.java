@@ -51,18 +51,20 @@ public class AbuseFragment extends BaseFragment implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.btnSendAbuse) {
-            if(!CommonUtils.isEmpty(etAbuseMessage, etAbusePhone, etEmail)) {
-                if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
-                    CommonUtils.showToast(getContext(), "Введите, пожалуйста, корректный email");
-                    return;
+        switch (view.getId()) {
+            case R.id.btnSendAbuse:
+                if(!CommonUtils.isEmpty(etAbuseMessage, etAbusePhone, etEmail)) {
+                    if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
+                        CommonUtils.showToast(getContext(), "Введите, пожалуйста, корректный email");
+                        return;
+                    }
+                    MainApplication.abuse(etAbusePhone.getText().toString(), etAbuseMessage.getText().toString());
+                    CommonUtils.showToast(getContext(), "Ваша жалоба отправлена");
+                    getFragmentEnvironment().getSupportFragmentManager().popBackStack();
+                } else {
+                    CommonUtils.showToast(getContext(), "Пожалуйста, заполните все поля");
                 }
-                MainApplication.abuse(etAbusePhone.getText().toString(), etAbuseMessage.getText().toString());
-                CommonUtils.showToast(getContext(), "Ваша жалоба отправлена");
-                getFragmentEnvironment().getSupportFragmentManager().popBackStack();
-            } else {
-                CommonUtils.showToast(getContext(), "Пожалуйста, заполните все поля");
-            }
+                break;
         }
     }
 

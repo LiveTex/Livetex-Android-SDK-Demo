@@ -25,7 +25,7 @@ public class GcmUtils {
     public static final String PUSH_SET = "push_set";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private static final String GCM_SENDER_ID = "277402781258"/*"27374021591"*/;
+    private static final String GCM_SENDER_ID = /*"719285453057"*//*"277402781258"*/"27374021591";
     private static final String GCM = "gcm_id";
 
     public static void unregister(final Context context) {

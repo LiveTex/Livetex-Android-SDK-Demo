@@ -1,5 +1,7 @@
 package nit.livetex.livetexsdktestapp.presenters;
 
+import android.util.Log;
+
 import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.providers.Dao;
 import nit.livetex.livetexsdktestapp.ui.callbacks.InitCallback;
@@ -28,6 +30,7 @@ public class InitPresenter extends BasePresenter<InitCallback> {
                 if(!id.equals(DataKeeper.restoreAppId(getContext()))) {
                     Dao.getInstance(getContext()).clearAll();
                 }
+                Log.d("push_tag", msg);
                 DataKeeper.saveRegId(getContext(), msg);
                 DataKeeper.saveAppId(getContext(), id);
                 MainApplication.initLivetex(id, msg);

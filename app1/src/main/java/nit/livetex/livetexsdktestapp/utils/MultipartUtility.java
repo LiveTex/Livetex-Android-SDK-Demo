@@ -7,8 +7,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import sdk.data.*;
-
 /**
  * Created by user on 7/23/15.
  */

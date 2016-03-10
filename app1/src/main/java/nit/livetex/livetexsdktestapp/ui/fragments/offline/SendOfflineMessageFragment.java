@@ -73,26 +73,28 @@ public class SendOfflineMessageFragment extends BaseFragment implements SendOffl
 
     @Override
     public void onClick(View view) {
-
-            String phone = "";
-            String name = "";
+        switch(view.getId()) {
+            case R.id.btnSendOfflineMsg:
+                String phone = "";
+                String name = "";
                 /*if(!CommonUtils.isEmpty(etPhone)) {
                     phone = etPhone.getText().toString();
                 }*/
-            if(!CommonUtils.isEmpty(etName)) {
-                name = etName.getText().toString();
-            }
-            if(!CommonUtils.isEmpty(etName, etEmail, etMessage)) {
-                if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
-                    CommonUtils.showToast(getContext(), "Неверно введен email");
-                    return;
+                if(!CommonUtils.isEmpty(etName)) {
+                    name = etName.getText().toString();
                 }
-                showProgress();
-                presenter.createConversation(name, etEmail.getText().toString(), phone, etMessage.getText().toString());
-            } else {
-                CommonUtils.showToast(getActivity(), "Заполните обязательные поля");
-            }
-
+                if(!CommonUtils.isEmpty(etName, etEmail, etMessage)) {
+                    if(!CommonUtils.isEmailValid(etEmail.getText().toString())) {
+                        CommonUtils.showToast(getContext(), "Неверно введен email");
+                        return;
+                    }
+                    showProgress();
+                    presenter.createConversation(name, etEmail.getText().toString(), phone, etMessage.getText().toString());
+                } else {
+                    CommonUtils.showToast(getActivity(), "Заполните обязательные поля");
+                }
+                break;
+        }
     }
 
     @Override
