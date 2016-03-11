@@ -235,6 +235,9 @@ public class OnlineChatFragment extends BaseChatFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if(MainApplication.getsLiveTex() != null) {
+            MainApplication.getsLiveTex().bindService();
+        }
         MainApplication.getMsgHistory(10, 0, new AHandler<List<TextMessage>>() {
             @Override
             public void onError(String errMsg) {
@@ -326,6 +329,14 @@ public class OnlineChatFragment extends BaseChatFragment {
             CommonUtils.showToast(getContext(), "Пожалуйста, установите файловый менеджер");
         }
     }*/
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(MainApplication.getsLiveTex() != null) {
+            MainApplication.getsLiveTex().destroy();
+        }
+    }
 
     public void sendFileFromUri(final String path) {
        // final Uri uriPath = CommonUtils.getRealPathFromURI(getContext(), uri);

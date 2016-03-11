@@ -131,9 +131,7 @@ public class FragmentEnvironment extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         MainApplication.IS_ACTIVE = true;
-        if(MainApplication.getsLiveTex() != null) {
-            MainApplication.getsLiveTex().bindService();
-        }
+
     }
 
     @Override
