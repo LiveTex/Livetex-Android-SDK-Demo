@@ -1,11 +1,15 @@
 package nit.livetex.livetexsdktestapp.ui.fragments.online;
 
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -26,6 +30,7 @@ import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.gcm.GcmMessageHandler;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.models.OnlineOperator;
+import nit.livetex.livetexsdktestapp.models.WifiConnectionEvent;
 import nit.livetex.livetexsdktestapp.providers.Dao;
 import nit.livetex.livetexsdktestapp.services.DownloadService;
 import nit.livetex.livetexsdktestapp.ui.dialogs.AttachChooseDialog;
@@ -55,6 +60,7 @@ import java.util.List;
 public class OnlineChatFragment extends BaseChatFragment {
 
     private TextView tvHeaderTyping;
+    private ImageView ivSendFile;
 
     public final static String CONVERSATION_ID = "conversation_id";
     public final static String AVATAR = "avatar";
@@ -64,31 +70,18 @@ public class OnlineChatFragment extends BaseChatFragment {
     private String firstName;
 
     private ImageView ivAvatarHeader;
+    private ImageView ivAbuseSend;
     private TextView tvHeaderTitle;
 
     private Handler handler;
     private TypingTask typingTask;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         handler = new Handler();
         typingTask = new TypingTask();
-
-    }
-
-    public class TypingTask implements Runnable {
-
-        @Override
-        public void run() {
-           // tvHeaderTyping.setVisibility(View.GONE);
-            tvHeaderTyping.setText("оператор онлайн");
-        }
-    }
-
-    private void sendingMessagesEnabled(boolean enabled) {
-        etInputMsg.setEnabled(enabled);
-        ivSendMsg.setEnabled(enabled);
     }
 
     @Override
@@ -98,9 +91,26 @@ public class OnlineChatFragment extends BaseChatFragment {
         return super.onCreateView(v);
     }
 
+    private void buttonsOnWifiStateChanged(boolean enabled) {
+        etInputMsg.setEnabled(enabled);
+        ivSendMsg.setEnabled(enabled);
+        ivSendFile.setEnabled(enabled);
+        ivAbuseSend.setEnabled(enabled);
+        String title = "оператор онлайн";
+        if(!enabled) {
+            title = "отсутствие подключения к сети";
+        }
+        tvHeaderTyping.setText(title);
+    }
+
     @Subscribe
     public void onMessageReceive(EventMessage eventMessage) {
         switch (eventMessage.getMessageType()) {
+            case WI_FI:
+                WifiConnectionEvent wifiEvent = (WifiConnectionEvent) eventMessage;
+                buttonsOnWifiStateChanged(wifiEvent.isWifiConnected());
+                Log.d("tag", "wifi is connected >>> " + wifiEvent.isWifiConnected());
+                break;
             case UPDATE_STATE:
                 LTEmployee employee = (LTEmployee) eventMessage.getSerializable();
                 setHeaderData(employee.getAvatar(), employee.getFirstname());
@@ -113,7 +123,6 @@ public class OnlineChatFragment extends BaseChatFragment {
                 break;
             case CLOSE:
                 Log.d("close", "onMessageReceive");
-                //sendingMessagesEnabled(false);
                 tvHeaderTyping.setText("оператор оффлайн");
                 Dao.getInstance(getContext()).saveMessage("CLOSE_DIALOG",
                         String.valueOf(System.currentTimeMillis()), Integer.parseInt(getConversationId()), false);
@@ -138,9 +147,7 @@ public class OnlineChatFragment extends BaseChatFragment {
 
                 break;
             case RECEIVE_FILE:
-
-                    LTFileMessage fileMessage = (LTFileMessage) eventMessage.getSerializable();
-
+                LTFileMessage fileMessage = (LTFileMessage) eventMessage.getSerializable();
                 if(!GcmMessageHandler.messages.contains(fileMessage.getText())) {
                     showProgress();
                     File path = new File(Environment.getExternalStorageDirectory(), "Downloadzz");
@@ -197,7 +204,7 @@ public class OnlineChatFragment extends BaseChatFragment {
     public View getCustomActionBarView(LayoutInflater inflater, int actionBarHeight) {
         View header = inflater.inflate(R.layout.header_chat1, null);
         ivAvatarHeader = (ImageView) header.findViewById(R.id.ivAvatarHeader);
-        ImageView ivAbuseSend = (ImageView) header.findViewById(R.id.ivAbuseSend);
+        ivAbuseSend = (ImageView) header.findViewById(R.id.ivAbuseSend);
         ivAbuseSend.setVisibility(View.VISIBLE);
 
         ivAbuseSend.setOnClickListener(new View.OnClickListener() {
@@ -212,11 +219,11 @@ public class OnlineChatFragment extends BaseChatFragment {
             ivAvatarHeader.getLayoutParams().width = actionBarHeight-26;
         }
 
-        Picasso.with(getContext()).load(avatar)./*resize(50, 50).centerCrop().*/into(ivAvatarHeader);
+        Picasso.with(getContext()).load(avatar).into(ivAvatarHeader);
         tvHeaderTitle = (TextView) header.findViewById(R.id.tvHeaderTitle);
         tvHeaderTitle.setText(firstName);
 
-        ImageView ivSendFile = (ImageView) header.findViewById(R.id.ivSendFile);
+        ivSendFile = (ImageView) header.findViewById(R.id.ivSendFile);
         ivSendFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -235,6 +242,8 @@ public class OnlineChatFragment extends BaseChatFragment {
     @Override
     public void onResume() {
         super.onResume();
+
+
         if(MainApplication.getsLiveTex() != null) {
             MainApplication.getsLiveTex().bindService();
         }
@@ -246,7 +255,7 @@ public class OnlineChatFragment extends BaseChatFragment {
 
             @Override
             public void onResultRecieved(List<TextMessage> result) {
-                if(result != null) {
+                if (result != null) {
                     for (TextMessage message : result) {
                         MainApplication.confirmTxtMsg(message.getId());
                     }
@@ -259,6 +268,7 @@ public class OnlineChatFragment extends BaseChatFragment {
             loader.forceLoad();
         }
     }
+
 
     @Override
     public void onClick(View view) {
@@ -318,17 +328,6 @@ public class OnlineChatFragment extends BaseChatFragment {
         });
     }
 
-    /*@Override
-    public void sendFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("file*//*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        try {
-            startActivityForResult(Intent.createChooser(intent, "Выберите файл для загрузки"), Const.CODE.FILE_SELECT);
-        } catch(ActivityNotFoundException ex) {
-            CommonUtils.showToast(getContext(), "Пожалуйста, установите файловый менеджер");
-        }
-    }*/
 
     @Override
     public void onStop() {
@@ -339,14 +338,11 @@ public class OnlineChatFragment extends BaseChatFragment {
     }
 
     public void sendFileFromUri(final String path) {
-       // final Uri uriPath = CommonUtils.getRealPathFromURI(getContext(), uri);
-       // final String path = uri.toString();
 
         if(path == null) {
             CommonUtils.showToast(getContext(), "Файл не доступен для загрузки");
             return;
         }
-       // String decodedPath = URLDecoder.decode(path, "UTF-8");
         final File file = new File(path);
         showProgress();
         MainApplication.sendFile(file, conversationId, new AHandler<Boolean>() {
@@ -381,6 +377,19 @@ public class OnlineChatFragment extends BaseChatFragment {
                 }
             }
         }
+    }
+
+    public class TypingTask implements Runnable {
+
+        @Override
+        public void run() {
+            tvHeaderTyping.setText("оператор онлайн");
+        }
+    }
+
+    private void sendingMessagesEnabled(boolean enabled) {
+        etInputMsg.setEnabled(enabled);
+        ivSendMsg.setEnabled(enabled);
     }
 
 
