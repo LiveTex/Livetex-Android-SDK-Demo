@@ -30,7 +30,6 @@ import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.gcm.GcmMessageHandler;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.models.OnlineOperator;
-import nit.livetex.livetexsdktestapp.models.WifiConnectionEvent;
 import nit.livetex.livetexsdktestapp.providers.Dao;
 import nit.livetex.livetexsdktestapp.services.DownloadService;
 import nit.livetex.livetexsdktestapp.ui.dialogs.AttachChooseDialog;
@@ -106,11 +105,6 @@ public class OnlineChatFragment extends BaseChatFragment {
     @Subscribe
     public void onMessageReceive(EventMessage eventMessage) {
         switch (eventMessage.getMessageType()) {
-            case WI_FI:
-                WifiConnectionEvent wifiEvent = (WifiConnectionEvent) eventMessage;
-                buttonsOnWifiStateChanged(wifiEvent.isWifiConnected());
-                Log.d("tag", "wifi is connected >>> " + wifiEvent.isWifiConnected());
-                break;
             case UPDATE_STATE:
                 LTEmployee employee = (LTEmployee) eventMessage.getSerializable();
                 setHeaderData(employee.getAvatar(), employee.getFirstname());
