@@ -3,7 +3,6 @@ package nit.livetex.livetexsdktestapp.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.Spinner;
 

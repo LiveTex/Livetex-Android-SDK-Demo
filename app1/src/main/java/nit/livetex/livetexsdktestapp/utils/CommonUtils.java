@@ -35,8 +35,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nit.livetex.livetexsdktestapp.MainApplication;
-
 /**
  * Created by user on 28.07.15.
  */
@@ -113,7 +111,7 @@ public class CommonUtils {
         return Environment.MEDIA_MOUNTED.equals(state);
     }
     public static boolean isKitKat() {
-        return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     }
     private static Uri getMediaUri() {
         String state = Environment.getExternalStorageState();

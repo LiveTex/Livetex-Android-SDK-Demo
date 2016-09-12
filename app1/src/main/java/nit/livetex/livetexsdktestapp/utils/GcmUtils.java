@@ -25,7 +25,7 @@ public class GcmUtils {
     public static final String PUSH_SET = "push_set";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private static final String GCM_SENDER_ID = /*"719285453057"*//*"277402781258"*/"27374021591";
+    private static final String GCM_SENDER_ID =  "27374021591" /*"506889494998" timeweb*/ /*"1082678686688"*/;                       /*"607494954915"*/    /*"1082678686688"*/;
     private static final String GCM = "gcm_id";
 
     public static void unregister(final Context context) {
@@ -91,6 +91,7 @@ public class GcmUtils {
                     try {
                         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
                         String regid = gcm.register(GCM_SENDER_ID);
+                        Log.d("regid", regid);
                         // You should send the registration ID to your server over HTTP, so it
                         // can use GCM/HTTP or CCS to send messages to your app.
                         // For this demo: we don't need to send it because the device will send

@@ -9,11 +9,11 @@ public abstract class BaseMessage {
 
     public enum TYPE {
         INIT, UPDATE_STATE, RECEIVE_FILE, RECEIVE_MSG, TYPING_MESSAGE,
-        CONFIRM_SEND_MSG, HOLD_MSG, OPERATOR_TYPING, OFFLINE_MSG_RECEIVED, CLOSE
+        CONFIRM_SEND_MSG, HOLD_MSG, OPERATOR_TYPING, OFFLINE_MSG_RECEIVED, CLOSE, RECEIVE_QUEUE_MSG, RECEIVE_QUEUE_FILE, RECEIVE_QUEUE_CONFIRM, RECEIVE_QUEUE_SELECT
     }
 
     protected TYPE messageType;
-    protected String stringExtra;
+    protected String stringExtra = "";
     protected  Serializable object;
 
     public BaseMessage(TYPE messageType) {

@@ -5,34 +5,35 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <permission android:name="nit.livetex.livetexsdktestapp.gcm.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="nit.livetex.livetexsdktestapp.gcm.permission.C2D_MESSAGE" />
 
     <application
         android:name="nit.livetex.livetexsdktestapp.MainApplication"
+        android:logo="@android:color/transparent"
         android:allowBackup="true"
         android:icon="@drawable/ic_app"
-        android:label="@string/app_name"
-        android:logo="@android:color/transparent"
-        android:theme="@style/CustomTheme" >
+        android:theme="@style/CustomTheme">
         <activity
-            android:exported="true"
             android:name="nit.livetex.livetexsdktestapp.FragmentEnvironment"
+            android:label="@string/app_name"
+            android:allowBackup="true"
+
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:label="@string/app_name" >
+
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="nit.livetex.livetexsdktestapp.PushAction"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name="nit.livetex.livetexsdktestapp.alert.ServiceDialog" android:label=""  android:theme="@style/Theme.AppCompat.Light.Dialog"/>
         <service
             android:name="sdk.requests.ClientRequestService"
             android:exported="false" >
@@ -45,26 +46,19 @@
 
         <service android:name="nit.livetex.livetexsdktestapp.services.DownloadService"/>
 
-        <provider
-            android:authorities="nit.livetex.livetexsdktestapp.providers.ConversationsProvider"
-            android:name="nit.livetex.livetexsdktestapp.providers.ConversationsProvider"/>
-        <provider
-            android:authorities="nit.livetex.livetexsdktestapp.providers.MessagesProvider"
-            android:name="nit.livetex.livetexsdktestapp.providers.MessagesProvider"/>
-
         <receiver
             android:name="nit.livetex.livetexsdktestapp.gcm.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="nit.livetex.livetexsdktestapp.gcm" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="${applicationId}"/>
             </intent-filter>
         </receiver>
+
         <service android:name="nit.livetex.livetexsdktestapp.gcm.GcmMessageHandler" />
 
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
     </application>
 
 </manifest>

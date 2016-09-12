@@ -48,6 +48,7 @@
 
     <style name="tv_title_init">
         <item name="android:textColor">@color/new_gray</item>
+
     </style>
 
 </resources>

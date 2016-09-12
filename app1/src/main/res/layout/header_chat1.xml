@@ -28,7 +28,7 @@
             android:textSize="@dimen/header_title"
             android:id="@+id/tvHeaderTitle"
             android:textColor="@android:color/white"
-            android:text="Misha Mavashi"
+            android:text="Оператор"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -37,7 +37,7 @@
             android:textSize="12sp"
             android:id="@+id/tvHeaderTyping"
             android:textColor="@android:color/white"
-            android:text="оператор онлайн"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

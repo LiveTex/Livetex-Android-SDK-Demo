@@ -54,7 +54,7 @@
 
 
     <ImageView
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_marginRight="8dp"
         android:id="@+id/ivAbuseSend"
         android:clickable="true"

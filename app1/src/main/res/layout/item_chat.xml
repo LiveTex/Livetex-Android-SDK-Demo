@@ -10,19 +10,35 @@
 
     <LinearLayout
         android:id="@+id/llLeft"
-        android:visibility="gone"
         android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
-            android:id="@+id/tvLeft"
-            android:layout_marginRight="2dp"
+        <LinearLayout
+            android:id="@+id/llLeftBaloon"
+            android:paddingLeft="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="4dp"
             android:background="@drawable/user_baloon_active"
-            android:text=""
-            android:maxEms="12"
-            android:textSize="16sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivScreenshot1"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
+                android:id="@+id/tvLeft"
+                android:layout_marginRight="2dp"
+                android:text=""
+                android:layout_marginLeft="6dp"
+                android:maxEms="12"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
         <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
             android:id="@+id/tvTimerLeft"
             android:text="12:10"
@@ -51,18 +67,23 @@
             android:layout_height="wrap_content" />
         <LinearLayout
             android:id="@+id/llRightBaloon"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="12dp"
             android:background="@drawable/operator_baloon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/ivScreenshot"
                 android:visibility="gone"
-                android:src="@drawable/ic_insert_drive_file_black_24dp"
+                android:scaleType="fitXY"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
                 android:id="@+id/tvRight"
                 android:layout_marginLeft="2dp"
+                android:layout_marginRight="6dp"
                 android:text=""
                 android:maxEms="12"
                 android:textSize="16sp"

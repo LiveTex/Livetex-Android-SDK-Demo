@@ -34,4 +34,9 @@
     <string name="loading_file">Передача файла</string>
     <string name="choose_file">Выберите файл</string>
 
+    <string name="permission_camera_rationale">Camera permission is needed to use camera flashlight.</string>
+    <string name="permission_camera_denied">Camera permission was denied. Please consider granting it in order to access the flashlight!</string>
+    <string name="button_allow">Allow</string>
+    <string name="button_deny">Deny</string>
+
 </resources>

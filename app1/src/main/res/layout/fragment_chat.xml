@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="nit.livetex.livetexsdktestapp.ChatActivity"
     android:background="@color/new_light_gray">
 
     <RelativeLayout
@@ -62,12 +61,23 @@
         android:layout_height="1dp"
         android:layout_below="@+id/rlVote"
         android:background="@color/material_grey_500" />
+
+    <ProgressBar
+        android:padding="5dp"
+        style="?android:attr/progressBarStyleSmall"
+        android:visibility="gone"
+        android:id="@+id/pb_history_download"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/divider_top"
+        android:layout_width="48dp"
+        android:layout_height="48dp" />
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/divider"
-        android:layout_below="@+id/divider_top"
+        android:layout_below="@id/pb_history_download"
         android:divider="@null" />
 
     <View
@@ -83,16 +93,6 @@
         android:layout_height="52dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white">
-
-        <!--<ImageButton
-            android:id="@+id/ivAddFile"
-            android:layout_width="68dp"
-            android:layout_height="68dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:scaleType="center"
-            android:background="@drawable/default_icon"
-            android:src="@drawable/add_file" />-->
 
         <EditText
             android:id="@+id/etInputMsg"
@@ -113,7 +113,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:scaleType="center"
-            android:src="@drawable/ic_send_grey600_36dp"
+            android:src="@drawable/send_msg1"
             android:background="@drawable/default_icon"  />
     </RelativeLayout>
 
