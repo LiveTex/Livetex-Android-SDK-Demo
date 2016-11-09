@@ -24,7 +24,7 @@ public class InitFragment extends BaseFragment implements InitCallback {
         showProgress();
         MainApplication.clearGlobal(getActivity());
         presenter = new InitPresenter(this);
-        presenter.init("114709");
+        presenter.init("123280");
         return super.onCreateView(v);
     }
 
