@@ -16,11 +16,11 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "ru.livetex"
+        applicationId "nit.livetex.livetexsdktestapp"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 215
+        versionName "2.2.1"
         multiDexEnabled = true
     }
     dexOptions {
@@ -28,8 +28,16 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    signingConfigs {
+        release {
+            storeFile file("livetex.jks")
+            storePassword "l1vetex"
+            keyAlias "livetex_test_sdk"
+            keyPassword "l1v3t3x"
         }
     }
     compileOptions {

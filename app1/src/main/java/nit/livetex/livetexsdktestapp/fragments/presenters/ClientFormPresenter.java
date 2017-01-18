@@ -48,7 +48,6 @@ public class ClientFormPresenter extends BasePresenter<ClientFormCallback> {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-
                                 if(destinations != null && destinations.size() != 0) {
                                     getCallback().onDestinationsReceived(destinations);
                                 } else {

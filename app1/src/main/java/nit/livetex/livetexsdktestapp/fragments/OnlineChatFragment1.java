@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import livetex.queue_service.Destination;
 import nit.livetex.livetexsdktestapp.Const;
 import nit.livetex.livetexsdktestapp.FragmentEnvironment;
 import nit.livetex.livetexsdktestapp.MainApplication;
@@ -24,6 +25,7 @@ import nit.livetex.livetexsdktestapp.fragments.dialogs.FileManagerDialog;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.models.MessageModel;
 import nit.livetex.livetexsdktestapp.services.DownloadService;
+import nit.livetex.livetexsdktestapp.utils.CommonUtils;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -36,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import livetex.livetex_service.LivetexService;
@@ -46,6 +49,7 @@ import livetex.queue_service.SendMessageResponse;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import sdk.handler.AHandler;
+import sdk.models.LTDialogAttributes;
 import sdk.models.LTEmployee;
 import sdk.models.LTFileMessage;
 import sdk.models.LTSerializableHolder;
@@ -67,6 +71,8 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
     private String firstName;
 
     private TypingTask typingTask;
+
+    private boolean isDialogClosed;
 
     private int prevHistoryCount;
     private boolean allHistoryDownloaded;
@@ -227,7 +233,8 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
                 lastMessageId = "OPEN_DIALOG";
                 break;
             case CLOSE:
-                tvHeaderTyping.setText("оператор оффлайн");
+                setHeaderData(null, "Оператор", "");
+                tvHeaderTyping.setText("");
                 if(!lastMessageId.equals("CLOSE_DIALOG")) {
                     scrollWithMessage(false, "CLOSE_DIALOG", String.valueOf(System.currentTimeMillis()));
                 }
@@ -387,19 +394,44 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
         MainApplication.sendTextMessage(message, new AHandler<SendMessageResponse>() {
             @Override
             public void onError(String errMsg) {
-                Toast.makeText(getContext(), "Can't send message", Toast.LENGTH_SHORT).show();
+                Log.d("tag", errMsg);
             }
 
             @Override
             public void onResultRecieved(SendMessageResponse result) {
-                Toast.makeText(getContext(), "Can't send message result", Toast.LENGTH_SHORT).show();
+                Log.d("tag", result.toString());
+
+                if(result.destination == null) {
+                    MainApplication.getDestinations(new AHandler<ArrayList<Destination>>() {
+                        @Override
+                        public void onError(String errMsg) {
+                        }
+
+                        @Override
+                        public void onResultRecieved(final ArrayList<Destination> destinations) {
+                            if(destinations != null && destinations.size() != 0) {
+                                Destination destination = destinations.get(0);
+                                if(destination != null) {
+                                    MainApplication.setDestination(destination, new LTDialogAttributes(new HashMap<String, String>()));
+                                    MainApplication.currentConversation = destination.getTouchPoint().getTouchPointId();
+                                }
+                            } else {
+                                CommonUtils.showToast(getContext(), "Нет доступных операторов");
+                            }
+                        }
+                    });
+                }
             }
         });
     }
 
 
     private void setHeaderData(String avatar, String firstName, String lastName) {
-        ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
+        if(avatar == null) {
+            ivAvatarHeader.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_app));
+        } else {
+            ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
+        }
         String name = (firstName == null ? "" : firstName) + (lastName == null ? "" : lastName);
         tvHeaderTitle.setText(name);
     }
