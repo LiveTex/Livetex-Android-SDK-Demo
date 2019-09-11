@@ -43,7 +43,9 @@ import sdk.utils.FileUtils;
 /**
  * Created by user on 28.07.15.
  */
-public class MainApplication extends Application {
+public class
+
+MainApplication extends Application {
 
     public static String currentConversation = "";
     public static boolean IS_ACTIVE = false;

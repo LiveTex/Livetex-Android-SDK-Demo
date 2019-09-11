@@ -70,7 +70,9 @@ public class GcmMessageHandler extends IntentService {
             messages.add(mes);
             DataKeeper.incUnreadMessages(this);
 
-            PowerManager.WakeLock screenOn = ((PowerManager)getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "example");
+            PowerManager.WakeLock screenOn =
+                    ((PowerManager)getSystemService(POWER_SERVICE))
+                    .newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "app1:example");
             screenOn.acquire();
             boolean isScreenOn = DeviceUtils.isScreenOn(this);
             Intent initIntent = new Intent(GcmMessageHandler.this, FragmentEnvironment.class);

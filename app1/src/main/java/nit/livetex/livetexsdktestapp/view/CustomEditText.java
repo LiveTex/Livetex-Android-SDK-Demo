@@ -4,16 +4,16 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatEditText;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
 
 import nit.livetex.livetexsdktestapp.R;
 
 /**
  * Created by user on 13.09.15.
  */
-public class CustomEditText extends EditText {
+public class CustomEditText extends AppCompatEditText {
     public CustomEditText(Context context) {
         super(context);
     }

@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DemoPrepareToUploadNew.iml" filepath="$PROJECT_DIR$/DemoPrepareToUploadNew.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Livetex-Android-SDK-Demo.iml" filepath="$PROJECT_DIR$/Livetex-Android-SDK-Demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app1/app1.iml" filepath="$PROJECT_DIR$/app1/app1.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app_sdk2/app_sdk2.iml" filepath="$PROJECT_DIR$/app_sdk2/app_sdk2.iml" />
     </modules>
   </component>
 </project>
