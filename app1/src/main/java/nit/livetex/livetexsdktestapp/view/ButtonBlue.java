@@ -2,8 +2,9 @@ package nit.livetex.livetexsdktestapp.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatButton;
 
 /**
  * Created by 1 on 21.09.15.

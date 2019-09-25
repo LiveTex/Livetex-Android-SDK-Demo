@@ -2,8 +2,9 @@ package nit.livetex.livetexsdktestapp.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * Created by user on 21.09.15.

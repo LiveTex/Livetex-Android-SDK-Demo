@@ -10,6 +10,8 @@ import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.utils.BusProvider;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -40,18 +42,17 @@ import sdk.models.LTTextMessage;
 import sdk.models.LTTypingMessage;
 import sdk.utils.FileUtils;
 
+
 /**
  * Created by user on 28.07.15.
  */
-public class
-
-MainApplication extends Application {
+public class MainApplication extends Application {
 
     public static String currentConversation = "";
     public static boolean IS_ACTIVE = false;
     private static List<Activity> externalActivitiesStack = new ArrayList<>();
 
-    private static final String AUTH_URL_REAL = "https://authentication-service-sdk-production-1.livetex.ru";
+    private static final String AUTH_URL_REAL = "https://sdk-auth-04.livetex.ru";
 
     private static final String API_KEY_REAL =  "demo";
 
@@ -112,7 +113,10 @@ MainApplication extends Application {
     }
 
     public static void initLivetex(String id, String regId) {
+        FirebaseInstanceId.getInstance()         ;
+
         initLivetex(id, regId, null);
+
     }
 
     public static void initLivetex(String id, String regId, final AHandler<Boolean> handler) {

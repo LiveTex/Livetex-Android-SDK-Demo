@@ -3,8 +3,9 @@ package nit.livetex.livetexsdktestapp.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.support.v7.widget.AppCompatSpinner;
 import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatSpinner;
 
 /**
  * Created by user on 13.09.15.
