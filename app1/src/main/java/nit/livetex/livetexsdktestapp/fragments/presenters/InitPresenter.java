@@ -1,10 +1,17 @@
 package nit.livetex.livetexsdktestapp.fragments.presenters;
 
+import android.util.Log;
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
 import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.fragments.callbacks.InitCallback;
-import nit.livetex.livetexsdktestapp.utils.CommonUtils;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
-import nit.livetex.livetexsdktestapp.utils.GcmUtils;
+
 
 /**
  * Created by user on 28.07.15.
@@ -16,22 +23,21 @@ public class InitPresenter extends BasePresenter<InitCallback> {
     }
 
     public void init(final String id) {
-
-        GcmUtils.startGCM(getCallback().getFragmentEnvironment(), new GcmUtils.Callback() {
-            @Override
-            public void onResult(boolean status, String msg) {
-                if (!status) {
-                    CommonUtils.showToast(getContext(), "GCM error: " + msg);
-                    return;
-                }
-                if(!id.equals(DataKeeper.restoreAppId(getContext()))) {
-                }
-                DataKeeper.saveRegId(getContext(), msg);
-                DataKeeper.saveAppId(getContext(), id);
-                MainApplication.initLivetex(id, msg);
-
-            }
-        });
-
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("fblog", "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        String token = task.getResult().getToken();
+                        DataKeeper.saveRegId(getContext(), token);
+                        DataKeeper.saveAppId(getContext(), id);
+                        MainApplication.initLivetex(id, token);                        
+                        Log.d("fblog", token);
+                    }
+                });
     }
+
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="nit.livetex.livetexsdktestapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,8 +13,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        tools:replace="android:appComponentFactory"
-        android:appComponentFactory="android.support.v7.app.CoreComponentFactory"
         android:name="nit.livetex.livetexsdktestapp.MainApplication"
         android:logo="@android:color/transparent"
         android:allowBackup="true"

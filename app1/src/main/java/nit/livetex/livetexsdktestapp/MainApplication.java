@@ -10,8 +10,6 @@ import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.utils.BusProvider;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
-
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -113,8 +111,6 @@ public class MainApplication extends Application {
     }
 
     public static void initLivetex(String id, String regId) {
-        FirebaseInstanceId.getInstance()         ;
-
         initLivetex(id, regId, null);
 
     }
@@ -277,26 +273,3 @@ public class MainApplication extends Application {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
