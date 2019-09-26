@@ -47,19 +47,15 @@
 
         <service android:name="nit.livetex.livetexsdktestapp.services.DownloadService"/>
 
-        <receiver
-            android:name="nit.livetex.livetexsdktestapp.gcm.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
+        <!-- [START firebase_service] -->
+        <service
+            android:name="nit.livetex.livetexsdktestapp.firebase.FirebaseMessageReceiver"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-                <category android:name="${applicationId}"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </receiver>
-
-        <service android:name="nit.livetex.livetexsdktestapp.gcm.GcmMessageHandler" />
-
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+        </service>
+        <!-- [END firebase_service] -->
     </application>
 
 </manifest>
