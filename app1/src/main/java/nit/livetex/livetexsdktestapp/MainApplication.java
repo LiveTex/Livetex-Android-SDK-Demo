@@ -5,11 +5,14 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import livetex.livetex_service.LivetexService;
 import nit.livetex.livetexsdktestapp.models.BaseMessage;
 import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.utils.BusProvider;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
+
+import com.google.firebase.FirebaseApp;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -50,11 +53,11 @@ public class MainApplication extends Application {
     public static boolean IS_ACTIVE = false;
     private static List<Activity> externalActivitiesStack = new ArrayList<>();
 
-    private static final String AUTH_URL_REAL = "https://sdk-auth-04.livetex.ru";
 
-    private static final String API_KEY_REAL =  "demo";
+    private static final String AUTH_URL_REAL = "https://authentication-service-sdk-production-1.livetex.ru";
+    private static final String API_KEY_REAL = "demo-prod";
 
-    private static String AUTH_URL = AUTH_URL_REAL ;
+    private static String AUTH_URL = AUTH_URL_REAL;
     private static String API_KEY = API_KEY_REAL;
 
     public static void setProductionScope() {

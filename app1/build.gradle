@@ -18,8 +18,8 @@ android {
         applicationId "nit.livetex.livetexsdktestapp"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 215
-        versionName "2.2.1"
+        versionCode 301
+        versionName "3.0.1"
         multiDexEnabled = true
     }
     dexOptions {
@@ -27,7 +27,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -64,14 +64,13 @@ dependencies {
 
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
-
-    //org.apache.http.legacy.boot.jar
+    
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
 
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation 'com.squareup.picasso:picasso:2.5.0'
-    implementation 'com.google.android.gms:play-services:12.0.1'
+//    implementation 'com.google.android.gms:play-services:12.0.1'
     implementation 'ru.livetex:sdk:2.0.0@aar'
     implementation 'com.google.firebase:firebase-messaging:20.0.0'
 }

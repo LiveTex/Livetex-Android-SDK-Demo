@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:name="nit.livetex.livetexsdktestapp.MainApplication"
         android:logo="@android:color/transparent"
         android:allowBackup="true"
