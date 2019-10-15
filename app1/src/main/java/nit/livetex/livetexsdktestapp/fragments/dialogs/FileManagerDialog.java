@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -23,6 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+
 import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
 
 import java.io.File;
@@ -32,7 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class FileManagerDialog extends android.support.v4.app.DialogFragment {
+public class FileManagerDialog extends DialogFragment {
 
     public static final int TAKE_FILE_URI = 115;
     private String mCurrentPath = null;

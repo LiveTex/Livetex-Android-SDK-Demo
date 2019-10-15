@@ -2,13 +2,15 @@ package nit.livetex.livetexsdktestapp.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
+
 import android.util.AttributeSet;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * Created by user on 21.09.15.
  */
-public class TextViewRoboto extends TextView {
+public class TextViewRoboto extends AppCompatTextView {
     public TextViewRoboto(Context context) {
         super(context);
     }

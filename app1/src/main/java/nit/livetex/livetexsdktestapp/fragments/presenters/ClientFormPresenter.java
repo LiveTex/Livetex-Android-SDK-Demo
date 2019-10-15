@@ -65,6 +65,7 @@ public class ClientFormPresenter extends BasePresenter<ClientFormCallback> {
     }
 
     public static void sendToDestination(Context context, final Destination destination, final String name, ClientFormCallback callback) {
+        
 
         final long mem = DeviceUtils.getFreeMemoryCount(context);
         int systemVersion = DeviceUtils.getAndroidVersion();

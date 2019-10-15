@@ -3,12 +3,13 @@ package nit.livetex.livetexsdktestapp.view;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.Button;
+
+import androidx.appcompat.widget.AppCompatButton;
 
 /**
- * Created by user on 21.09.15.
+ * Created by 1 on 21.09.15.
  */
-public class ButtonBlue extends Button {
+public class ButtonBlue extends AppCompatButton {
 
 
     public ButtonBlue(Context context) {

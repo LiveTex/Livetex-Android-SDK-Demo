@@ -6,14 +6,15 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 import nit.livetex.livetexsdktestapp.R;
 
 /**
  * Created by user on 13.09.15.
  */
-public class CustomEditText extends EditText {
+public class CustomEditText extends AppCompatEditText {
     public CustomEditText(Context context) {
         super(context);
     }

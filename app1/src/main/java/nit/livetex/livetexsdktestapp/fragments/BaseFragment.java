@@ -5,12 +5,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+
+import androidx.fragment.app.Fragment;
 
 import nit.livetex.livetexsdktestapp.FragmentEnvironment;
 import nit.livetex.livetexsdktestapp.R;

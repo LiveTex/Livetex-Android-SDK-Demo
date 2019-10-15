@@ -4,12 +4,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
-import android.widget.Spinner;
+
+import androidx.appcompat.widget.AppCompatSpinner;
 
 /**
  * Created by user on 13.09.15.
  */
-public class CustomSpinner extends Spinner {
+public class CustomSpinner extends AppCompatSpinner {
     public CustomSpinner(Context context) {
         super(context);
     }
