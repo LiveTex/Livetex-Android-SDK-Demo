@@ -14,7 +14,7 @@ public abstract class BaseMessage {
 
     protected TYPE messageType;
     protected String stringExtra = "";
-    protected  Serializable object;
+    protected Serializable object;
 
     public BaseMessage(TYPE messageType) {
         this.messageType = messageType;
