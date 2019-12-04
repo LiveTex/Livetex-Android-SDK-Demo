@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="nit.livetex.livetexsdktestapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,7 +19,8 @@
         android:logo="@android:color/transparent"
         android:allowBackup="true"
         android:icon="@drawable/ic_app"
-        android:theme="@style/CustomTheme">
+        android:theme="@style/CustomTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
         <activity
             android:name="nit.livetex.livetexsdktestapp.FragmentEnvironment"

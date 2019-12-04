@@ -3,16 +3,9 @@ package nit.livetex.livetexsdktestapp;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
-import livetex.livetex_service.LivetexService;
-import nit.livetex.livetexsdktestapp.models.BaseMessage;
-import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
-import nit.livetex.livetexsdktestapp.models.EventMessage;
-import nit.livetex.livetexsdktestapp.utils.BusProvider;
-import nit.livetex.livetexsdktestapp.utils.DataKeeper;
-
-import com.google.firebase.FirebaseApp;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -29,6 +22,11 @@ import livetex.capabilities.Capabilities;
 import livetex.dialog.DialogAttributes;
 import livetex.queue_service.Destination;
 import livetex.queue_service.SendMessageResponse;
+import nit.livetex.livetexsdktestapp.models.BaseMessage;
+import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
+import nit.livetex.livetexsdktestapp.models.EventMessage;
+import nit.livetex.livetexsdktestapp.utils.BusProvider;
+import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 import sdk.Livetex;
 import sdk.handler.AHandler;
 import sdk.handler.IInitHandler;
@@ -130,6 +128,9 @@ public class MainApplication extends Application {
         sLiveTex.init(new IInitHandler() {
             @Override
             public void onSuccess(String token) {
+                // Если нужно использовать определенную сессию, для дебаг целей. Потребуется перезапуск после первого получения
+                if (!TextUtils.isEmpty(Const.FORCED_TOKEN))
+                    token = Const.FORCED_TOKEN;
                 sdk.data.DataKeeper.saveToken(getInstance(), token);
                 postMessage(new EventMessage(BaseMessage.TYPE.INIT, token));
                 if (handler != null) {

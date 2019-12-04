@@ -2,19 +2,19 @@ package nit.livetex.livetexsdktestapp.fragments;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-import nit.livetex.livetexsdktestapp.MainApplication;
-import nit.livetex.livetexsdktestapp.R;
-import nit.livetex.livetexsdktestapp.fragments.callbacks.ClientFormCallback;
-import nit.livetex.livetexsdktestapp.fragments.presenters.ClientFormPresenter;
-import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import livetex.queue_service.Destination;
+import nit.livetex.livetexsdktestapp.MainApplication;
+import nit.livetex.livetexsdktestapp.R;
+import nit.livetex.livetexsdktestapp.fragments.callbacks.ClientFormCallback;
+import nit.livetex.livetexsdktestapp.fragments.presenters.ClientFormPresenter;
+import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 import sdk.handler.AHandler;
 import sdk.models.LTDepartment;
 import sdk.models.LTEmployee;
@@ -24,6 +24,7 @@ import sdk.models.LTEmployee;
  */
 public class ChooseModeFragment extends BaseFragment implements ClientFormCallback, View.OnClickListener {
 
+    private static final String TAG = "ChooseModeFragment";
     Button btnOnlineMode;
 
     ArrayList<Destination> destinations;
@@ -64,7 +65,7 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
         MainApplication.getDestinations(new AHandler<ArrayList<Destination>>() {
             @Override
             public void onError(String errMsg) {
-
+                Log.e(TAG, "Destinations: err " + errMsg);
             }
 
             @Override
@@ -73,7 +74,8 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
                     ChooseModeFragment.this.destinations = destinations;
                     btnOnlineMode.setEnabled(true);
                     btnOnlineMode.setBackground(getContext().getResources().getDrawable(R.drawable.blue_btn));
-                }
+                } else
+                    Log.e(TAG, "Empty destinations!");
             }
         });
 

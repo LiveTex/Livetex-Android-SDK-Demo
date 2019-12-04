@@ -1,6 +1,7 @@
 package nit.livetex.livetexsdktestapp.fragments;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,19 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import livetex.queue_service.Destination;
-import nit.livetex.livetexsdktestapp.Const;
-import nit.livetex.livetexsdktestapp.FragmentEnvironment;
-import nit.livetex.livetexsdktestapp.MainApplication;
-import nit.livetex.livetexsdktestapp.R;
-import nit.livetex.livetexsdktestapp.fragments.dialogs.AttachChooseDialog;
-import nit.livetex.livetexsdktestapp.fragments.dialogs.FileManagerDialog;
-import nit.livetex.livetexsdktestapp.models.EventMessage;
-import nit.livetex.livetexsdktestapp.models.MessageModel;
-import nit.livetex.livetexsdktestapp.services.DownloadService;
-import nit.livetex.livetexsdktestapp.utils.CommonUtils;
-import nit.livetex.livetexsdktestapp.utils.DataKeeper;
-import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.otto.Subscribe;
 
@@ -42,10 +30,23 @@ import java.util.HashMap;
 import java.util.List;
 
 import livetex.livetex_service.LivetexService;
+import livetex.queue_service.Destination;
 import livetex.queue_service.FileMessage;
 import livetex.queue_service.Message;
 import livetex.queue_service.MessageAttributes;
 import livetex.queue_service.SendMessageResponse;
+import nit.livetex.livetexsdktestapp.Const;
+import nit.livetex.livetexsdktestapp.FragmentEnvironment;
+import nit.livetex.livetexsdktestapp.MainApplication;
+import nit.livetex.livetexsdktestapp.R;
+import nit.livetex.livetexsdktestapp.fragments.dialogs.AttachChooseDialog;
+import nit.livetex.livetexsdktestapp.fragments.dialogs.FileManagerDialog;
+import nit.livetex.livetexsdktestapp.models.EventMessage;
+import nit.livetex.livetexsdktestapp.models.MessageModel;
+import nit.livetex.livetexsdktestapp.services.DownloadService;
+import nit.livetex.livetexsdktestapp.utils.CommonUtils;
+import nit.livetex.livetexsdktestapp.utils.DataKeeper;
+import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import sdk.handler.AHandler;
@@ -63,6 +64,7 @@ import sdk.utils.FileUtils;
 @RuntimePermissions
 public class OnlineChatFragment1 extends BaseChatFragment1 {
 
+    private static final String TAG = "OnlineChatFragment1";
     private TextView tvHeaderTitle;
     private TextView tvHeaderTyping;
     private ImageView ivAvatarHeader;
@@ -90,19 +92,12 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
     @Override
     protected View onCreateView(View v) {
         super.onCreateView(v);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateMessageHistory(100, 0, true);
-            }
-        }, 500);
-
         return v;
     }
 
-    private void updateMessageHistory(int count, int offset, final boolean scrollDown) {
+    private void updateMessageHistory(int offset, int limit, final boolean scrollDown) {
         pbHistory.setVisibility(View.VISIBLE);
-        MainApplication.getQueueHistory(offset, count, new AHandler<LTSerializableHolder>() {
+        MainApplication.getQueueHistory(offset, limit, new AHandler<LTSerializableHolder>() {
                     @Override
                     public void onError(String errMsg) {
                         pbHistory.setVisibility(View.GONE);
@@ -157,24 +152,10 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
         DataKeeper.resetUnreadMessagesCount(getContext());
 
-        MainApplication.getQueueHistory(0, 10, new AHandler<LTSerializableHolder>() {
-            @Override
-            public void onError(String errMsg) {
+        handler.postDelayed(() -> updateMessageHistory(0, 100, true), 500);
 
-            }
-
-            @Override
-            public void onResultRecieved(LTSerializableHolder result1) {
-                if(result1 != null) {
-                    List<Message> result = (List<Message>) result1.getSerializable();
-                    if (result != null) {
-
-                        handler.post(new GetStateTask());
-                        handler.postDelayed(new GetStateTask(), 7000);
-                    }
-                }
-            }
-        });
+        handler.post(new GetStateTask());
+        handler.postDelayed(new GetStateTask(), 7000);
     }
 
     private class GetStateTask implements Runnable {
@@ -206,7 +187,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
         if("1".equals(result.getEmployee().getStatus())) {
             tvHeaderTyping.setText("оператор онлайн");
         } else {
-            tvHeaderTyping.setText("оператор офлайн");
+            tvHeaderTyping.setText("оператор оффлайн");
         }
     }
 
@@ -249,7 +230,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
                 LTTextMessage textMessage = (LTTextMessage) eventMessage.getSerializable();
                 MainApplication.confirmQueueMessage(textMessage.getId());
                 if(!lastMessageId.equals(textMessage.getId())) {
-                    scrollWithMessage(false, textMessage.getText(), String.valueOf(System.currentTimeMillis()));
+                    scrollWithMessage(false, textMessage.getText(), textMessage.timestamp);
                 }
                 lastMessageId = textMessage.getId();
                 break;
@@ -427,8 +408,12 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
 
     private void setHeaderData(String avatar, String firstName, String lastName) {
-        if(avatar == null) {
-            ivAvatarHeader.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_app));
+        Context context = getContext();
+        if (context == null)
+            return;
+
+        if (TextUtils.isEmpty(avatar)) {
+            ivAvatarHeader.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_app));
         } else {
             ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
         }

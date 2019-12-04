@@ -2,6 +2,9 @@ package nit.livetex.livetexsdktestapp.fragments;
 
 import android.view.View;
 
+import com.squareup.otto.Subscribe;
+
+import nit.livetex.livetexsdktestapp.Const;
 import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.fragments.callbacks.InitCallback;
@@ -10,7 +13,6 @@ import nit.livetex.livetexsdktestapp.models.BaseMessage;
 import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.utils.CommonUtils;
-import com.squareup.otto.Subscribe;
 
 /**
  * Created by user on 28.07.15.
@@ -24,7 +26,7 @@ public class InitFragment extends BaseFragment implements InitCallback {
         showProgress();
         MainApplication.clearGlobal(getActivity());
         presenter = new InitPresenter(this);
-        presenter.init("161872");
+        presenter.init(Const.APP_ID);
         return super.onCreateView(v);
     }
 

@@ -5,7 +5,9 @@ package nit.livetex.livetexsdktestapp;
  */
 public class Const {
 
-    private static String URL_TEST = "http://authentication-service.livetex.omnitest:80/";
+    public static final String APP_ID = "161872";
+    public static final String FORCED_TOKEN = ""; // set for debug purposes
+
     public static String PUSH_ONLINE_ACTION = "nit.livetex.livetexsdktestapp.PUSH_ONLINE_ACTION";
 
 

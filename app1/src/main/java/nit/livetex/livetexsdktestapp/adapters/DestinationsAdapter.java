@@ -23,7 +23,7 @@ public class DestinationsAdapter extends ArrayAdapter<DestinationsAdapter.Destin
         View v = LayoutInflater.from(getContext()).inflate(R.layout.spinner_view, parent, false);
         TextView tvDepartmentName = (TextView) v.findViewById(android.R.id.text1);
 
-            tvDepartmentName.setText("Отдел " + getItem(position).getD().getTouchPoint().getTouchPointId());
+        tvDepartmentName.setText("Отдел " + getItem(position).getD().getTouchPoint().getTouchPointId());
 
         return v;
     }
@@ -48,7 +48,7 @@ public class DestinationsAdapter extends ArrayAdapter<DestinationsAdapter.Destin
         @Override
         public String toString() {
 
-            if(d.isSetTouchPoint()) {
+            if (d.isSetTouchPoint()) {
                 return "Отдел " + d.getTouchPoint().getTouchPointId();
             } else {
                 return "Department ";
