@@ -119,18 +119,24 @@ public class MainApplication extends Application {
     public static void initLivetex(String id, String regId, final AHandler<Boolean> handler) {
         Log.d("polling", "initLivetex");
         ArrayList<Capabilities> capabilities = new ArrayList(){{add(Capabilities.QUEUE);}};
+
+        String sessionToken;
+        // Если нужно использовать определенную сессию, для дебаг целей
+        if (!TextUtils.isEmpty(Const.FORCED_TOKEN))
+            sessionToken = Const.FORCED_TOKEN;
+        else
+            sessionToken = sdk.data.DataKeeper.restoreToken(getInstance());
+
         sLiveTex = new Livetex.Builder(getInstance(), API_KEY, id)
                 .addAuthUrl(AUTH_URL)
                 .addDeviceId(regId)
                 .addCapabilities(capabilities)
-                .addToken(sdk.data.DataKeeper.restoreToken(getInstance()))
+                .addToken(sessionToken)
                 .build();
+
         sLiveTex.init(new IInitHandler() {
             @Override
             public void onSuccess(String token) {
-                // Если нужно использовать определенную сессию, для дебаг целей. Потребуется перезапуск после первого получения
-                if (!TextUtils.isEmpty(Const.FORCED_TOKEN))
-                    token = Const.FORCED_TOKEN;
                 sdk.data.DataKeeper.saveToken(getInstance(), token);
                 postMessage(new EventMessage(BaseMessage.TYPE.INIT, token));
                 if (handler != null) {
