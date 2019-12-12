@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -17,13 +18,20 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.R;
+import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 
-public class FirebaseMessageReceiver extends FirebaseMessagingService {
+public final class FirebaseMessageReceiver extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d("fb messaging", remoteMessage.getFrom());
         sendNotification(remoteMessage);
+    }
+
+    @Override
+    public void onNewToken(@NonNull String newToken) {
+        // This token will start working on next Livetex init (app restart for now)
+        DataKeeper.saveRegId(this, newToken);
     }
 
     private void sendNotification(RemoteMessage remoteMessage) {
@@ -32,7 +40,7 @@ public class FirebaseMessageReceiver extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        String channelId = "nit channel";
+        String channelId = "Chat notifications";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
@@ -49,7 +57,7 @@ public class FirebaseMessageReceiver extends FirebaseMessagingService {
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
+                    "Chat notifications",
                     NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }

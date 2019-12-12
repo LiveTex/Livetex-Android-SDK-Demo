@@ -121,7 +121,6 @@ public class MainApplication extends Application {
         ArrayList<Capabilities> capabilities = new ArrayList(){{add(Capabilities.QUEUE);}};
 
         String sessionToken;
-        // Если нужно использовать определенную сессию, для дебаг целей
         if (!TextUtils.isEmpty(Const.FORCED_TOKEN))
             sessionToken = Const.FORCED_TOKEN;
         else

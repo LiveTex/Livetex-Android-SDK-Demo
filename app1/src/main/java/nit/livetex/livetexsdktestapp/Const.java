@@ -5,8 +5,9 @@ package nit.livetex.livetexsdktestapp;
  */
 public class Const {
 
-    public static final String APP_ID = "161872";
-    public static final String FORCED_TOKEN = ""; // set for debug purposes
+    public static final String APP_ID = "161872"; // demo LiveTex app account
+    public static final String FORCED_TOKEN = ""; // for debug purposes
+    public static final String FORCED_DEVICE_ID = ""; // for debug purposes
 
     public static String PUSH_ONLINE_ACTION = "nit.livetex.livetexsdktestapp.PUSH_ONLINE_ACTION";
 
