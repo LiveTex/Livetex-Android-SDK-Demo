@@ -50,7 +50,9 @@
 
         <service android:name="nit.livetex.livetexsdktestapp.services.DownloadService"/>
 
-        <!-- [START firebase_service] -->
+        <!-- [START firebase_service]
+         for docs see https://firebase.google.com/docs/cloud-messaging/android/receive
+         -->
         <service
             android:name="nit.livetex.livetexsdktestapp.firebase.FirebaseMessageReceiver"
             android:exported="false">

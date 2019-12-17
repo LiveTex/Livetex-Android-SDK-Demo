@@ -56,14 +56,11 @@ android {
 }
 
 dependencies {
-    implementation 'ru.livetex:sdk:2.0.0@aar'
+    implementation 'ru.livetex:sdk:2.0.3@aar'
 
     // ui
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation 'com.google.android.material:material:1.0.0'
-
-    // test
-    androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.4.1'
 
     // network
     implementation('org.apache.httpcomponents:httpmime:4.3.6') {
@@ -80,6 +77,9 @@ dependencies {
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.0.3'
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    // test
+    androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.4.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

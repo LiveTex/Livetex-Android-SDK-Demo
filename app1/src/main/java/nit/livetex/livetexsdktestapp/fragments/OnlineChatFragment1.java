@@ -97,7 +97,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     private void updateMessageHistory(int offset, int limit, final boolean scrollDown) {
         pbHistory.setVisibility(View.VISIBLE);
-        MainApplication.getQueueHistory(offset, limit, new AHandler<LTSerializableHolder>() {
+        MainApplication.getMessagesHistory(offset, limit, new AHandler<LTSerializableHolder>() {
                     @Override
                     public void onError(String errMsg) {
                         pbHistory.setVisibility(View.GONE);

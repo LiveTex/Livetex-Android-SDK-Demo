@@ -79,13 +79,13 @@ public class MainApplication extends Application {
         super.onCreate();
 
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-        .cacheInMemory(true)
-        .cacheOnDisk(true)
-        .build();
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-        .defaultDisplayImageOptions(defaultOptions)
-        .build();
+                .defaultDisplayImageOptions(defaultOptions)
+                .build();
 
         ImageLoader.getInstance().init(config); // Do it on Application start
 
@@ -106,7 +106,7 @@ public class MainApplication extends Application {
     }
 
     public static void clearGlobal(Context context) {
-       // currentToken = "";
+        // currentToken = "";
         DataKeeper.dropAll(context);
 
     }
@@ -118,7 +118,9 @@ public class MainApplication extends Application {
 
     public static void initLivetex(String id, String regId, final AHandler<Boolean> handler) {
         Log.d("polling", "initLivetex");
-        ArrayList<Capabilities> capabilities = new ArrayList(){{add(Capabilities.QUEUE);}};
+        ArrayList<Capabilities> capabilities = new ArrayList() {{
+            add(Capabilities.QUEUE);
+        }};
 
         String sessionToken;
         if (!TextUtils.isEmpty(Const.FORCED_TOKEN))
@@ -143,8 +145,6 @@ public class MainApplication extends Application {
                 }
 
                 sLiveTex.setNotificationDialogHandler(new INotificationDialogHandler() {
-
-
                     @Override
                     public void updateDialogState(LTDialogState state) throws TException {
                         Log.d("double", "update dialog state");
@@ -175,6 +175,11 @@ public class MainApplication extends Application {
                     }
 
                     @Override
+                    public void selectDestination(List<livetex.visitor_notification.Destination> destinations) throws TException {
+
+                    }
+
+                    @Override
                     public void receiveTextMessage(LTTextMessage message) throws TException {
                         EventMessage eventMessage = new EventMessage(BaseMessage.TYPE.RECEIVE_QUEUE_MSG);
                         eventMessage.putSerializable(message);
@@ -189,6 +194,11 @@ public class MainApplication extends Application {
                         postMessage(eventMessage);
                     }
 
+                    @Override
+                    public void confirm(String messageId) throws TException {
+
+                    }
+
                 });
             }
 
@@ -197,16 +207,12 @@ public class MainApplication extends Application {
                 postMessage(new ErrorMessage1(BaseMessage.TYPE.INIT, errorMessage));
             }
         });
-
-
     }
 
     public static void postMessage(BaseMessage message) {
-        if(message != null) {
+        if (message != null) {
             BusProvider.getInstance().post(message);
         }
-
-
     }
 
     public static void confirmQueueMessage(String messageId) {
@@ -215,9 +221,9 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void getQueueHistory(long offset, long limit, AHandler<LTSerializableHolder> handler) {
-        if(sLiveTex != null) {
-            sLiveTex.getHistory(offset, limit, handler);
+    public static void getMessagesHistory(long offset, long limit, AHandler<LTSerializableHolder> handler) {
+        if (sLiveTex != null) {
+            sLiveTex.getLastMessages(offset, limit, handler);
         }
     }
 
@@ -232,26 +238,26 @@ public class MainApplication extends Application {
     }
 
     public static void getDestinations(AHandler<ArrayList<Destination>> handler) {
-        if(sLiveTex != null) {
+        if (sLiveTex != null) {
             sLiveTex.getDestinations(handler);
         }
     }
 
     public static void setDestination(Destination destination, LTDialogAttributes dialogAttrs) {
 
-        if(sLiveTex != null) {
+        if (sLiveTex != null) {
             sLiveTex.setDestination(destination, dialogAttrs);
         }
     }
 
     public static void sendTextMessage(String message, AHandler<SendMessageResponse> handler) {
-        if(sLiveTex != null) {
+        if (sLiveTex != null) {
             sLiveTex.sendTextMessage(message, handler);
         }
     }
 
     public static void getStateQueue(AHandler<livetex.queue_service.DialogState> handler) {
-        if(sLiveTex != null) {
+        if (sLiveTex != null) {
             sLiveTex.getState(handler);
         }
     }
