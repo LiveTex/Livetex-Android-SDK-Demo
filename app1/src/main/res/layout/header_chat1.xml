@@ -35,7 +35,7 @@
         <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
             android:layout_marginLeft="4dp"
             android:textSize="12sp"
-            android:id="@+id/tvHeaderTyping"
+            android:id="@+id/tvHeaderStatus"
             android:textColor="@android:color/white"
             android:text=""
             android:layout_width="wrap_content"

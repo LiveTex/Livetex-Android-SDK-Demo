@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -13,6 +13,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
+import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.adapters.ChatArrayAdapter;
 import nit.livetex.livetexsdktestapp.fragments.dialogs.FileManagerDialog;
@@ -43,6 +50,7 @@ public abstract class BaseChatFragment1 extends BaseFragment implements View.OnC
 
     protected Uri mTakenPhotoUri;
 
+    private CompositeDisposable disposables = new CompositeDisposable();
 
     @Override
     protected int getLayoutId() {
@@ -51,16 +59,16 @@ public abstract class BaseChatFragment1 extends BaseFragment implements View.OnC
 
     @Override
     public void onClick(View view) {
-        if(R.id.ivSendMsg == view.getId()) {
-            if(!LivetexUtils.isEmpty(etInputMsg)) {
+        if (R.id.ivSendMsg == view.getId()) {
+            if (!LivetexUtils.isEmpty(etInputMsg)) {
                 sendMessage(etInputMsg.getText().toString());
                 etInputMsg.setText("");
             } else {
                 LivetexUtils.showToast(getContext(), "Введите сообщение");
             }
-        } else if(R.id.ivVoteUp == view.getId()) {
+        } else if (R.id.ivVoteUp == view.getId()) {
 
-        } else if(R.id.ivVoteDown == view.getId()) {
+        } else if (R.id.ivVoteDown == view.getId()) {
 
         }
     }
@@ -135,15 +143,30 @@ public abstract class BaseChatFragment1 extends BaseFragment implements View.OnC
     public void onDestroyView() {
         getFragmentEnvironment().getSupportActionBar().setDisplayShowCustomEnabled(false);
         super.onDestroyView();
-
     }
 
-    public void sendTyping(String text) {
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposables.clear();
     }
 
-    public void initTextWatcher() {
+    private void sendTyping(String text) {
+        MainApplication.sendTextMessageTyping(text);
+    }
+
+    private final long DELAY = 500; // milliseconds
+    private PublishSubject<String> textSubject = PublishSubject.create();
+
+    private void initTextWatcher() {
+        Disposable disposable = textSubject
+                .throttleLast(DELAY, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::sendTyping);
+        disposables.add(disposable);
+
         etInputMsg.addTextChangedListener(new TextWatcher() {
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -151,15 +174,15 @@ public abstract class BaseChatFragment1 extends BaseFragment implements View.OnC
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                Log.d("tag", charSequence.toString() + " " + " " + start + " " + before + " " + count);
-                if (charSequence.length() != 0) {
-                    sendTyping(charSequence.toString());
-                }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                String text = editable.toString().trim();
+                // Send typing event, not faster than DELAY
+                if (!TextUtils.isEmpty(text)) {
+                    textSubject.onNext(text);
+                }
             }
         });
     }

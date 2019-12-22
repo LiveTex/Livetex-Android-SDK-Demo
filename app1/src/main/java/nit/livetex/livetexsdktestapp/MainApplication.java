@@ -117,7 +117,7 @@ public class MainApplication extends Application {
     }
 
     public static void initLivetex(String id, String regId, final AHandler<Boolean> handler) {
-        Log.d("polling", "initLivetex");
+        Log.d("MainApplication", "initLivetex");
         ArrayList<Capabilities> capabilities = new ArrayList() {{
             add(Capabilities.QUEUE);
         }};
@@ -147,7 +147,6 @@ public class MainApplication extends Application {
                 sLiveTex.setNotificationDialogHandler(new INotificationDialogHandler() {
                     @Override
                     public void updateDialogState(LTDialogState state) throws TException {
-                        Log.d("double", "update dialog state");
                         if (state.getEmployee() == null) {
                             EventMessage eventMessage = new EventMessage(BaseMessage.TYPE.CLOSE);
                             postMessage(eventMessage);
@@ -221,7 +220,7 @@ public class MainApplication extends Application {
         }
     }
 
-    public static void getMessagesHistory(long offset, long limit, AHandler<LTSerializableHolder> handler) {
+    public static void getLastMessages(long offset, long limit, AHandler<LTSerializableHolder> handler) {
         if (sLiveTex != null) {
             sLiveTex.getLastMessages(offset, limit, handler);
         }
@@ -253,6 +252,12 @@ public class MainApplication extends Application {
     public static void sendTextMessage(String message, AHandler<SendMessageResponse> handler) {
         if (sLiveTex != null) {
             sLiveTex.sendTextMessage(message, handler);
+        }
+    }
+
+    public static void sendTextMessageTyping(String message) {
+        if (sLiveTex != null) {
+            sLiveTex.sendTextMessageTyping(message);
         }
     }
 

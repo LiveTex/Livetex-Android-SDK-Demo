@@ -66,13 +66,13 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     private static final String TAG = "OnlineChatFragment1";
     private TextView tvHeaderTitle;
-    private TextView tvHeaderTyping;
+    private TextView tvHeaderStatus;
     private ImageView ivAvatarHeader;
 
     private String avatar;
     private String firstName;
 
-    private TypingTask typingTask;
+    private TypingResetTask typingResetTask;
 
     private boolean isDialogClosed;
 
@@ -83,8 +83,8 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        typingTask = new TypingTask();
-        if(!isStoragePermissionsGranted()) {
+        typingResetTask = new TypingResetTask();
+        if (!isStoragePermissionsGranted()) {
             OnlineChatFragment1PermissionsDispatcher.initWithExternalStorageWithCheck(OnlineChatFragment1.this);
         }
     }
@@ -97,52 +97,52 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     private void updateMessageHistory(int offset, int limit, final boolean scrollDown) {
         pbHistory.setVisibility(View.VISIBLE);
-        MainApplication.getMessagesHistory(offset, limit, new AHandler<LTSerializableHolder>() {
-                    @Override
-                    public void onError(String errMsg) {
-                        pbHistory.setVisibility(View.GONE);
-                        dismissProgress();
-                    }
+        MainApplication.getLastMessages(offset, limit, new AHandler<LTSerializableHolder>() {
+            @Override
+            public void onError(String errMsg) {
+                pbHistory.setVisibility(View.GONE);
+                dismissProgress();
+            }
 
-                    @Override
-                    public void onResultRecieved(LTSerializableHolder result1) {
-                        List<Message> result = (List<Message>) result1.getSerializable();
-                        if (result != null) {
-                            Log.d("tag", "getHistory " + result.size());
-                            ArrayList<MessageModel> messages = new ArrayList<>();
-                            for (Message message2 : result) {
-                                    if(message2.attributes.isSetText()) {
-                                        livetex.queue_service.TextMessage message1 = (livetex.queue_service.TextMessage) message2.attributes.getFieldValue(MessageAttributes._Fields.TEXT);
-                                        String created = (String) message1.getFieldValue(livetex.queue_service.TextMessage._Fields.CREATED);
-                                        String sender = (String) message1.getFieldValue(livetex.queue_service.TextMessage._Fields.SENDER);
-                                        String text = (String) message1.getFieldValue(livetex.queue_service.TextMessage._Fields.TEXT);
-                                        Log.d("history", "");
-                                        MessageModel messageModel = new MessageModel(!(sender != null), text, created, conversationId);
-                                        messages.add(messageModel);
-                                    } else if(message2.attributes.isSetFile()) {
-                                        livetex.queue_service.FileMessage messageFile = (livetex.queue_service.FileMessage) message2.attributes.getFieldValue(MessageAttributes._Fields.FILE);
-                                        String created = (String) messageFile.getFieldValue(FileMessage._Fields.CREATED);
-                                        String sender = (String) messageFile.getFieldValue(FileMessage._Fields.SENDER);
-                                        String text = (String) messageFile.getFieldValue(FileMessage._Fields.URL);
-                                        MessageModel messageModel = new MessageModel(!(sender != null), text, created, conversationId);
-                                        messages.add(messageModel);
-                                    }
-
-                            }
-                            allHistoryDownloaded = (prevHistoryCount == messages.size()) ? true : false;
-                            prevHistoryCount = messages.size();
-                            Collections.reverse(messages);
-                            adapter.setData(messages);
-                            if(scrollDown) {
-                                lvChat.setSelection(adapter.getCount()-1);
-                            }
-                            if(allHistoryDownloaded) {
-                                lvChat.setOnScrollListener(null);
-                            }
+            @Override
+            public void onResultRecieved(LTSerializableHolder result1) {
+                List<Message> result = (List<Message>) result1.getSerializable();
+                if (result != null) {
+                    Log.d("tag", "getHistory " + result.size());
+                    ArrayList<MessageModel> messages = new ArrayList<>();
+                    for (Message message2 : result) {
+                        if (message2.attributes.isSetText()) {
+                            livetex.queue_service.TextMessage message1 = (livetex.queue_service.TextMessage) message2.attributes.getFieldValue(MessageAttributes._Fields.TEXT);
+                            String created = (String) message1.getFieldValue(livetex.queue_service.TextMessage._Fields.CREATED);
+                            String sender = (String) message1.getFieldValue(livetex.queue_service.TextMessage._Fields.SENDER);
+                            String text = (String) message1.getFieldValue(livetex.queue_service.TextMessage._Fields.TEXT);
+                            Log.d("history", "");
+                            MessageModel messageModel = new MessageModel(!(sender != null), text, created, conversationId);
+                            messages.add(messageModel);
+                        } else if (message2.attributes.isSetFile()) {
+                            livetex.queue_service.FileMessage messageFile = (livetex.queue_service.FileMessage) message2.attributes.getFieldValue(MessageAttributes._Fields.FILE);
+                            String created = (String) messageFile.getFieldValue(FileMessage._Fields.CREATED);
+                            String sender = (String) messageFile.getFieldValue(FileMessage._Fields.SENDER);
+                            String text = (String) messageFile.getFieldValue(FileMessage._Fields.URL);
+                            MessageModel messageModel = new MessageModel(!(sender != null), text, created, conversationId);
+                            messages.add(messageModel);
                         }
-                        pbHistory.setVisibility(View.GONE);
+
                     }
-                });
+                    allHistoryDownloaded = (prevHistoryCount == messages.size()) ? true : false;
+                    prevHistoryCount = messages.size();
+                    Collections.reverse(messages);
+                    adapter.setData(messages);
+                    if (scrollDown) {
+                        lvChat.setSelection(adapter.getCount() - 1);
+                    }
+                    if (allHistoryDownloaded) {
+                        lvChat.setOnScrollListener(null);
+                    }
+                }
+                pbHistory.setVisibility(View.GONE);
+            }
+        });
 
     }
 
@@ -178,16 +178,16 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     private void setHeaderData(livetex.queue_service.DialogState result) {
 
-        if(result == null || (result != null && (result.getEmployee() == null || result.getEmployee().getAvatar() == null))) {
+        if (result == null || (result != null && (result.getEmployee() == null || result.getEmployee().getAvatar() == null))) {
             return;
         }
         setHeaderData(result.getEmployee().getAvatar(), result.getEmployee().getFirstname(), result.getEmployee().getLastname());
         setConversationId(result.getEmployee().getEmployeeId());
         sendingMessagesEnabled(true);
-        if("1".equals(result.getEmployee().getStatus())) {
-            tvHeaderTyping.setText("оператор онлайн");
+        if ("1".equals(result.getEmployee().getStatus())) {
+            tvHeaderStatus.setText("оператор онлайн");
         } else {
-            tvHeaderTyping.setText("оператор оффлайн");
+            tvHeaderStatus.setText("оператор оффлайн");
         }
     }
 
@@ -207,29 +207,28 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
                 setHeaderData(employee.getAvatar(), employee.getFirstname(), employee.getLastname());
                 setConversationId(employee.getEmployeeId());
                 sendingMessagesEnabled(true);
-                tvHeaderTyping.setText("оператор онлайн");
-                if(!lastMessageId.equals("OPEN_DIALOG")) {
+                tvHeaderStatus.setText("оператор онлайн");
+                if (!lastMessageId.equals("OPEN_DIALOG")) {
                     scrollWithMessage(false, "OPEN_DIALOG", String.valueOf(System.currentTimeMillis()));
                 }
                 lastMessageId = "OPEN_DIALOG";
                 break;
             case CLOSE:
                 setHeaderData(null, "Оператор", "");
-                tvHeaderTyping.setText("");
-                if(!lastMessageId.equals("CLOSE_DIALOG")) {
+                tvHeaderStatus.setText("");
+                if (!lastMessageId.equals("CLOSE_DIALOG")) {
                     scrollWithMessage(false, "CLOSE_DIALOG", String.valueOf(System.currentTimeMillis()));
                 }
                 lastMessageId = "CLOSE_DIALOG";
                 break;
             case TYPING_MESSAGE:
-                tvHeaderTyping.setVisibility(View.VISIBLE);
-                tvHeaderTyping.setText("печатает...");
-                handler.postDelayed(typingTask, 1500);
+                tvHeaderStatus.setText("печатает...");
+                handler.postDelayed(typingResetTask, 1500);
                 break;
             case RECEIVE_QUEUE_MSG:
                 LTTextMessage textMessage = (LTTextMessage) eventMessage.getSerializable();
                 MainApplication.confirmQueueMessage(textMessage.getId());
-                if(!lastMessageId.equals(textMessage.getId())) {
+                if (!lastMessageId.equals(textMessage.getId())) {
                     scrollWithMessage(false, textMessage.getText(), textMessage.timestamp);
                 }
                 lastMessageId = textMessage.getId();
@@ -258,16 +257,16 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
                 showFragment(new AbuseFragment());
             }
         });
-        tvHeaderTyping = (TextView) header.findViewById(R.id.tvHeaderTyping);
-        if(actionBarHeight != -1) {
-            ivAvatarHeader.getLayoutParams().height = actionBarHeight-26;
-            ivAvatarHeader.getLayoutParams().width = actionBarHeight-26;
+        tvHeaderStatus = header.findViewById(R.id.tvHeaderStatus);
+        if (actionBarHeight != -1) {
+            ivAvatarHeader.getLayoutParams().height = actionBarHeight - 26;
+            ivAvatarHeader.getLayoutParams().width = actionBarHeight - 26;
         }
-        if(!TextUtils.isEmpty(avatar)) {
+        if (!TextUtils.isEmpty(avatar)) {
             ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
         }
         tvHeaderTitle = (TextView) header.findViewById(R.id.tvHeaderTitle);
-        if(!TextUtils.isEmpty(firstName)) {
+        if (!TextUtils.isEmpty(firstName)) {
             tvHeaderTitle.setText(firstName);
         }
 
@@ -278,7 +277,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
                 AttachChooseDialog dialog = new AttachChooseDialog();
                 dialog.setTargetFragment(OnlineChatFragment1.this, CHOOSER_DIALOG_REQUEST);
-                if(!isStoragePermissionsGranted()) {
+                if (!isStoragePermissionsGranted()) {
                     dialog.showAllowingStateLoss(getFragmentEnvironment().getSupportFragmentManager(), "AttachChooseDialog");
                 } else {
 
@@ -293,7 +292,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     private boolean isStoragePermissionsGranted() {
         int sdk = android.os.Build.VERSION.SDK_INT;
-        if(sdk < 23) return true;
+        if (sdk < 23) return true;
         int i = FragmentEnvironment.fa.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         return i == PackageManager.PERMISSION_GRANTED;
     }
@@ -306,7 +305,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
     void initWithCamera() {
         try {
             takePictureByCam();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             dismissProgress();
             Toast.makeText(getContext(), "Unable to take photo", Toast.LENGTH_SHORT).show();
@@ -315,7 +314,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     @Override
     protected void sendFileFromUri(final String path1) {
-        if(path1 == null) {
+        if (path1 == null) {
             LivetexUtils.showToast(getContext(), "Файл не доступен для загрузки");
             return;
         }
@@ -354,7 +353,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     private void scrollWithMessage(boolean isVisitor, String message, String time) {
         adapter.setData(new MessageModel(isVisitor, message, time, conversationId));
-        lvChat.setSelection(lvChat.getCount()-1);
+        lvChat.setSelection(lvChat.getCount() - 1);
     }
 
     private void scrollWithFile(boolean isVisitor, String message, String time) {
@@ -382,7 +381,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
             public void onResultRecieved(SendMessageResponse result) {
                 Log.d("tag", result.toString());
 
-                if(result.destination == null) {
+                if (result.destination == null) {
                     MainApplication.getDestinations(new AHandler<ArrayList<Destination>>() {
                         @Override
                         public void onError(String errMsg) {
@@ -390,9 +389,9 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
                         @Override
                         public void onResultRecieved(final ArrayList<Destination> destinations) {
-                            if(destinations != null && destinations.size() != 0) {
+                            if (destinations != null && destinations.size() != 0) {
                                 Destination destination = destinations.get(0);
-                                if(destination != null) {
+                                if (destination != null) {
                                     MainApplication.setDestination(destination, new LTDialogAttributes(new HashMap<String, String>()));
                                     MainApplication.currentConversation = destination.getTouchPoint().getTouchPointId();
                                 }
@@ -426,43 +425,41 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
         ivSendMsg.setEnabled(enabled);
     }
 
-    public class TypingTask implements Runnable {
-
+    public class TypingResetTask implements Runnable {
         @Override
         public void run() {
-            tvHeaderTyping.setText("оператор онлайн");
+            tvHeaderStatus.setText("оператор онлайн");
         }
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case Const.CODE.FILE_SELECT:
-                if(data != null) {
+                if (data != null) {
                     Uri uri = data.getData();
                     sendFileFromUri(LivetexUtils.getPath(getContext(), uri));
                 }
                 break;
             case CHOOSER_DIALOG_REQUEST:
-                if(resultCode == AttachChooseDialog.TAKE_FILE) {
+                if (resultCode == AttachChooseDialog.TAKE_FILE) {
                     takeFile();
-                } else if(resultCode == AttachChooseDialog.TAKE_PICTURE_BY_CAM) {
-                    if(getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA) && android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+                } else if (resultCode == AttachChooseDialog.TAKE_PICTURE_BY_CAM) {
+                    if (getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA) && android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
                         OnlineChatFragment1PermissionsDispatcher.initWithCameraWithCheck(OnlineChatFragment1.this);
                     } else {
                         Toast.makeText(getContext(), "Taking photos is not available", Toast.LENGTH_SHORT).show();
                     }
 
-                } else if(resultCode == AttachChooseDialog.TAKE_GALLERY_PICTURE) {
+                } else if (resultCode == AttachChooseDialog.TAKE_GALLERY_PICTURE) {
                     takeGalleryPicture();
                 }
                 break;
             case SELECT_PICTURE_REQUEST:
-                if(data != null) {
+                if (data != null) {
                     Uri uri = data.getData();
                     Uri pathUri = LivetexUtils.getRealPathFromURI(getContext(), uri);
-                    if(pathUri != null) {
+                    if (pathUri != null) {
                         sendFileFromUri(pathUri.toString());
                     } else {
                         LivetexUtils.showToast(getContext(), "Пожалуйста,выберите другой файл");
@@ -471,8 +468,8 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
                 }
                 break;
             case CHOOSER_FILE_REQUEST:
-                if(resultCode == FileManagerDialog.TAKE_FILE_URI) {
-                    if(data != null) {
+                if (resultCode == FileManagerDialog.TAKE_FILE_URI) {
+                    if (data != null) {
                         Uri uri = data.getData();
                         sendFileFromUri(LivetexUtils.getPath(getContext(), uri));
                     }
@@ -504,7 +501,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
                 int progress = resultData.getInt("progress");
                 if (progress == 100) {
                     dismissProgress();
-                    lvChat.setSelection(lvChat.getCount()-1);
+                    lvChat.setSelection(lvChat.getCount() - 1);
                 }
             }
         }

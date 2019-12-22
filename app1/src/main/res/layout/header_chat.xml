@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:layout_width="match_parent"
@@ -27,16 +28,16 @@
             android:layout_marginLeft="4dp"
             android:textSize="18sp"
             android:id="@+id/tvHeaderTitle"
-            android:text="Misha Mavashi"
+            tools:text="Misha Mavashi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <nit.livetex.livetexsdktestapp.view.TextViewRoboto
             android:layout_marginLeft="4dp"
             android:textSize="14sp"
-            android:visibility="gone"
-            android:id="@+id/tvHeaderTyping"
-            android:text="Печатает..."
+            android:visibility="visible"
+            android:id="@+id/tvHeaderStatus"
+            tools:text="Печатает..."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
