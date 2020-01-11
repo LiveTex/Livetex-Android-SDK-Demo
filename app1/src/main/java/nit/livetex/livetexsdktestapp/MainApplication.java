@@ -27,6 +27,7 @@ import nit.livetex.livetexsdktestapp.models.ErrorMessage1;
 import nit.livetex.livetexsdktestapp.models.EventMessage;
 import nit.livetex.livetexsdktestapp.utils.BusProvider;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
+import nit.livetex.livetexsdktestapp.utils.ThreadUtils;
 import sdk.Livetex;
 import sdk.handler.AHandler;
 import sdk.handler.IInitHandler;
@@ -80,20 +81,27 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .defaultDisplayImageOptions(defaultOptions)
-                .build();
-
-        ImageLoader.getInstance().init(config); // Do it on Application start
-
         instance = this;
-        MainApplication.setProductionScope();
-        BusProvider.register(this);
+        boolean isMainProcess = ThreadUtils.getNameFromActivityThread().equals(getPackageName());
+
+        if (isMainProcess) {
+            DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .build();
+
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                    .defaultDisplayImageOptions(defaultOptions)
+                    .build();
+
+            ImageLoader.getInstance().init(config); // Do it on Application start
+
+            MainApplication.setProductionScope();
+            BusProvider.register(this);
+        }
+        else {
+            // init here additional stuff like remote services (adverts, metrics etc.)
+        }
     }
 
 
@@ -110,12 +118,10 @@ public class MainApplication extends Application {
     public static void clearGlobal(Context context) {
         // currentToken = "";
         DataKeeper.dropAll(context);
-
     }
 
     public static void initLivetex(String id, String regId) {
         initLivetex(id, regId, null);
-
     }
 
     public static void initLivetex(String id, String regId, final AHandler<Boolean> handler) {
