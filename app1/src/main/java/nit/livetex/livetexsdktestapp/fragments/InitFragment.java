@@ -1,6 +1,7 @@
 package nit.livetex.livetexsdktestapp.fragments;
 
 import android.view.View;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -37,15 +38,20 @@ public class InitFragment extends BaseFragment implements InitCallback {
 
     @Subscribe
     public void onEventMessage(EventMessage eventMessage) {
-        if(eventMessage.getMessageType() == BaseMessage.TYPE.INIT) {
+        if (eventMessage.getMessageType() == BaseMessage.TYPE.INIT) {
             onInitComplete(eventMessage.getStringExtra());
         }
     }
 
     public void onErrorMessage(ErrorMessage1 errorMessage1) {
-        if(errorMessage1.getMessageType() == BaseMessage.TYPE.INIT) {
-
+        if (errorMessage1.getMessageType() == BaseMessage.TYPE.INIT) {
+            onInitError(errorMessage1.getStringExtra());
         }
+    }
+
+    private void onInitError(String msg) {
+        dismissProgress();
+        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -58,24 +64,4 @@ public class InitFragment extends BaseFragment implements InitCallback {
     public void onClear() {
         CommonUtils.showToast(getContext(), "Cache is clear");
     }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

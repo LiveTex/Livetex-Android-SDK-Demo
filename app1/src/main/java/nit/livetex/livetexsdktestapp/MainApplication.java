@@ -47,6 +47,8 @@ import sdk.utils.FileUtils;
  */
 public class MainApplication extends Application {
 
+    private static final String TAG = "MainApplication";
+
     public static String currentConversation = "";
     public static boolean IS_ACTIVE = false;
     private static List<Activity> externalActivitiesStack = new ArrayList<>();
@@ -159,7 +161,7 @@ public class MainApplication extends Application {
 
                     @Override
                     public void receiveHoldMessage(LTHoldMessage message) throws TException {
-
+                        Log.w(TAG, "notif receiveHoldMessage: " + message);
                     }
 
                     @Override
@@ -170,19 +172,18 @@ public class MainApplication extends Application {
 
                     @Override
                     public void onError(String message) {
-
+                        Log.w(TAG, "notif onError: " + message);
                     }
 
                     @Override
                     public void selectDestination(List<livetex.visitor_notification.Destination> destinations) throws TException {
-
+                        Log.v(TAG, "selectDestination: " + destinations.size());
                     }
 
                     @Override
                     public void receiveTextMessage(LTTextMessage message) throws TException {
                         EventMessage eventMessage = new EventMessage(BaseMessage.TYPE.RECEIVE_QUEUE_MSG);
                         eventMessage.putSerializable(message);
-
                         postMessage(eventMessage);
                     }
 
@@ -203,6 +204,7 @@ public class MainApplication extends Application {
 
             @Override
             public void onError(String errorMessage) {
+                Log.w(TAG, "init onError: " + errorMessage);
                 postMessage(new ErrorMessage1(BaseMessage.TYPE.INIT, errorMessage));
             }
         });
@@ -243,7 +245,6 @@ public class MainApplication extends Application {
     }
 
     public static void setDestination(Destination destination, LTDialogAttributes dialogAttrs) {
-
         if (sLiveTex != null) {
             sLiveTex.setDestination(destination, dialogAttrs);
         }

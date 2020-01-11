@@ -29,7 +29,7 @@ public class InitPresenter extends BasePresenter<InitCallback> {
 
         // for debug only
         if (!TextUtils.isEmpty(Const.FORCED_DEVICE_ID)) {
-            Log.v("Firebase", "Init with debug regId = " + regId);
+            Log.v("Firebase", "Init with debug regId = " + Const.FORCED_DEVICE_ID);
             MainApplication.initLivetex(appId, Const.FORCED_DEVICE_ID);
             return;
         }

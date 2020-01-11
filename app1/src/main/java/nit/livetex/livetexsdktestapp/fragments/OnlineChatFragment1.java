@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.otto.Subscribe;
 
@@ -154,11 +156,12 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
         handler.postDelayed(() -> updateMessageHistory(0, 100, true), 500);
 
-        handler.post(new GetStateTask());
-        handler.postDelayed(new GetStateTask(), 7000);
+        handler.post(new GetDialogStateTask());
+        // todo: not required, updateDialogState should be used
+        handler.postDelayed(new GetDialogStateTask(), 7000);
     }
 
-    private class GetStateTask implements Runnable {
+    private class GetDialogStateTask implements Runnable {
 
         @Override
         public void run() {
@@ -177,14 +180,13 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
     }
 
     private void setHeaderData(livetex.queue_service.DialogState result) {
-
-        if (result == null || (result != null && (result.getEmployee() == null || result.getEmployee().getAvatar() == null))) {
+        if (result == null || result.getEmployee() == null) {
             return;
         }
         setHeaderData(result.getEmployee().getAvatar(), result.getEmployee().getFirstname(), result.getEmployee().getLastname());
         setConversationId(result.getEmployee().getEmployeeId());
         sendingMessagesEnabled(true);
-        if ("1".equals(result.getEmployee().getStatus())) {
+        if (result.getEmployee().getStatus().equals("1")) {
             tvHeaderStatus.setText("оператор онлайн");
         } else {
             tvHeaderStatus.setText("оператор оффлайн");
@@ -362,24 +364,19 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
     @Override
     public void sendMessage(final String message) {
-
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                scrollWithMessage(true, message, String.valueOf(System.currentTimeMillis()));
-            }
+        handler.postDelayed(() -> {
+            scrollWithMessage(true, message, String.valueOf(System.currentTimeMillis()));
         }, 200);
 
         MainApplication.sendTextMessage(message, new AHandler<SendMessageResponse>() {
             @Override
             public void onError(String errMsg) {
-                Log.d("tag", errMsg);
+                Log.d("tag", "sendTextMessage error:" + errMsg);
             }
 
             @Override
             public void onResultRecieved(SendMessageResponse result) {
-                Log.d("tag", result.toString());
+                Log.d("tag", "sendTextMessage " + result.toString());
 
                 if (result.destination == null) {
                     MainApplication.getDestinations(new AHandler<ArrayList<Destination>>() {
@@ -405,8 +402,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
         });
     }
 
-
-    private void setHeaderData(String avatar, String firstName, String lastName) {
+    private void setHeaderData(@Nullable String avatar, String firstName, String lastName) {
         Context context = getContext();
         if (context == null)
             return;

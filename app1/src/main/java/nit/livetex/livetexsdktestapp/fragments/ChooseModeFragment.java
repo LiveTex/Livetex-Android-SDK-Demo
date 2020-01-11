@@ -25,9 +25,9 @@ import sdk.models.LTEmployee;
 public class ChooseModeFragment extends BaseFragment implements ClientFormCallback, View.OnClickListener {
 
     private static final String TAG = "ChooseModeFragment";
-    Button btnOnlineMode;
+    private Button btnOnlineMode;
 
-    ArrayList<Destination> destinations;
+    private ArrayList<Destination> destinations;
 
     @Override
     protected int getLayoutId() {
@@ -35,7 +35,7 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
     }
 
     private void init(View v) {
-        btnOnlineMode = (Button) v.findViewById(R.id.btnOnlineMode);
+        btnOnlineMode = v.findViewById(R.id.btnOnlineMode);
         btnOnlineMode.setOnClickListener(this);
     }
 
@@ -43,16 +43,15 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnOnlineMode:
-                if(TextUtils.isEmpty(DataKeeper.getClientName(getContext()))) {
+                if (TextUtils.isEmpty(DataKeeper.getClientName(getContext()))) {
                     showFragment(new ClientFormFragment(), true);
                 } else {
                     showProgress();
-                    if(destinations != null && !destinations.isEmpty()) {
+                    if (destinations != null && !destinations.isEmpty()) {
                         Destination destination = destinations.get(0);
                         ClientFormPresenter.sendToDestination(getContext(), destination, DataKeeper.getClientName(getContext()), this);
                     }
                 }
-
                 break;
         }
     }
@@ -70,7 +69,7 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
 
             @Override
             public void onResultRecieved(ArrayList<Destination> destinations) {
-                if(destinations != null && destinations.size() != 0) {
+                if (destinations != null && destinations.size() != 0) {
                     ChooseModeFragment.this.destinations = destinations;
                     btnOnlineMode.setEnabled(true);
                     btnOnlineMode.setBackground(getContext().getResources().getDrawable(R.drawable.blue_btn));
@@ -78,7 +77,6 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
                     Log.e(TAG, "Empty destinations!");
             }
         });
-
 
         return super.onCreateView(v);
     }
@@ -120,24 +118,3 @@ public class ChooseModeFragment extends BaseFragment implements ClientFormCallba
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
