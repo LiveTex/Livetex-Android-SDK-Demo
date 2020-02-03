@@ -108,6 +108,10 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
             @Override
             public void onResultRecieved(LTSerializableHolder result1) {
+                if (result1 == null) {
+                    pbHistory.setVisibility(View.GONE);
+                    return;
+                }
                 List<Message> result = (List<Message>) result1.getSerializable();
                 if (result != null) {
                     Log.d("tag", "getHistory " + result.size());
@@ -168,7 +172,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
             MainApplication.getStateQueue(new AHandler<livetex.queue_service.DialogState>() {
                 @Override
                 public void onError(String errMsg) {
-
+                    Log.e(TAG, "GetDialogStateTask: error " + errMsg);
                 }
 
                 @Override

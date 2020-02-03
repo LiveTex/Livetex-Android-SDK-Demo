@@ -43,6 +43,7 @@ public class InitFragment extends BaseFragment implements InitCallback {
         }
     }
 
+    @Subscribe
     public void onErrorMessage(ErrorMessage1 errorMessage1) {
         if (errorMessage1.getMessageType() == BaseMessage.TYPE.INIT) {
             onInitError(errorMessage1.getStringExtra());
