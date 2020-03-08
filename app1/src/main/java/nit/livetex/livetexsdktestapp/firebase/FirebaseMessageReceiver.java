@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import nit.livetex.livetexsdktestapp.MainApplication;
+import nit.livetex.livetexsdktestapp.FragmentEnvironment;
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.utils.DataKeeper;
 
@@ -35,18 +35,21 @@ public final class FirebaseMessageReceiver extends FirebaseMessagingService {
     }
 
     private void sendNotification(RemoteMessage remoteMessage) {
-        Intent intent = new Intent(this, MainApplication.class);
+        Intent intent = new Intent(this, FragmentEnvironment.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
+
+        String messageTitle = remoteMessage.getNotification().getTitle();
+        String messageText = remoteMessage.getNotification().getBody();
 
         String channelId = "Chat notifications";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.default_icon)
-                        .setContentTitle(remoteMessage.getNotification().getTitle())
-                        .setContentText(remoteMessage.getNotification().getBody())
+                        .setContentTitle(messageTitle)
+                        .setContentText(messageText)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
