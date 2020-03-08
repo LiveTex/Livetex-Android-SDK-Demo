@@ -11,27 +11,19 @@ buildscript {
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
 
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "nit.livetex.livetexsdktestapp"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 301
         versionName "3.0.1"
         multiDexEnabled = true
     }
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+
     signingConfigs {
         release {
             storeFile file("livetex.jks")
@@ -40,6 +32,24 @@ android {
             keyPassword "l1v3t3x"
         }
     }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     lintOptions {
         abortOnError false
         disable 'InvalidPackage'
