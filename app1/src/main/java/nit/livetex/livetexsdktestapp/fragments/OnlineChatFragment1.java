@@ -416,7 +416,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
         } else {
             ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
         }
-        String name = (firstName == null ? "" : firstName) + (lastName == null ? "" : lastName);
+        String name = (firstName == null ? "" : firstName) + (lastName == null ? "" : " " + lastName);
         tvHeaderTitle.setText(name);
     }
 
