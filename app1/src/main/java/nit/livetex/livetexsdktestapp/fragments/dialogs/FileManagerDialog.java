@@ -25,14 +25,14 @@ import android.widget.Toast;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
 
 public class FileManagerDialog extends DialogFragment {
 
@@ -50,7 +50,16 @@ public class FileManagerDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mStartFiles.addAll(getFiles(Environment.getExternalStorageDirectory()));
+        File extDir = Environment.getExternalStorageDirectory();
+        if (extDir == null || !extDir.canRead()) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("Ошибка")
+                    .setMessage("Нет доступа к файловой системе")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .create();
+        }
+        List<File> files = getFiles(extDir);
+        mStartFiles.addAll(files);
         mFiles.addAll(mStartFiles);
         mMainLayout = createMainLayout();
         ListView listView = createListView(getActivity());
@@ -58,7 +67,7 @@ public class FileManagerDialog extends DialogFragment {
         mMainLayout.addView(createBackItem(listView));
         mMainLayout.addView(listView);
         return new AlertDialog.Builder(getActivity())
-                .setTitle(Environment.getExternalStorageDirectory().getPath())
+                .setTitle(extDir.getPath())
                 .setView(mMainLayout)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -136,7 +145,7 @@ public class FileManagerDialog extends DialogFragment {
                     Intent intent = new Intent();
                     intent.setData(Uri.fromFile(file));
                     getTargetFragment().onActivityResult(getTargetRequestCode(), TAKE_FILE_URI, intent);
-                   // ((MessagesActivity) getActivity()).sendFile(Uri.fromFile(file));
+                    // ((MessagesActivity) getActivity()).sendFile(Uri.fromFile(file));
                     dismiss();
                 }
             }
@@ -146,7 +155,7 @@ public class FileManagerDialog extends DialogFragment {
 
     private void refreshFiles(ArrayAdapter<File> adapter) {
         try {
-            if (isRoot){
+            if (isRoot) {
                 getDialog().setTitle(Environment.getExternalStorageDirectory().getPath());
                 mFiles.clear();
                 mFiles.addAll(mStartFiles);
@@ -170,7 +179,8 @@ public class FileManagerDialog extends DialogFragment {
     }
 
     private List<File> getFiles(File directory) {
-        List<File> fileList = Arrays.asList(directory.listFiles());
+        File[] list = directory.listFiles();
+        List<File> fileList = Arrays.asList(list);
         Collections.sort(fileList, new Comparator<File>() {
             @Override
             public int compare(File file, File file2) {

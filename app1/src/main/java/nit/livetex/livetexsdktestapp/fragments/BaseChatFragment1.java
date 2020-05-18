@@ -23,6 +23,7 @@ import nit.livetex.livetexsdktestapp.MainApplication;
 import nit.livetex.livetexsdktestapp.R;
 import nit.livetex.livetexsdktestapp.adapters.ChatArrayAdapter;
 import nit.livetex.livetexsdktestapp.fragments.dialogs.FileManagerDialog;
+import nit.livetex.livetexsdktestapp.utils.FileUtils;
 import nit.livetex.livetexsdktestapp.utils.LivetexUtils;
 
 /**
@@ -119,7 +120,7 @@ public abstract class BaseChatFragment1 extends BaseFragment implements View.OnC
 
     public void takePictureByCam() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        mTakenPhotoUri = LivetexUtils.getOutputMediaFile(getFragmentEnvironment());
+        mTakenPhotoUri = FileUtils.getOutputMediaFile(getFragmentEnvironment());
         intent.putExtra(MediaStore.EXTRA_OUTPUT, mTakenPhotoUri);
         startActivityForResult(intent, CAPTURE_IMAGE_REQUEST);
     }
@@ -137,7 +138,7 @@ public abstract class BaseChatFragment1 extends BaseFragment implements View.OnC
         dialog.show(getFragmentEnvironment().getSupportFragmentManager(), "FileManagerDialog");
     }
 
-    protected abstract void sendFileFromUri(String path);
+    protected abstract void sendFile(String path);
 
     @Override
     public void onDestroyView() {

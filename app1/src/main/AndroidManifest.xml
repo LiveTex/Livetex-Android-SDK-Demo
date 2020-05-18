@@ -15,6 +15,7 @@
 
     <application
         android:usesCleartextTraffic="true"
+	    android:requestLegacyExternalStorage="true"
         android:name="nit.livetex.livetexsdktestapp.MainApplication"
         android:logo="@android:color/transparent"
         android:allowBackup="false"
@@ -39,6 +40,17 @@
             </intent-filter>
         </activity>
         <activity android:name="nit.livetex.livetexsdktestapp.alert.ServiceDialog" android:label=""  android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
         <service
             android:name="sdk.requests.ClientRequestService"
             android:exported="false" >

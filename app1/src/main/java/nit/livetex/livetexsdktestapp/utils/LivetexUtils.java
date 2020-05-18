@@ -3,14 +3,11 @@ package nit.livetex.livetexsdktestapp.utils;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
@@ -18,6 +15,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -37,6 +36,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import nit.livetex.livetexsdktestapp.BuildConfig;
+
 /**
  * Created by user on 28.07.15.
  */
@@ -48,7 +49,7 @@ public class LivetexUtils {
 
     public static HashMap<String, String> fromStringSet(Set<String> set) {
         HashMap<String, String> map = new HashMap<>();
-        for (String s: set) {
+        for (String s : set) {
             String[] parts = s.split(":");
             map.put(parts[0], (parts.length == 1) ? "" : parts[1]);
         }
@@ -56,8 +57,8 @@ public class LivetexUtils {
     }
 
     public static boolean isEmpty(EditText... ets) {
-        for(EditText editText : ets) {
-            if(editText.getText() ==null || editText.getText().length() == 0) {
+        for (EditText editText : ets) {
+            if (editText.getText() == null || editText.getText().length() == 0) {
                 return true;
             }
         }
@@ -65,7 +66,7 @@ public class LivetexUtils {
     }
 
     public static void clear(EditText... ets) {
-        for(EditText editText : ets) {
+        for (EditText editText : ets) {
             editText.setText("");
         }
     }
@@ -75,115 +76,6 @@ public class LivetexUtils {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public static String getPath(Context context, Uri uri) {
-        if("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = {"_data"};
-            Cursor cursor = null;
-
-            try {
-                cursor = context.getContentResolver().query(uri, projection, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if(cursor.moveToFirst()) {
-                    String path = cursor.getString(column_index);
-                    return path;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        else if("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-        return null;
-    }
-
-    public static Uri getOutputMediaFile(Context context) {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return Uri.fromFile(new File(getStorageDir(context).getPath() + File.separator +
-                "IMG_" + timeStamp + ".jpg"));
-    }
-
-    private static File getStorageDir(Context context) {
-        if (!isStorageAvailable())
-            return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File mediaStorageDir = new File(context.getExternalCacheDir(), "LiveTex");
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                return null;
-            }
-        }
-        return mediaStorageDir;
-    }
-
-    private static boolean isStorageAvailable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-    public static boolean isKitKat() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-    }
-    private static Uri getMediaUri() {
-        String state = Environment.getExternalStorageState();
-        if (!state.equalsIgnoreCase(Environment.MEDIA_MOUNTED))
-            return MediaStore.Images.Media.INTERNAL_CONTENT_URI;
-
-        return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    }
-    public static Uri getRealPathFromURI(Context context, Uri contentUri) {
-       // Context context = MainApplication.getInstance();
-        if (isKitKat()) {
-            // get the id of the image selected by the user
-            try {
-                String wholeID = DocumentsContract.getDocumentId(contentUri);
-                String id = wholeID.split(":")[1];
-
-                String[] projection = {MediaStore.Images.Media.DATA};
-                String whereClause = MediaStore.Images.Media._ID + "=?";
-                Cursor cursor = context.getContentResolver().query(getMediaUri(),
-                        projection, whereClause, new String[]{id}, null);
-                if (cursor != null) {
-                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    if (cursor.moveToFirst()) {
-                        Uri result = Uri.parse(cursor.getString(column_index));
-                        cursor.close();
-                        return result;
-                    }
-                    cursor.close();
-                } else {
-                    return contentUri;
-                }
-            } catch(Exception e) {
-                e.printStackTrace();
-
-            }
-
-
-        } else {
-            Uri res = null;
-            final String[] columns = {MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME};
-            Cursor cursor = context.getContentResolver()
-                    .query(contentUri, columns, null, null, null);
-            if (cursor == null || !cursor.moveToFirst()) {
-                if (cursor != null) cursor.close();
-                return null;
-            }
-            String path;
-            int columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
-            if (columnIndex != -1) {
-                path = cursor.getString(columnIndex);
-                res = Uri.parse(path);
-            } else {
-                columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME);
-                if (columnIndex != -1) {
-                    res = contentUri;
-                }
-            }
-            cursor.close();
-            return res;
-        }
-        return null;
     }
 
     public static void galleryAddPic(Context context, Uri uri) {
@@ -215,7 +107,7 @@ public class LivetexUtils {
         long last = 0;
         // 10 digits.
         long id = System.currentTimeMillis() % LIMIT;
-        if ( id <= last ) {
+        if (id <= last) {
             id = (last + 1) % LIMIT;
         }
         return last = id;
@@ -242,7 +134,7 @@ public class LivetexUtils {
     public static void hideSoftKeyboard(Activity activity) {
         View view = activity.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }

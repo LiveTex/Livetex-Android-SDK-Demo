@@ -11,9 +11,7 @@ public class Const {
 
     public static String PUSH_ONLINE_ACTION = "nit.livetex.livetexsdktestapp.PUSH_ONLINE_ACTION";
 
-
     public static class CODE {
         public final static int FILE_SELECT = 10;
     }
-
 }

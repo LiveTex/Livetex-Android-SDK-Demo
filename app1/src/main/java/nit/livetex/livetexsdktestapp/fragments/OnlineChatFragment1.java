@@ -319,7 +319,7 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
     }
 
     @Override
-    protected void sendFileFromUri(final String path1) {
+    protected void sendFile(final String path1) {
         if (path1 == null) {
             LivetexUtils.showToast(getContext(), "Файл не доступен для загрузки");
             return;
@@ -327,34 +327,28 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
 
         final File file = new File(path1);
         showProgress();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String endpoint = sdk.data.DataKeeper.restoreEndpoint(getContext(), LivetexService.FILE);
-                    String response = FileUtils.sendMultipart(file, endpoint);
-                    JSONObject jo = new JSONObject(response);
-                    String path = jo.getString("path");
-                    final String url = endpoint + path;
-                    getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
+        new Thread(() -> {
+            try {
+                String endpoint = sdk.data.DataKeeper.restoreEndpoint(getContext(), LivetexService.FILE);
+                String response = FileUtils.sendMultipart(file, endpoint);
+                JSONObject jo = new JSONObject(response);
+                String path = jo.getString("path");
+                final String url = endpoint + path;
+                getHandler().post(() -> {
+                    MainApplication.sendFileQueue(url, null);
+                    scrollWithFile(true, url, String.valueOf(System.currentTimeMillis()));
+                    dismissProgress();
+                });
 
-                            MainApplication.sendFileQueue(url, null);
-                            scrollWithFile(true, url, String.valueOf(System.currentTimeMillis()));
-                            dismissProgress();
-                        }
-                    });
-
-                    Log.d("tag", response);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Log.d("tag", response);
+            } catch (IOException e) {
+                Log.e("tag", "send file", e);
+                dismissProgress();
+            } catch (JSONException e) {
+                Log.e("tag", "send file", e);
+                dismissProgress();
             }
         }).start();
-
     }
 
     private void scrollWithMessage(boolean isVisitor, String message, String time) {
@@ -438,14 +432,14 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
             case Const.CODE.FILE_SELECT:
                 if (data != null) {
                     Uri uri = data.getData();
-                    sendFileFromUri(LivetexUtils.getPath(getContext(), uri));
+                    sendFile(nit.livetex.livetexsdktestapp.utils.FileUtils.getPath(getContext(), uri));
                 }
                 break;
             case CHOOSER_DIALOG_REQUEST:
                 if (resultCode == AttachChooseDialog.TAKE_FILE) {
                     takeFile();
                 } else if (resultCode == AttachChooseDialog.TAKE_PICTURE_BY_CAM) {
-                    if (getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA) && android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+                    if (getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) && android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
                         OnlineChatFragment1PermissionsDispatcher.initWithCameraWithCheck(OnlineChatFragment1.this);
                     } else {
                         Toast.makeText(getContext(), "Taking photos is not available", Toast.LENGTH_SHORT).show();
@@ -458,26 +452,26 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
             case SELECT_PICTURE_REQUEST:
                 if (data != null) {
                     Uri uri = data.getData();
-                    Uri pathUri = LivetexUtils.getRealPathFromURI(getContext(), uri);
-                    if (pathUri != null) {
-                        sendFileFromUri(pathUri.toString());
+                    String path = nit.livetex.livetexsdktestapp.utils.FileUtils.getPath(getContext(), uri);
+                    if (path != null) {
+                        sendFile(path);
                     } else {
-                        LivetexUtils.showToast(getContext(), "Пожалуйста,выберите другой файл");
+                        LivetexUtils.showToast(getContext(), "Нет доступа. Пожалуйста, выберите другой файл или выдайте доступ.");
                     }
-
                 }
                 break;
             case CHOOSER_FILE_REQUEST:
                 if (resultCode == FileManagerDialog.TAKE_FILE_URI) {
                     if (data != null) {
                         Uri uri = data.getData();
-                        sendFileFromUri(LivetexUtils.getPath(getContext(), uri));
+                        String path = nit.livetex.livetexsdktestapp.utils.FileUtils.getPath(getContext(), uri);
+                        sendFile(path);
                     }
                 }
                 break;
             case CAPTURE_IMAGE_REQUEST:
-                sendFileFromUri(LivetexUtils.getPath(getContext(), mTakenPhotoUri));
-
+                String path = nit.livetex.livetexsdktestapp.utils.FileUtils.getPath(getContext(), mTakenPhotoUri);
+                sendFile(path);
                 break;
         }
 
