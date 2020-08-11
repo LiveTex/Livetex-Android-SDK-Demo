@@ -67,7 +67,7 @@ android {
 
 dependencies {
     // LiveTex SDK
-    implementation 'ru.livetex:sdk:2.0.8@aar'
+    implementation 'ru.livetex:sdk:2.0.9@aar'
 
     // ui
     implementation "androidx.appcompat:appcompat:1.1.0"
