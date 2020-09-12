@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.bumptech.glide.Glide;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
@@ -269,7 +269,11 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
             ivAvatarHeader.getLayoutParams().width = actionBarHeight - 26;
         }
         if (!TextUtils.isEmpty(avatar)) {
-            ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
+            Glide.with(this)
+                    .load(avatar)
+                    .centerCrop()
+                    .dontAnimate()
+                    .into(ivAvatarHeader);
         }
         tvHeaderTitle = (TextView) header.findViewById(R.id.tvHeaderTitle);
         if (!TextUtils.isEmpty(firstName)) {
@@ -408,7 +412,11 @@ public class OnlineChatFragment1 extends BaseChatFragment1 {
         if (TextUtils.isEmpty(avatar)) {
             ivAvatarHeader.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_app));
         } else {
-            ImageLoader.getInstance().displayImage(avatar, ivAvatarHeader);
+            Glide.with(this)
+                    .load(avatar)
+                    .centerCrop()
+                    .dontAnimate()
+                    .into(ivAvatarHeader);
         }
         String name = (firstName == null ? "" : firstName) + (lastName == null ? "" : " " + lastName);
         tvHeaderTitle.setText(name);
