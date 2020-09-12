@@ -16,16 +16,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import nit.livetex.livetexsdktestapp.R;
-import nit.livetex.livetexsdktestapp.models.MessageModel;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import nit.livetex.livetexsdktestapp.R;
+import nit.livetex.livetexsdktestapp.models.MessageModel;
 
 /**
  * Created by dev on 02.06.16.
@@ -124,10 +124,18 @@ public class ChatArrayAdapter extends ArrayAdapter<MessageModel> {
             final String filePath = offlineMessagePersistent.getText();
             String messageText = offlineMessagePersistent.getText();
             holder.tvMessageLeft.setText(messageText);
-            if(messageText.endsWith("png") || messageText.endsWith("jpg")) {
+
+            if (filePath.endsWith("png") || filePath.endsWith("jpg")) {
                 state = BubbleState.FILE_OPERATOR;
-                ImageLoader.getInstance().displayImage(messageText, holder.ivScreenshot1);
+
+                Glide.with(view.getContext())
+                        .load(filePath)
+                        .centerCrop()
+                        .placeholder(R.drawable.placeholder)
+                        .dontAnimate()
+                        .into(holder.ivScreenshot1);
             }
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -156,19 +164,20 @@ public class ChatArrayAdapter extends ArrayAdapter<MessageModel> {
             });
         } else if(offlineMessagePersistent.getText() != null && offlineMessagePersistent.getText().contains("/") && state == BubbleState.VISITOR) {
 
-            String filePath1 = offlineMessagePersistent.getText();
-            holder.tvMessageRight.setText(offlineMessagePersistent.getText());
-            final String filePath = filePath1;
+            final String filePath = offlineMessagePersistent.getText();
             String messageText = offlineMessagePersistent.getText();
+            holder.tvMessageRight.setText(messageText);
             holder.tvMessageLeft.setText(messageText);
-            if(messageText.endsWith("png") || messageText.endsWith("jpg")) {
-                state = BubbleState.FILE_VISITOR;
-                if(messageText.startsWith("http")) {
-                    ImageLoader.getInstance().displayImage(messageText, holder.ivScreenshot);
-                } else {
-                    Picasso.with(getContext()).load(messageText).into(holder.ivScreenshot);
-                }
 
+            if (messageText.endsWith("png") || messageText.endsWith("jpg")) {
+                state = BubbleState.FILE_VISITOR;
+
+                Glide.with(view.getContext())
+                        .load(filePath)
+                        .centerCrop()
+                        .placeholder(R.drawable.placeholder)
+                        .dontAnimate()
+                        .into(holder.ivScreenshot);
             }
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -247,7 +256,7 @@ public class ChatArrayAdapter extends ArrayAdapter<MessageModel> {
                 holder.tvMessageLeft.setVisibility(View.GONE);
                 holder.tvTimerLeft.setText(formatTimestamp1(offlineMessagePersistent.getDate()));
                 break;
-            case  FILE_VISITOR:
+            case FILE_VISITOR:
                 holder.tvDialogState.setVisibility(View.GONE);
                 holder.llLeft.setVisibility(View.GONE);
                 holder.ivScreenshot.setVisibility(View.VISIBLE);
@@ -257,6 +266,11 @@ public class ChatArrayAdapter extends ArrayAdapter<MessageModel> {
                 holder.tvMessageRight.setVisibility(View.GONE);
                 holder.tvTimerRight.setText(formatTimestamp1(offlineMessagePersistent.getDate()));
                 break;
+        }
+        // https://bumptech.github.io/glide/doc/getting-started.html#listview-and-recyclerview
+        if (state != BubbleState.FILE_OPERATOR && state != BubbleState.FILE_VISITOR) {
+            Glide.with(view.getContext()).clear(holder.ivScreenshot);
+            Glide.with(view.getContext()).clear(holder.ivScreenshot1);
         }
     }
 

@@ -6,10 +6,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import org.apache.thrift.TException;
 
 import java.io.File;
@@ -85,17 +81,6 @@ public class MainApplication extends Application {
         boolean isMainProcess = ThreadUtils.getNameFromActivityThread().equals(getPackageName());
 
         if (isMainProcess) {
-            DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                    .cacheInMemory(true)
-                    .cacheOnDisk(true)
-                    .build();
-
-            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                    .defaultDisplayImageOptions(defaultOptions)
-                    .build();
-
-            ImageLoader.getInstance().init(config); // Do it on Application start
-
             MainApplication.setProductionScope();
             BusProvider.register(this);
         }

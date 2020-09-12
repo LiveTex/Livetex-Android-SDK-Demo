@@ -25,8 +25,9 @@
             <ImageView
                 android:id="@+id/ivScreenshot1"
                 android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:adjustViewBounds="true"
+                android:layout_width="250dp"
+                android:layout_height="200dp" />
             <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
                 android:id="@+id/tvLeft"
                 android:layout_marginRight="2dp"
@@ -77,9 +78,9 @@
             <ImageView
                 android:id="@+id/ivScreenshot"
                 android:visibility="gone"
-                android:scaleType="fitXY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:adjustViewBounds="true"
+                android:layout_width="250dp"
+                android:layout_height="200dp" />
             <nit.livetex.livetexsdktestapp.view.TextViewRobotoRegular
                 android:id="@+id/tvRight"
                 android:layout_marginLeft="2dp"
